@@ -1,0 +1,476 @@
+"use client";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase-browser";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { 
+    Megaphone, 
+    Users, 
+    Send, 
+    AlertCircle, 
+    Loader2, 
+    Download, 
+    BarChart3, 
+    CheckCircle2, 
+    Clock, 
+    XCircle,
+    Target,
+    Zap,
+    History,
+    FileJson,
+    Activity
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
+import { cn } from "@/lib/utils";
+
+const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+
+// --- Premium Animated Counter ---
+function AnimatedCounter({ value, className }: { value: number; className?: string }) {
+    const [displayValue, setDisplayValue] = useState(0);
+
+    useEffect(() => {
+        let start = displayValue;
+        const end = value;
+        if (start === end) return;
+        
+        const duration = 1200; // 1.2s smooth animation
+        const startTime = performance.now();
+        
+        const update = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease-out cubic
+            const easeProgress = 1 - Math.pow(1 - progress, 3);
+            setDisplayValue(Math.floor(start + (end - start) * easeProgress));
+            
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                setDisplayValue(end);
+            }
+        };
+        requestAnimationFrame(update);
+    }, [value]);
+
+    return <span className={className}>{displayValue}</span>;
+}
+
+export default function CampaignsPage() {
+    const t = useTranslations("Campaigns");
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [instances, setInstances] = useState<any[]>([]);
+    const [selectedInstance, setSelectedInstance] = useState<string>("");
+    const [message, setMessage] = useState("");
+    const [estimatedAudience, setEstimatedAudience] = useState<number>(0);
+    const [downloading, setDownloading] = useState(false);
+    const [analytics, setAnalytics] = useState({ sent: 0, delivered: 0, read: 0, failed: 0 });
+    const supabase = createClient();
+
+    useEffect(() => {
+        const loadInitialData = async () => {
+            const { data: contactsData } = await supabase.from("silkbot_contacts").select("tags, instance_name");
+            
+            if (contactsData) {
+                const uniqueTags = new Set<string>();
+                const uniqueInstances = new Set<string>();
+                
+                contactsData.forEach((c: any) => {
+                    if (c.instance_name) uniqueInstances.add(c.instance_name);
+                    if (c.tags && Array.isArray(c.tags)) {
+                        c.tags.forEach((tag: string) => uniqueTags.add(tag));
+                    }
+                });
+                
+                setTags(Array.from(uniqueTags));
+                const instancesArr = Array.from(uniqueInstances).map(name => ({ instanceName: name }));
+                setInstances(instancesArr);
+                if (instancesArr.length > 0) {
+                    setSelectedInstance(instancesArr[0].instanceName);
+                }
+            }
+            setLoading(false);
+        };
+        loadInitialData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!selectedInstance) return;
+            
+            let query = supabase.from("silkbot_contacts").select("id", { count: "exact" }).eq("instance_name", selectedInstance);
+            if (selectedTags.length > 0) query = query.contains("tags", selectedTags);
+            const { count } = await query;
+            setEstimatedAudience(count || 0);
+
+            const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+            const { data } = await supabase.from("silkbot_messages").select("delivery_status").eq("instance_name", selectedInstance).eq("from_me", true).gte("timestamp", threeDaysAgo);
+                
+            if (data) {
+                const stats = { sent: 0, delivered: 0, read: 0, failed: 0 };
+                data.forEach(msg => {
+                    const status = msg.delivery_status?.toUpperCase() || "SENT";
+                    if (status.includes("READ")) stats.read++;
+                    else if (status.includes("DELIVERED") || status.includes("RECEIVED")) stats.delivered++;
+                    else if (status.includes("FAIL") || status.includes("ERROR")) stats.failed++;
+                    else stats.sent++;
+                });
+                setAnalytics(stats);
+            }
+        };
+        fetchData();
+    }, [selectedInstance, selectedTags]);
+
+    const handleTagToggle = (tag: string) => {
+        setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+    };
+
+    const handleExportCSV = async () => {
+        if (!selectedInstance || estimatedAudience === 0) return;
+        setDownloading(true);
+        toast.info("Preparing audience CSV export...");
+        try {
+            let query = supabase.from("silkbot_contacts").select("contact_jid, push_name, tags").eq("instance_name", selectedInstance);
+            if (selectedTags.length > 0) query = query.contains("tags", selectedTags);
+            const { data } = await query;
+            
+            if (data && data.length > 0) {
+                const header = "JID,Name,Tags\n";
+                const rows = data.map((c: any) => `"${c.contact_jid}","${c.push_name || ''}","${c.tags?.join(', ') || ''}"`).join("\n");
+                const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `audiences_${selectedInstance}_${Date.now()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success("Audience data exported successfully!");
+            }
+        } catch (e: any) {
+            toast.error("Failed to export: " + e.message);
+        } finally {
+            setDownloading(false);
+        }
+    };
+
+    const handleSendBroadcast = async () => {
+        if (!selectedInstance || !message.trim() || estimatedAudience === 0) {
+            toast.error(t("validation_error") || "Validation failed: Check instance, message, and audience.");
+            return;
+        }
+
+        toast.info("Preparing broadcast deployment...", { duration: 2000 });
+        setSending(true);
+        try {
+            let query = supabase.from("silkbot_contacts").select("contact_jid").eq("instance_name", selectedInstance);
+            if (selectedTags.length > 0) query = query.contains("tags", selectedTags);
+            const { data: targetContacts } = await query;
+            const jidList = targetContacts?.map(c => c.contact_jid) || [];
+
+            const apiKey = process.env.NEXT_PUBLIC_GATEWAY_API_KEY || "";
+            if (!apiKey) {
+                console.warn("[Campaigns] Missing NEXT_PUBLIC_GATEWAY_API_KEY.");
+            }
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/instance/broadcast`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-api-key": apiKey
+                },
+                body: JSON.stringify({ instance: selectedInstance, targets: jidList, message: message.trim() })
+            });
+
+            if (!res.ok) {
+                let errorMsg = `Gateway Error: ${res.status}`;
+                try {
+                    const errorData = await res.json();
+                    errorMsg = errorData?.error || errorMsg;
+                } catch(e) {}
+                throw new Error(errorMsg);
+            }
+            
+            toast.success(t("broadcast_started") || `Campaign successfully queued for ${jidList.length} contacts!`);
+            setMessage("");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to launch campaign.");
+        } finally {
+            setSending(false);
+        }
+    };
+
+    const pieData = [
+        { name: 'Sent', value: analytics.sent || 1 },
+        { name: 'Delivered', value: analytics.delivered },
+        { name: 'Read', value: analytics.read },
+        { name: 'Failed', value: analytics.failed },
+    ].filter(d => d.value > 0);
+
+    if (loading) {
+        return (
+            <div className="flex h-[80vh] items-center justify-center bg-[#020617]">
+                <div className="relative">
+                    <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
+                    <div className="absolute inset-0 blur-xl bg-blue-500/20 animate-pulse" />
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-[#020617] text-slate-200 p-4 md:p-10 font-sans selection:bg-blue-500/30">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-[1700px] mx-auto space-y-12"
+            >
+                {/* Header Section */}
+                <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black text-blue-400 tracking-widest uppercase italic">
+                                Signal Source: Active
+                            </span>
+                            <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                                <History className="w-3 h-3" /> System Uptime: 99.9%
+                            </div>
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-500">
+                            {t("title") || "Campaign Command"}<span className="text-blue-500">.</span>
+                        </h1>
+                        <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+                            {t("description") || "Orchestrate high-volume outreach with neural-optimized delivery protocols and real-time metrics."}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-6">
+                        <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/5 p-5 rounded-3xl flex items-center gap-5 shadow-2xl">
+                            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                                <Target className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Target Reach</p>
+                                <p className="text-2xl font-black text-white leading-none">
+                                    <AnimatedCounter value={estimatedAudience} />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+                    <div className="xl:col-span-8 space-y-10">
+                        {/* Audience Targeting Card */}
+                        <motion.section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                            
+                            <div className="flex items-center gap-4 mb-10">
+                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
+                                    <Users className="h-6 w-6" />
+                                </div>
+                                <h2 className="text-2xl font-black text-white tracking-tight">{t("audience_targeting") || "Audience Targeting"}</h2>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-10">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                        <Zap className="h-3 w-3 text-blue-500" />
+                                        {t("active_instance") || "Signal Hub Selection"}
+                                    </label>
+                                    <select 
+                                        className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:ring-2 ring-blue-500/20 text-white font-bold transition-all appearance-none cursor-pointer"
+                                        value={selectedInstance}
+                                        onChange={(e) => setSelectedInstance(e.target.value)}
+                                    >
+                                        <option value="" disabled>Select Signal Hub...</option>
+                                        {instances.map(inst => (
+                                            <option key={inst.instanceName} value={inst.instanceName}>{inst.instanceName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                                        <FileJson className="h-3 w-3 text-blue-400" />
+                                        {t("filter_tags") || "Segment Categorization"}
+                                    </label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {tags.length > 0 ? tags.map(tag => (
+                                            <button
+                                                key={tag}
+                                                onClick={() => handleTagToggle(tag)}
+                                                className={cn(
+                                                    "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                                                    selectedTags.includes(tag) 
+                                                        ? "bg-blue-500/20 border-blue-500/40 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]" 
+                                                        : "bg-white/5 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-white/10"
+                                                )}
+                                            >
+                                                {tag}
+                                            </button>
+                                        )) : (
+                                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic pt-2">No segments found</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.section>
+
+                        {/* Message Composer Card */}
+                        <motion.section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative group">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                            
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
+                                        <Send className="h-6 w-6" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-white tracking-tight">{t("message_payload") || "Communication Payload"}</h2>
+                                </div>
+                                <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: Direct</span>
+                                </div>
+                            </div>
+
+                            <div className="relative">
+                                <textarea 
+                                    className="w-full bg-black/40 border border-white/5 rounded-3xl p-8 min-h-[300px] outline-none focus:border-blue-500/30 text-slate-300 transition-all font-medium text-lg leading-relaxed shadow-inner"
+                                    placeholder={t("message_placeholder") || "Construct your campaign transmission..."}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                />
+                                <div className="absolute bottom-6 right-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                                    {message.length} Characters
+                                </div>
+                            </div>
+
+                            <div className="mt-8 flex items-center gap-4 p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
+                                <AlertCircle className="h-5 w-5 text-blue-500/50 shrink-0" />
+                                <p className="text-xs text-slate-500 font-medium italic">
+                                    Throttling active: Transmission delay set to 1,500ms to ensure network stability and avoid detection.
+                                </p>
+                            </div>
+                        </motion.section>
+                    </div>
+
+                    <div className="xl:col-span-4 space-y-10">
+                        {/* Deployment Status Card */}
+                        <motion.section className="bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-[3rem] shadow-[0_40px_100px_rgba(59,130,246,0.3)] text-white relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[80px] -mr-32 -mt-32 rounded-full group-hover:bg-white/20 transition-all duration-700" />
+                            
+                            <div className="relative z-10 space-y-10">
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Deployment Matrix</p>
+                                    <div className="flex items-baseline gap-3">
+                                        <span className="text-7xl font-black tabular-nums tracking-tighter">
+                                            <AnimatedCounter value={estimatedAudience} />
+                                        </span>
+                                        <span className="text-xl font-black opacity-50 uppercase tracking-widest italic">Nodes</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <button
+                                        onClick={handleSendBroadcast}
+                                        disabled={sending || estimatedAudience === 0 || !message.trim()}
+                                        className="w-full py-6 bg-white text-blue-700 font-black rounded-3xl flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98] hover:shadow-white/20 transition-all outline-none text-lg tracking-tighter"
+                                    >
+                                        {sending ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6" />}
+                                        {sending ? "DEPLOYING..." : "ACTIVATE BROADCAST"}
+                                    </button>
+
+                                    <button
+                                        onClick={handleExportCSV}
+                                        disabled={downloading || estimatedAudience === 0}
+                                        className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-xs uppercase tracking-widest disabled:opacity-30"
+                                    >
+                                        {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                                        Export Node Registry
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.section>
+
+                        {/* Analytics Card */}
+                        <section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl">
+                            <div className="flex items-center justify-between mb-10">
+                                <div className="space-y-1">
+                                    <h2 className="text-xl font-black text-white tracking-tight uppercase tracking-tighter">Transmission Analytics</h2>
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Past 72H Cycle</p>
+                                </div>
+                                <Activity className="w-5 h-5 text-blue-500" />
+                            </div>
+
+                            <div className="h-[240px] w-full relative group/chart">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie 
+                                            data={pieData} 
+                                            innerRadius={70} 
+                                            outerRadius={100} 
+                                            paddingAngle={10} 
+                                            dataKey="value" 
+                                            stroke="none"
+                                        >
+                                            {pieData.map((entry, index) => (
+                                                <Cell 
+                                                    key={`cell-${index}`} 
+                                                    fill={COLORS[index % COLORS.length]} 
+                                                    className="outline-none"
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <RechartsTooltip 
+                                            contentStyle={{ 
+                                                backgroundColor: 'rgba(2, 6, 23, 0.95)', 
+                                                backdropFilter: 'blur(10px)', 
+                                                border: '1px solid rgba(255,255,255,0.1)', 
+                                                borderRadius: '20px', 
+                                                color: '#fff',
+                                                fontSize: '12px',
+                                                fontWeight: 'bold'
+                                            }} 
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                                    <span className="text-4xl font-black text-white tracking-tighter">
+                                        {Math.round((analytics.delivered / (analytics.sent || 1)) * 100)}%
+                                    </span>
+                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] italic">Success</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mt-10">
+                                {[
+                                    { label: 'Transmitted', val: analytics.sent, icon: Clock, color: 'text-slate-500', bg: 'bg-slate-500/10' },
+                                    { label: 'Delivered', val: analytics.delivered, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                                    { label: 'Read/Ack', val: analytics.read, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                                    { label: 'Failed/Null', val: analytics.failed, icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10' }
+                                ].map((stat) => (
+                                    <div key={stat.label} className="p-5 bg-white/[0.03] rounded-3xl border border-white/5 hover:bg-white/[0.05] transition-colors group/stat">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center text-[10px]", stat.bg, stat.color)}>
+                                                <stat.icon className="h-3 w-3" />
+                                            </div>
+                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</span>
+                                        </div>
+                                        <div className="text-2xl font-black text-white tracking-tight group-hover/stat:text-blue-400 transition-colors">
+                                            <AnimatedCounter value={stat.val} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </motion.div>
+        </div>
+
+    );
+}
