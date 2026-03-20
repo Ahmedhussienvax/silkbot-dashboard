@@ -1,3 +1,4 @@
+import React from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Inter, Cairo } from "next/font/google";
