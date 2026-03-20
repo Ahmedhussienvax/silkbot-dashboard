@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 // Skill 12: Robust Error Boundary for Dashboards

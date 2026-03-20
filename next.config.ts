@@ -8,9 +8,7 @@ const nextConfig: import('next').NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Removed unrecognized eslint key for Next.js 16 compatibility
 };
 
 export default withNextIntl(nextConfig);
