@@ -5,24 +5,30 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 // Initialize Upstash Redis for Rate Limiting (Skill 10)
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(20, "10 s"), // 20 requests per 10 seconds
-});
+// Defensive validation to prevent crash if variables are missing
+const redis = UPSTASH_URL && UPSTASH_TOKEN 
+  ? new Redis({ url: UPSTASH_URL, token: UPSTASH_TOKEN }) 
+  : null;
+
+const ratelimit = redis 
+  ? new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.slidingWindow(20, "10 s"), // 20 requests per 10 seconds
+    }) 
+  : null;
+
 
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Apply Rate Limiting to API routes
-  if (pathname.startsWith('/api')) {
-    const ip = request.ip ?? "127.0.0.1";
+  // Apply Rate Limiting to API routes (only if initialized correctly)
+  if (pathname.startsWith('/api') && ratelimit) {
+    const ip = request.headers.get("x-forwarded-for") ?? request.ip ?? "127.0.0.1";
     const { success, limit, reset, remaining } = await ratelimit.limit(ip);
 
     if (!success) {

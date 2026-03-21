@@ -8,7 +8,13 @@ const nextConfig: import('next').NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Removed unrecognized eslint key for Next.js 16 compatibility
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+  // Optimize for ARM64 by reducing memory usage during build if needed
+  // but for now focus on pathing and stability
 };
 
 export default withNextIntl(nextConfig);

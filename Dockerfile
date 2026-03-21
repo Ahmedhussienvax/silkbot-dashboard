@@ -30,17 +30,16 @@ RUN adduser --system --uid 1001 nextjs
 RUN chown nextjs:nodejs /app
 
 # Copy essential standalone files
-# MUST include .next/standalone and .next/static
+# Maintain the full path to avoid pathing mismatch and match the server expectations
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-
-# Next.js 15/16 Standalone Fix: Assets need to be accessible in the project subfolder
-# The subfolder name 'silkbot-dashboard' comes from package.json name
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./silkbot-dashboard/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./silkbot-dashboard/public
-
-# Also keep them at root for standard compatibility
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# In Next.js 15, the standalone output might contain a subfolder 'dashboard' or the package name
+# We ensure the assets are also there for internal resolution
+RUN mkdir -p silkbot-dashboard/.next && \
+    ln -s ../.next/static silkbot-dashboard/.next/static && \
+    ln -s ../public silkbot-dashboard/public
 
 USER nextjs
 
@@ -48,5 +47,9 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# server.js is the entrypoint for standalone mode
+# Start the server from the root of the standalone folder
+# Pathing Fix: If server.js is at root, call it directly.
+# If built with base-path/monorepo, it might be in a subfolder, 
+# but Next standalone should have it at root of standalone/.
 CMD ["node", "server.js"]
+
