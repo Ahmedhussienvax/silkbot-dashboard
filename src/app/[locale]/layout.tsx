@@ -1,12 +1,12 @@
 import React from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { Inter, Cairo } from "next/font/google";
+import { Outfit, Cairo } from "next/font/google";
 import { Toaster } from 'sonner';
 import Providers from "@/components/Providers";
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"] });
 const cairo = Cairo({ subsets: ["arabic"] });
 
 export const metadata = {
@@ -29,7 +29,7 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'}>
-            <body className={`${isRtl ? cairo.className : inter.className} bg-slate-950 text-white antialiased`}>
+            <body className={`${isRtl ? cairo.className : outfit.className} bg-slate-950 text-white antialiased`}>
                 <NextIntlClientProvider messages={messages}>
                     <ErrorBoundary>
                         <Providers>
