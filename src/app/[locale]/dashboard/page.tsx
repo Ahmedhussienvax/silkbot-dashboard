@@ -23,8 +23,13 @@ import {
     Clock,
     CheckCircle2,
     Search,
-    ChevronRight
+    ChevronRight,
+    Send,
+    ShieldCheck,
+    Sun,
+    Moon
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +51,9 @@ interface RecentActivity {
 
 export default function DashboardPage() {
     const t = useTranslations("Dashboard");
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    
     const [stats, setStats] = useState<Stats>({ conversations: 0, messages: 0, contacts: 0, botEnabled: false });
     const [activities, setActivities] = useState<RecentActivity[]>([]);
     const [loading, setLoading] = useState(true);
@@ -55,6 +63,10 @@ export default function DashboardPage() {
     const [clusterStatus, setClusterStatus] = useState<"healthy" | "degraded" | "unhealthy" | "loading">("loading");
     const [traces, setTraces] = useState<any[]>([]);
     const supabase = createClient();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Ping Gateway Health
     useEffect(() => {
@@ -520,46 +532,71 @@ export default function DashboardPage() {
                         </div>
                     </section>
 
-                    {/* Navigation Shortcuts */}
-                    <aside className="xl:col-span-4 space-y-10">
-                        <section className="bg-slate-900/30 border border-white/5 rounded-[3rem] p-10 shadow-2xl flex flex-col h-full">
-                            <h3 className="text-white font-black text-xl tracking-tight mb-10 leading-none">{t("quick_actions")}</h3>
-                            <nav className="space-y-5 flex-1" aria-label="Quick Navigation">
+                    {/* Navigation Shortcuts & System Status */}
+                    <aside className="xl:col-span-4 flex flex-col min-h-full">
+                        <section className="bg-slate-900/30 border border-white/5 rounded-[3rem] p-8 shadow-2xl flex flex-col flex-1 relative overflow-hidden group/nav-box">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 blur-[80px] -z-10" />
+                            
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-white font-black text-xl tracking-tight leading-none">{t("quick_actions")}</h3>
+                                {mounted && (
+                                    <button 
+                                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                        className="p-3 rounded-2xl bg-white/5 border border-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all shadow-inner"
+                                        title="Toggle Mode"
+                                    >
+                                        {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                    </button>
+                                )}
+                            </div>
+
+                            <nav className="space-y-3 flex-1" aria-label="Quick Navigation">
                                 {[
                                     { href: "/dashboard/inbox", icon: <MessageSquare className="w-5 h-5" />, title: t("inbox"), sub: t("quick_action_omnichannel"), color: "from-purple-500/20" },
                                     { href: "/dashboard/whatsapp", icon: <Globe className="w-5 h-5" />, title: t("whatsapp"), sub: t("quick_action_instance_control"), color: "from-emerald-500/20" },
-                                    { href: "/dashboard/bot", icon: <Bot className="w-5 h-5" />, title: t("bot_settings"), sub: t("quick_action_agent_synthesis"), color: "from-blue-500/20" }
+                                    { href: "/dashboard/bot", icon: <Bot className="w-5 h-5" />, title: t("bot_settings"), sub: t("quick_action_agent_synthesis"), color: "from-blue-500/20" },
+                                    { href: "/dashboard/campaigns", icon: <Send className="w-5 h-5" />, title: t("campaigns"), sub: t("quick_action_mass_broadcast"), color: "from-pink-500/20" },
+                                    { href: "/dashboard/audit", icon: <ShieldCheck className="w-5 h-5" />, title: t("audit_log"), sub: t("quick_action_security_audit"), color: "from-amber-500/20" }
                                 ].map((item, idx) => (
                                     <Link 
                                         key={item.href} 
                                         href={item.href as any} 
-                                        className="group relative flex items-center gap-6 p-6 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:bg-slate-800/60 hover:border-purple-500/30 transition-all overflow-hidden"
+                                        className="group relative flex items-center gap-4 p-4 rounded-[1.75rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all overflow-hidden"
                                     >
                                         <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity", item.color)} />
-                                        <div className="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center border border-white/5 text-slate-400 group-hover:text-white group-hover:scale-105 transition-all shadow-2xl relative z-10">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-900/80 flex items-center justify-center border border-white/5 text-slate-400 group-hover:text-white transition-all relative z-10 shrink-0">
                                             {item.icon}
                                         </div>
                                         <div className="relative z-10 min-w-0">
-                                            <p className="text-white font-black text-base tracking-tight mb-0.5">{item.title}</p>
-                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity whitespace-nowrap overflow-hidden text-ellipsis">{item.sub}</p>
+                                            <p className="text-white font-bold text-sm tracking-tight mb-0.5">{item.title}</p>
+                                            <p className="text-slate-500 text-[8px] font-black uppercase tracking-[0.15em] opacity-60 group-hover:opacity-100 transition-opacity truncate">{item.sub}</p>
                                         </div>
                                         <div className="ml-auto relative z-10 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
-                                            <ChevronRight className="w-5 h-5 text-purple-500" />
+                                            <ChevronRight className="w-4 h-4 text-white/30" />
                                         </div>
                                     </Link>
                                 ))}
                             </nav>
                             
-                            <div className="mt-10 p-6 bg-purple-500/5 border border-purple-500/20 rounded-3xl relative overflow-hidden group/upgrade">
-                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 blur-3xl group-hover/upgrade:bg-purple-500/20 transition-all" />
+                            <div className="mt-10 p-6 bg-purple-500/5 border border-purple-500/10 rounded-3xl relative overflow-hidden group/upgrade">
+                                <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 blur-3xl group-hover/upgrade:bg-purple-500/20 transition-all font-inter" />
                                 <div className="relative z-10">
-                                    <p className="text-white font-black text-sm mb-2">{t("power_user_tip")}</p>
-                                    <p className="text-slate-500 text-[11px] leading-relaxed italic mb-4">
+                                    <p className="text-white font-black text-[11px] mb-2 uppercase tracking-tighter">{t("power_user_tip")}</p>
+                                    <p className="text-slate-500 text-[10px] leading-relaxed italic mb-4 opacity-70">
                                         {t("power_user_tip_body")}
                                     </p>
-                                    <Link href="/dashboard/campaigns" className="text-[10px] font-black uppercase tracking-widest text-purple-400 flex items-center gap-2 hover:text-purple-300 transition-colors">
+                                    <Link href="/dashboard/campaigns" className="text-[9px] font-black uppercase tracking-widest text-purple-400 flex items-center gap-2 hover:text-purple-300 transition-colors">
                                         {t("explore_campaigns")} <ArrowUpRight className="w-3 h-3" />
                                     </Link>
+                                </div>
+                            </div>
+
+                            {/* Powered By - Now strictly at the bottom of the card content area */}
+                            <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between opacity-40 hover:opacity-100 transition-opacity">
+                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">✨ Powered by SilkBot Engine v10</p>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                    <span className="text-[9px] text-emerald-500/80 font-black uppercase tracking-tighter">System Normal</span>
                                 </div>
                             </div>
                         </section>

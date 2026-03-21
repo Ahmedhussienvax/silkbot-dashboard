@@ -98,14 +98,6 @@ export default function AIReasoningTrace({ steps = [] }: { steps?: TraceStep[] }
                     </div>
                 )}
             </div>
-
-            <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
-                <p className="text-[10px] text-slate-500 font-medium">✨ Powered by SilkBot Engine v10</p>
-                <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] text-emerald-500/80 font-black uppercase tracking-tighter">System Normal</span>
-                </div>
-            </div>
         </div>
     );
 }
