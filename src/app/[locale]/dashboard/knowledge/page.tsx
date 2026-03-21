@@ -103,11 +103,11 @@ export default function KnowledgePage() {
         const confirmDelete = await new Promise((resolve) => {
             toast.warning(t("delete_confirm", { filename }), {
                 action: {
-                    label: "Delete",
+                    label: t("delete_action"),
                     onClick: () => resolve(true),
                 },
                 cancel: {
-                    label: "Cancel",
+                    label: t("cancel_action"),
                     onClick: () => resolve(false),
                 }
             });
@@ -115,7 +115,7 @@ export default function KnowledgePage() {
 
         if (!confirmDelete) return;
         
-        const toastId = toast.loading("Deleting document...");
+        const toastId = toast.loading(t("deleting"));
         try {
             const { error } = await supabase
                 .from("knowledge_docs")
@@ -124,9 +124,9 @@ export default function KnowledgePage() {
 
             if (error) throw error;
             setDocs(prev => prev.filter(d => d.filename !== filename));
-            toast.success("Document purged successfully", { id: toastId });
+            toast.success(t("delete_success"), { id: toastId });
         } catch (err: any) {
-            toast.error("Error: " + err.message, { id: toastId });
+            toast.error(`${t("error_prefix")} ${err.message}`, { id: toastId });
         }
     };
 

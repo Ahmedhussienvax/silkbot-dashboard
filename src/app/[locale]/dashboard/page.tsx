@@ -149,8 +149,8 @@ export default function DashboardPage() {
                     <Bot className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-purple-400 animate-pulse" />
                 </div>
                 <div className="mt-8 text-center space-y-2">
-                    <h2 className="text-white font-black text-xl tracking-tighter uppercase italic">Booting Silk-Neural Engine</h2>
-                    <p className="text-slate-500 text-xs font-mono animate-pulse">Synchronizing cluster nodes...</p>
+                    <h2 className="text-white font-black text-xl tracking-tighter uppercase italic">{t("booting_engine")}</h2>
+                    <p className="text-slate-500 text-xs font-mono animate-pulse">{t("syncing_cluster_nodes")}</p>
                 </div>
             </div>
         );
@@ -160,7 +160,7 @@ export default function DashboardPage() {
         { label: t("conversations"), value: stats.conversations, icon: <MessageSquare className="w-6 h-6" />, color: "from-purple-500 to-indigo-600", trend: "+12.5%", desc: t("conversations_desc") },
         { label: t("messages"), value: stats.messages, icon: <Activity className="w-6 h-6" />, color: "from-blue-500 to-cyan-600", trend: "+8.2%", desc: t("messages_desc") },
         { label: t("contacts"), value: stats.contacts, icon: <Users className="w-6 h-6" />, color: "from-emerald-500 to-teal-600", trend: "+24.1%", desc: t("contacts_desc") },
-        { label: t("bot_status"), value: stats.botEnabled ? "ONLINE" : "OFFLINE", icon: <Bot className="w-6 h-6" />, color: stats.botEnabled ? "from-amber-400 to-orange-500" : "from-slate-600 to-slate-800", trend: "Stable", desc: t("bot_status_desc") },
+        { label: t("bot_status"), value: stats.botEnabled ? t("online") : t("offline"), icon: <Bot className="w-6 h-6" />, color: stats.botEnabled ? "from-amber-400 to-orange-500" : "from-slate-600 to-slate-800", trend: t("stable"), desc: t("bot_status_desc") },
     ];
 
     return (
@@ -178,10 +178,10 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="px-3 py-1 bg-purple-500/10 border border-purple-500/20 rounded-full text-[10px] font-black text-purple-400 tracking-widest uppercase italic">
-                                Enterprise v4.5.2
+                                {t("enterprise_badge")}
                             </span>
                             <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold">
-                                <Globe className="w-3 h-3" /> API Cluster: Frankfurt-01
+                                <Globe className="w-3 h-3" /> {t("api_cluster")}
                             </div>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
@@ -203,11 +203,11 @@ export default function DashboardPage() {
                                 <Shield className="w-6 h-6 animate-pulse" />
                             </div>
                             <div>
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Security Shield</p>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{t("security_shield")}</p>
                                 <p className="text-sm font-black text-white">
-                                    {clusterStatus === "healthy" ? "Active & Secure" : 
-                                     clusterStatus === "degraded" ? "Partial Shield" : 
-                                     clusterStatus === "loading" ? "Scanning..." : "Bypassed / Null"}
+                                    {clusterStatus === "healthy" ? t("active_secure") : 
+                                     clusterStatus === "degraded" ? t("partial_shield") : 
+                                     clusterStatus === "loading" ? t("scanning") : t("bypassed_null")}
                                 </p>
                             </div>
                         </div>
@@ -216,14 +216,14 @@ export default function DashboardPage() {
                                 <Zap className="w-6 h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Latency</p>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{t("latency")}</p>
                                 <p className="text-sm font-black text-white">
                                     {latency ? `${latency}ms` : "--ms"} 
                                     <span className={cn(
                                         "text-[10px] ml-2 font-black",
                                         (latency && latency < 100) ? "text-emerald-500" : "text-amber-500"
                                     )}>
-                                        {(latency && latency < 100) ? "ULTRA" : "STANDARD"}
+                                        {(latency && latency < 100) ? t("ultra") : t("standard")}
                                     </span>
                                 </p>
                             </div>
@@ -284,12 +284,12 @@ export default function DashboardPage() {
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                     <h3 className="text-white font-black text-2xl tracking-tight">{t("message_activity")}</h3>
-                                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-black rounded uppercase">Live</span>
+                                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-black rounded uppercase">{t("live")}</span>
                                 </div>
-                                <p className="text-slate-500 text-sm font-medium">Network throughput optimization overview</p>
+                                <p className="text-slate-500 text-sm font-medium">{t("network_throughput_overview")}</p>
                             </div>
                             <div className="flex bg-black/40 p-1.5 rounded-2xl border border-white/5">
-                                {["Day", "Week", "Month"].map((tab) => (
+                                {[t("tab_day"), t("tab_week"), t("tab_month")].map((tab) => (
                                     <button 
                                         key={tab}
                                         onClick={() => setActiveTab(tab.toLowerCase())}
@@ -345,8 +345,8 @@ export default function DashboardPage() {
                                     <ArrowUpRight className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1">Peak Volume</p>
-                                    <p className="text-lg font-black text-white tracking-tight">1,204 Msg/h</p>
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1">{t("peak_volume")}</p>
+                                    <p className="text-lg font-black text-white tracking-tight">{t("peak_volume_value")}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
@@ -354,8 +354,8 @@ export default function DashboardPage() {
                                     <CheckCircle2 className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1">Sucess Rate</p>
-                                    <p className="text-lg font-black text-white tracking-tight">99.98%</p>
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-1">{t("success_rate")}</p>
+                                    <p className="text-lg font-black text-white tracking-tight">{t("success_rate_value")}</p>
                                 </div>
                             </div>
                         </div>
@@ -369,8 +369,8 @@ export default function DashboardPage() {
                             </div>
                             
                             <div className="w-full mb-10">
-                                <h3 className="text-white font-black text-xl tracking-tight leading-none mb-2">Neural Deflection</h3>
-                                <p className="text-slate-500 text-xs font-medium">AI Automation Performance</p>
+                                <h3 className="text-white font-black text-xl tracking-tight leading-none mb-2">{t("neural_deflection")}</h3>
+                                <p className="text-slate-500 text-xs font-medium">{t("ai_automation_performance")}</p>
                             </div>
                             
                             <div className="relative w-full aspect-square flex items-center justify-center">
@@ -378,8 +378,8 @@ export default function DashboardPage() {
                                     <PieChart>
                                         <Pie
                                             data={[
-                                                { name: "Automated", value: 84 },
-                                                { name: "Human", value: 16 }
+                                                { name: t("automated"), value: 84 },
+                                                { name: t("human"), value: 16 }
                                             ]}
                                             innerRadius={80}
                                             outerRadius={110}
@@ -394,14 +394,14 @@ export default function DashboardPage() {
                                 </ResponsiveContainer>
                                 <div className="absolute flex flex-col items-center justify-center text-center">
                                     <span className="text-5xl font-black text-white tracking-tighter">84%</span>
-                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mt-2 italic">Neural Load</span>
+                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] mt-2 italic">{t("neural_load")}</span>
                                 </div>
                             </div>
 
                             <div className="w-full space-y-6 mt-10">
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                        <span className="text-slate-400">Response Accuracy</span>
+                                        <span className="text-slate-400">{t("response_accuracy")}</span>
                                         <span className="text-purple-400">96.4%</span>
                                     </div>
                                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -415,7 +415,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                        <span className="text-slate-400">Uptime Reliability</span>
+                                        <span className="text-slate-400">{t("uptime_reliability")}</span>
                                         <span className="text-emerald-400">100.0%</span>
                                     </div>
                                     <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
@@ -444,13 +444,13 @@ export default function DashboardPage() {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                             <div className="space-y-1">
                                 <h3 className="text-white font-black text-2xl tracking-tight leading-none">{t("recent_activity")}</h3>
-                                <p className="text-slate-500 text-sm font-medium">Global communication stream</p>
+                                <p className="text-slate-500 text-sm font-medium">{t("global_communication_stream")}</p>
                             </div>
                             <div className="relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-purple-500 transition-colors" />
                                 <input 
                                     type="text" 
-                                    placeholder="Scan neural logs..."
+                                    placeholder={t("scan_neural_logs")}
                                     className="bg-black/40 border border-white/5 rounded-2xl pl-12 pr-6 py-3 text-xs text-white focus:ring-2 focus:ring-purple-500/20 outline-none w-64 transition-all"
                                 />
                             </div>
@@ -459,8 +459,8 @@ export default function DashboardPage() {
                         <div className="space-y-4">
                             <AnimatePresence mode="popLayout">
                                 {activities.length > 0 ? activities.map((act, idx) => {
-                                    const name = act.contact_push_name || act.contact_jid?.split('@')[0] || 'Member';
-                                    const preview = act.content?.conversation || act.content?.extendedTextMessage?.text || 'Media Message';
+                                    const name = act.contact_push_name || act.contact_jid?.split('@')[0] || t("member");
+                                    const preview = act.content?.conversation || act.content?.extendedTextMessage?.text || t("media_message");
                                     const isMe = act.is_from_me === 'true';
                                     
                                     return (
@@ -488,7 +488,7 @@ export default function DashboardPage() {
                                                             "text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border",
                                                             isMe ? "bg-cyan-500/10 border-cyan-500/20 text-cyan-500" : "bg-purple-500/10 border-purple-500/20 text-purple-500"
                                                         )}>
-                                                            {isMe ? "Sent" : "Received"}
+                                                            {isMe ? t("sent") : t("received")}
                                                         </span>
                                                     </div>
                                                     <p className="text-slate-500 text-xs truncate max-w-sm md:max-w-md font-medium italic group-hover:text-slate-300 transition-colors">
@@ -512,7 +512,7 @@ export default function DashboardPage() {
                                         </div>
                                         <div>
                                             <p className="text-white font-black text-xl">{t("no_activity")}</p>
-                                            <p className="text-slate-500 text-xs font-mono">Neural cluster standby mode...</p>
+                                            <p className="text-slate-500 text-xs font-mono">{t("neural_cluster_standby")}</p>
                                         </div>
                                     </div>
                                 )}
@@ -526,9 +526,9 @@ export default function DashboardPage() {
                             <h3 className="text-white font-black text-xl tracking-tight mb-10 leading-none">{t("quick_actions")}</h3>
                             <nav className="space-y-5 flex-1" aria-label="Quick Navigation">
                                 {[
-                                    { href: "/dashboard/inbox", icon: <MessageSquare className="w-5 h-5" />, title: t("inbox"), sub: "Omnichannel Comms", color: "from-purple-500/20" },
-                                    { href: "/dashboard/whatsapp", icon: <Globe className="w-5 h-5" />, title: t("whatsapp"), sub: "Instance Control", color: "from-emerald-500/20" },
-                                    { href: "/dashboard/bot", icon: <Bot className="w-5 h-5" />, title: t("bot_settings"), sub: "Agent Synthesis", color: "from-blue-500/20" }
+                                    { href: "/dashboard/inbox", icon: <MessageSquare className="w-5 h-5" />, title: t("inbox"), sub: t("quick_action_omnichannel"), color: "from-purple-500/20" },
+                                    { href: "/dashboard/whatsapp", icon: <Globe className="w-5 h-5" />, title: t("whatsapp"), sub: t("quick_action_instance_control"), color: "from-emerald-500/20" },
+                                    { href: "/dashboard/bot", icon: <Bot className="w-5 h-5" />, title: t("bot_settings"), sub: t("quick_action_agent_synthesis"), color: "from-blue-500/20" }
                                 ].map((item, idx) => (
                                     <Link 
                                         key={item.href} 
@@ -553,12 +553,12 @@ export default function DashboardPage() {
                             <div className="mt-10 p-6 bg-purple-500/5 border border-purple-500/20 rounded-3xl relative overflow-hidden group/upgrade">
                                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 blur-3xl group-hover/upgrade:bg-purple-500/20 transition-all" />
                                 <div className="relative z-10">
-                                    <p className="text-white font-black text-sm mb-2">Power User Tip</p>
+                                    <p className="text-white font-black text-sm mb-2">{t("power_user_tip")}</p>
                                     <p className="text-slate-500 text-[11px] leading-relaxed italic mb-4">
-                                        You can broadcast custom campaigns directly from the contacts segment using vectorized targeting.
+                                        {t("power_user_tip_body")}
                                     </p>
                                     <Link href="/dashboard/campaigns" className="text-[10px] font-black uppercase tracking-widest text-purple-400 flex items-center gap-2 hover:text-purple-300 transition-colors">
-                                        Explore Campaigns <ArrowUpRight className="w-3 h-3" />
+                                        {t("explore_campaigns")} <ArrowUpRight className="w-3 h-3" />
                                     </Link>
                                 </div>
                             </div>

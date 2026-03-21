@@ -97,7 +97,7 @@ export default function BotConfigPage() {
                 }
             } catch (err: any) {
                 console.error("Error loading neural state:", err.message);
-                toast.error(t("error_loading") || "Failed to load neural configuration.");
+                toast.error(t("error_loading"));
             } finally {
                 setLoading(false);
             }
@@ -117,8 +117,8 @@ export default function BotConfigPage() {
                 .eq("id", config.id);
 
             if (saveError) throw saveError;
-            toast.success("Protocol Updated", {
-                description: "AI behavior configurations synchronized across all nodes."
+            toast.success(t("success"), {
+                description: t("success_description")
             });
         } catch (err: any) {
             toast.error(t("error") || err.message);

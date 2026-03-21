@@ -138,17 +138,9 @@ export default function InboxPage() {
     // Send Message Mutation
     const sendMutation = useMutation({
         mutationFn: async ({ conv, text }: { conv: Conversation, text: string }) => {
-            const apiKey = process.env.NEXT_PUBLIC_GATEWAY_API_KEY || "";
-            if (!apiKey) {
-                console.warn("[Inbox] Missing NEXT_PUBLIC_GATEWAY_API_KEY for Gateway communication.");
-            }
-
-            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/send-message`, {
+            const res = await fetch(`/api/gateway/send-message`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "x-api-key": apiKey 
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     instance: conv.instance_name, 
                     to: conv.contact_jid, 
@@ -189,7 +181,7 @@ export default function InboxPage() {
         },
         onError: (err: any, variables, context) => {
             queryClient.setQueryData(["messages", variables.conv.composite_chat_id], context?.previousMessages);
-            toast.error(err.message || "Network Error: Could not send message.");
+            toast.error(err.message || t("network_error_send"));
         },
         onSettled: (data, error, variables) => {
             queryClient.invalidateQueries({ queryKey: ["messages", variables.conv.composite_chat_id] });
@@ -214,7 +206,7 @@ export default function InboxPage() {
         },
         onError: (err, variables, context) => {
             queryClient.setQueryData(["conversations"], context?.previousConvs);
-            toast.error("Mode override failed.");
+            toast.error(t("mode_override_failed"));
         },
         onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
     });
@@ -260,7 +252,7 @@ export default function InboxPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-purple-500 transition-colors" />
                         <input 
                             type="text" 
-                            placeholder="Search contacts..." 
+                            placeholder={t("search_contacts")} 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-6 py-3.5 text-sm text-white focus:ring-2 focus:ring-purple-500/30 outline-none transition-all"
@@ -268,12 +260,12 @@ export default function InboxPage() {
                     </div>
 
                     <div className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-2xl border border-white/5">
-                        <button onClick={() => setFilter("all")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all", filter === "all" ? "bg-white/10 text-white shadow-lg" : "text-slate-500 hover:text-white")}>ALL</button>
+                        <button onClick={() => setFilter("all")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all", filter === "all" ? "bg-white/10 text-white shadow-lg" : "text-slate-500 hover:text-white")}>{t("filter_all")}</button>
                         <button onClick={() => setFilter("bot")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "bot" ? "bg-purple-500 text-white shadow-lg shadow-purple-500/20" : "text-slate-500 hover:text-white")}>
-                            <Bot className="w-3 h-3" /> AI
+                            <Bot className="w-3 h-3" /> {t("filter_ai")}
                         </button>
                         <button onClick={() => setFilter("human")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "human" ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20" : "text-slate-500 hover:text-white")}>
-                            <User className="w-3 h-3" /> HUMAN
+                            <User className="w-3 h-3" /> {t("filter_human")}
                         </button>
                     </div>
                 </div>
@@ -283,7 +275,7 @@ export default function InboxPage() {
                         {loadingConvs ? (
                             <div className="py-20 text-center animate-pulse">
                                 <MessageSquare className="w-10 h-10 text-slate-700 mx-auto mb-4" />
-                                <p className="text-slate-600 font-bold text-xs uppercase tracking-widest">Encrypting stream...</p>
+                                <p className="text-slate-600 font-bold text-xs uppercase tracking-widest">{t("stream_encrypting")}</p>
                             </div>
                         ) : filteredConversations.map((conv) => (
                             <motion.button 

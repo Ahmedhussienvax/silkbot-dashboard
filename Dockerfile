@@ -11,10 +11,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# IMPORTANT: No build-time secrets allowed to prevent embedding in Docker layers.
-# Next.js standalone mode will use runtime ENVs for Server Components.
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
+
+# Crucial for standalone mode in subdirectory: 
+# Move assets into the standalone folder BEFORE copying to the final image
+RUN mkdir -p .next/standalone/public && \
+    cp -r public .next/standalone/ && \
+    mkdir -p .next/standalone/.next/static && \
+    cp -r .next/static .next/standalone/.next/
 
 # Stage 3: Runner
 FROM node:20-alpine AS runner
@@ -26,20 +31,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Set correct permissions
-RUN chown nextjs:nodejs /app
+# Match the expected path from the Coolify start command: node .next/standalone/server.js
+# We copy the already-fixed standalone folder from builder
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone /app/.next/standalone
 
-# Copy essential standalone files
-# Maintain the full path to avoid pathing mismatch and match the server expectations
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
-# In Next.js 15, the standalone output might contain a subfolder 'dashboard' or the package name
-# We ensure the assets are also there for internal resolution
-RUN mkdir -p silkbot-dashboard/.next && \
-    ln -s ../.next/static silkbot-dashboard/.next/static && \
-    ln -s ../public silkbot-dashboard/public
+# Internal Resolution Symlink (Next.js 15 internal resolution for monorepos/subfolders)
+# If server.js is at .next/standalone/server.js, it might expect assets relative to its internal app folder
+RUN mkdir -p /app/.next/standalone/silkbot-dashboard/.next && \
+    ln -s ../.next/static /app/.next/standalone/silkbot-dashboard/.next/static && \
+    ln -s ../public /app/.next/standalone/silkbot-dashboard/public
 
 USER nextjs
 
@@ -47,9 +47,10 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the server from the root of the standalone folder
-# Pathing Fix: If server.js is at root, call it directly.
-# If built with base-path/monorepo, it might be in a subfolder, 
-# but Next standalone should have it at root of standalone/.
-CMD ["node", "server.js"]
+# Health check setup for container-level monitoring
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
+
+# Final Command Alignment: Matches DEPLOYMENT.md and Coolify convention
+CMD ["node", ".next/standalone/server.js"]
 

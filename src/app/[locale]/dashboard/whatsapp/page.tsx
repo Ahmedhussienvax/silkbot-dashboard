@@ -74,7 +74,7 @@ export default function WhatsAppPage() {
             if (data.code || data.base64) {
                 setQrCode(data.base64 || data.code);
                 setStatus("qr");
-                toast.success("QR Code generated successfully");
+                toast.success(t("qr_generated"));
             } else {
                 await fetch(`${GATEWAY_URL}/instance/create`, {
                     method: "POST",
@@ -86,13 +86,13 @@ export default function WhatsAppPage() {
         } catch (err) {
             console.error("Connect error:", err);
             setStatus("disconnected");
-            toast.error("Failed to initialize session");
+            toast.error(t("session_init_failed"));
         }
     };
 
     const handleLogout = async () => {
         if (!instanceName || !apiKey) return;
-        if (!confirm("Are you sure you want to disconnect?")) return;
+        if (!confirm(t("confirm_disconnect"))) return;
         try {
             await fetch(`${GATEWAY_URL}/instance/logout/${instanceName}`, {
                 method: "DELETE",
@@ -100,10 +100,10 @@ export default function WhatsAppPage() {
             });
             setStatus("disconnected");
             setQrCode(null);
-            toast.info("Instance disconnected");
+            toast.info(t("instance_disconnected"));
         } catch (err) {
             console.error("Logout error:", err);
-            toast.error("Logout failed");
+            toast.error(t("logout_failed"));
         }
     };
 
@@ -121,7 +121,7 @@ export default function WhatsAppPage() {
                         <div className="p-2 bg-emerald-500/10 rounded-lg">
                             <Signal className="w-5 h-5 text-emerald-400" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-500/80">Wa-Gateway Connectivity</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-emerald-500/80">{t("gateway_connectivity")}</span>
                     </div>
                     <h1 className="text-4xl font-black text-white tracking-tight">{t("title")}</h1>
                     <p className="text-slate-400 mt-2 max-w-lg">{t("description")}</p>
@@ -130,7 +130,7 @@ export default function WhatsAppPage() {
                 <div className="flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
                     <div className={`w-2 h-2 rounded-full animate-pulse ${status === "connected" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-500"}`} />
                     <span className="text-sm font-semibold text-slate-300">
-                        {status === "connected" ? "System Online" : "Disconnected"}
+                        {status === "connected" ? t("system_online") : t("disconnected")}
                     </span>
                 </div>
             </header>
@@ -190,7 +190,7 @@ export default function WhatsAppPage() {
                             <button 
                                 onClick={() => checkStatus(instanceName!, apiKey!)}
                                 className="p-4 bg-white/5 text-slate-400 rounded-2xl hover:bg-white/10 hover:text-white transition-all border border-white/10 active:rotate-180 duration-500"
-                                title="Refresh Status"
+                                title={t("btn_refresh")}
                             >
                                 <RefreshCw size={24} />
                             </button>
@@ -211,9 +211,9 @@ export default function WhatsAppPage() {
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                                     <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">Safe Connection</span>
+                                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">{t("safe_connection")}</span>
                                 </div>
-                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center">Scan with WhatsApp Business</p>
+                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center">{t("scan_with_whatsapp")}</p>
                             </div>
                         </>
                     ) : (
@@ -222,10 +222,10 @@ export default function WhatsAppPage() {
                                 <Lock size={40} className="text-slate-600" />
                             </div>
                             <h4 className="text-white font-bold mb-1">
-                                {status === "connected" ? "Connection Active" : "No Session"}
+                                {status === "connected" ? t("connection_active") : t("no_session")}
                             </h4>
                             <p className="text-slate-500 text-sm max-w-[180px] mx-auto">
-                                {status === "connected" ? "Your device is securely linked to the cloud." : "Initialize a pairing session to link your device."}
+                                {status === "connected" ? t("device_linked") : t("initialize_pairing")}
                             </p>
                         </div>
                     )}

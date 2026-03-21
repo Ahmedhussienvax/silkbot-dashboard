@@ -132,7 +132,7 @@ export default function CampaignsPage() {
     const handleExportCSV = async () => {
         if (!selectedInstance || estimatedAudience === 0) return;
         setDownloading(true);
-        toast.info("Preparing audience CSV export...");
+        toast.info(t("export_preparing"));
         try {
             let query = supabase.from("silkbot_contacts").select("contact_jid, push_name, tags").eq("instance_name", selectedInstance);
             if (selectedTags.length > 0) query = query.contains("tags", selectedTags);
@@ -149,10 +149,10 @@ export default function CampaignsPage() {
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                toast.success("Audience data exported successfully!");
+                toast.success(t("export_success"));
             }
         } catch (e: any) {
-            toast.error("Failed to export: " + e.message);
+            toast.error(`${t("export_failed")}: ${e.message}`);
         } finally {
             setDownloading(false);
         }
@@ -164,7 +164,7 @@ export default function CampaignsPage() {
             return;
         }
 
-        toast.info("Preparing broadcast deployment...", { duration: 2000 });
+        toast.info(t("broadcast_preparing"), { duration: 2000 });
         setSending(true);
         try {
             let query = supabase.from("silkbot_contacts").select("contact_jid").eq("instance_name", selectedInstance);
@@ -172,17 +172,9 @@ export default function CampaignsPage() {
             const { data: targetContacts } = await query;
             const jidList = targetContacts?.map(c => c.contact_jid) || [];
 
-            const apiKey = process.env.NEXT_PUBLIC_GATEWAY_API_KEY || "";
-            if (!apiKey) {
-                console.warn("[Campaigns] Missing NEXT_PUBLIC_GATEWAY_API_KEY.");
-            }
-
-            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/instance/broadcast`, {
+            const res = await fetch(`/api/gateway/broadcast`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-api-key": apiKey
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ instance: selectedInstance, targets: jidList, message: message.trim() })
             });
 
@@ -195,10 +187,10 @@ export default function CampaignsPage() {
                 throw new Error(errorMsg);
             }
             
-            toast.success(t("broadcast_started") || `Campaign successfully queued for ${jidList.length} contacts!`);
+            toast.success(`${t("broadcast_started")} (${jidList.length})`);
             setMessage("");
         } catch (error: any) {
-            toast.error(error.message || "Failed to launch campaign.");
+            toast.error(error.message || t("broadcast_failed"));
         } finally {
             setSending(false);
         }

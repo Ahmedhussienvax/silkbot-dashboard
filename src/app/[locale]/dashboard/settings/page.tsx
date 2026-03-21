@@ -29,7 +29,7 @@ export default function SettingsPage() {
                 if (data) setTenant(data);
             } catch (err: any) {
                 console.error("Error loading tenant:", err.message);
-                toast.error("Failed to load settings");
+                toast.error(t("error_load"));
             } finally {
                 setLoading(false);
             }
@@ -54,7 +54,7 @@ export default function SettingsPage() {
             if (saveError) throw saveError;
             toast.success(t("success"));
         } catch (err: any) {
-            toast.error(err.message || "Failed to save settings");
+            toast.error(err.message || t("error_save"));
         } finally {
             setSaving(false);
         }
@@ -99,7 +99,7 @@ export default function SettingsPage() {
                                         value={tenant?.name || ""}
                                         onChange={(e) => setTenant(prev => prev ? { ...prev, name: e.target.value } : null)}
                                         className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-purple-500/30 outline-none transition-all hover:bg-black/60"
-                                        placeholder="Enter Business Name"
+                                        placeholder={t("business_name_placeholder")}
                                     />
                                 </div>
                                 <div className="space-y-3">
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                                         value={tenant?.industry || ""}
                                         onChange={(e) => setTenant(prev => prev ? { ...prev, industry: e.target.value } : null)}
                                         className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-purple-500/30 outline-none transition-all hover:bg-black/60"
-                                        placeholder="e.g. Real Estate"
+                                        placeholder={t("industry_placeholder")}
                                     />
                                 </div>
                             </div>
@@ -139,9 +139,9 @@ export default function SettingsPage() {
 
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-gradient-to-br from-purple-600/20 to-cyan-500/20 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-4">Quick Setup</h3>
+                        <h3 className="text-lg font-bold text-white mb-4">{t("quick_setup_title")}</h3>
                         <p className="text-sm text-slate-400 leading-relaxed mb-6">
-                            Make sure your business profile is up to date. These details are used by the AI to better understand your identity.
+                            {t("quick_setup_description")}
                         </p>
                         <Button
                             type="submit"
@@ -157,9 +157,9 @@ export default function SettingsPage() {
                         <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Shield className="w-8 h-8 text-emerald-500" />
                         </div>
-                        <h4 className="text-white font-bold text-sm mb-2 italic">Trusted Environment</h4>
+                        <h4 className="text-white font-bold text-sm mb-2 italic">{t("trusted_environment_title")}</h4>
                         <p className="text-[11px] text-slate-500 leading-tight">
-                            All your business settings are stored securely with enterprise-level encryption.
+                            {t("trusted_environment_description")}
                         </p>
                     </div>
                 </div>
