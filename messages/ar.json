@@ -65,7 +65,19 @@
     "quick_action_agent_synthesis": "تهيئة الوكيل",
     "power_user_tip": "نصيحة للمستخدم المتقدم",
     "power_user_tip_body": "يمكنك بث حملات مخصصة مباشرة من شرائح جهات الاتصال عبر الاستهداف المتجهي.",
-    "explore_campaigns": "استكشف الحملات"
+    "explore_campaigns": "استكشف الحملات",
+    "search_placeholder": "ابحث في ذكاء SilkBot...",
+    "ai_neural_load": "الحمل العصبي للذكاء الاصطناعي",
+    "resource_utilization": "استهلاك الموارد",
+    "activity_feed": "موجز النشاط",
+    "real_time_events": "الأحداث اللحظية",
+    "view_full_history": "عرض السجل الكامل",
+    "details": "تفاصيل",
+    "log": "سجل",
+    "no_events_found": "لم يتم العثور على أحداث",
+    "system_health": "صحة النظام",
+    "efficiency": "الكفاءة",
+    "active_nodes": "العقد النشطة"
   },
   "Sidebar": {
     "dashboard": "لوحة التحكم",
@@ -74,6 +86,8 @@
     "bot_settings": "إعدادات البوت",
     "knowledge": "قاعدة المعرفة",
     "whatsapp": "مدير الواتساب",
+    "campaigns": "الحملات",
+    "audit_log": "سجلات التدقيق",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج"
   },

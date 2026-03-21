@@ -98,8 +98,8 @@ export default function ActivityStream({ activities, translations: t }: Activity
                                     
                                     {/* Action Tags */}
                                     <div className="flex gap-2 mt-3 opacity-0 group-hover/item:opacity-100 transition-opacity translate-y-2 group-hover/item:translate-y-0 duration-500">
-                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-primary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">Details</button>
-                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">Log</button>
+                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-primary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">{t("details")}</button>
+                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">{t("log")}</button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -109,7 +109,7 @@ export default function ActivityStream({ activities, translations: t }: Activity
                             <div className="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mb-6">
                                 <Activity className="w-8 h-8 text-slate-600" />
                             </div>
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-600">No events found</p>
+                            <p className="text-xs font-black uppercase tracking-widest text-slate-600">{t("no_events_found")}</p>
                         </div>
                     )}
                 </AnimatePresence>

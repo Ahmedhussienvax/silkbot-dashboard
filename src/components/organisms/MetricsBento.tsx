@@ -28,7 +28,7 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
             <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
                     <h3 className="text-white font-black text-xl tracking-tight leading-none mb-2">
-                        {t("ai_neural_load")}
+                        {t("neural_load")}
                     </h3>
                     <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest opacity-60">
                         {t("resource_utilization")}
@@ -71,7 +71,7 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                     <span className="text-2xl font-black text-white leading-none">84%</span>
-                    <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">Efficiency</span>
+                    <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">{t("efficiency")}</span>
                 </div>
             </div>
 
@@ -79,14 +79,14 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 text-accent-secondary">
                         <Zap className="w-3 h-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Active nodes</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">{t("active_nodes")}</span>
                     </div>
                     <p className="text-lg font-black text-white">12,482</p>
                 </div>
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 text-slate-400">
                         <Activity className="w-3 h-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Latency</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest">{t("latency")}</span>
                     </div>
                     <p className="text-lg font-black text-white">18ms</p>
                 </div>
@@ -95,7 +95,7 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
             {/* Premium Progress Bar */}
             <div className="mt-8">
                 <div className="flex justify-between items-end mb-2">
-                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">System Health</span>
+                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">{t("system_health")}</span>
                     <span className="text-[10px] font-black text-accent-secondary uppercase">Premium</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
