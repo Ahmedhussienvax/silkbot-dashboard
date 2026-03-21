@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface OnboardingWizardProps {
+    show: boolean;
     onComplete: () => void;
 }
 
@@ -35,7 +36,9 @@ const TERMINAL_LOGS = [
     "Neural weights loaded. System readiness: 98%."
 ];
 
-export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
+export default function OnboardingWizard({ show, onComplete }: OnboardingWizardProps) {
+    if (!show) return null;
+
     const t = useTranslations("Dashboard");
     const router = useRouter();
     const [step, setStep] = useState(1);
@@ -87,7 +90,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             if (step < 3) {
                 setStep(step + 1);
             } else {
-                onComplete();
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
             }
             setIsChecking(false);
             setLogIndex(0);
@@ -95,7 +100,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     };
 
     const navigateToStep = (path: string) => {
-        onComplete();
+        if (typeof onComplete === 'function') {
+            onComplete();
+        }
         router.push(path as any);
     };
 
@@ -253,7 +260,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     {/* Footer Controls */}
                     <div className="flex justify-between items-center mt-auto pt-10 border-t border-white/5">
                         <button 
-                            onClick={() => onComplete()} 
+                            onClick={() => typeof onComplete === 'function' && onComplete()} 
                             className="text-slate-700 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em] disabled:opacity-0"
                             disabled={isChecking}
                         >

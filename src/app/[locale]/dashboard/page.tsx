@@ -31,6 +31,7 @@ export default function DashboardPage() {
     const [activities, setActivities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeChartTab, setActiveChartTab] = useState("day");
+    const [showWizard, setShowWizard] = useState(false);
     
     const supabase = createClient();
 
@@ -189,7 +190,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Overlays */}
-                <OnboardingWizard open={false} onOpenChange={() => {}} />
+                <OnboardingWizard show={showWizard} onComplete={() => setShowWizard(false)} />
             </main>
         </div>
     );
