@@ -9,6 +9,7 @@ import {
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Link, usePathname } from "@/i18n/routing";
+import Logo from "@/components/atoms/Logo";
 
 import { useTranslations } from "next-intl";
 
@@ -42,11 +43,9 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
             <div className="relative z-10">
                 <Link href="/dashboard" className="flex items-center gap-4 mb-16 group/logo cursor-pointer">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center shadow-[0_0_30px_rgba(var(--accent-rgb),0.3)] group-hover:scale-110 transition-transform duration-500">
-                        <Zap className="w-7 h-7 text-white fill-white/20" />
-                    </div>
+                    <Logo size="md" className="group-hover:scale-110 transition-transform duration-500" />
                     <div className="flex flex-col">
-                        <span className="text-2xl font-black text-white tracking-tighter leading-none italic">SILK<span className="text-accent-primary">BOT</span></span>
+                        <span className="text-2xl font-black text-white tracking-tighter leading-none italic uppercase">SILK<span className="text-accent-primary">BOT</span></span>
                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1 opacity-60">Architect v2.0</span>
                     </div>
                 </Link>

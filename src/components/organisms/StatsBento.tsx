@@ -93,7 +93,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
     return (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             {statItems.map((stat, idx) => (
-                <motion.div
+                <motion.button
                     variants={cardVariants}
                     initial="initial"
                     animate="animate"
@@ -102,7 +102,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                     key={stat.id}
                     onClick={() => onCardClick?.(stat.id)}
                     className={cn(
-                        "overflow-hidden group relative cursor-pointer",
+                        "overflow-hidden group relative text-left w-full outline-none",
                         "glass-card p-6 border border-zinc-200/50 dark:border-white/5 hover:border-accent-primary/30",
                         "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
                     )}
@@ -162,7 +162,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
 
                     {/* Light Reflection Sweep */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
-                </motion.div>
+                </motion.button>
             ))}
         </section>
     );

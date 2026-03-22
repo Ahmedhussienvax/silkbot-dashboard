@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import Logo from "@/components/atoms/Logo";
 import { Zap, Loader2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -76,14 +78,13 @@ export default function LoginPage() {
                     <motion.div 
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="inline-flex items-center gap-4 mb-4"
                     >
-                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-white shadow-2xl shadow-accent-primary/20 ring-1 ring-white/10">
-                            <Zap className="w-7 h-7 fill-white/20" />
+                       <div className="flex flex-col items-center mb-10 overflow-visible">
+                            <Logo size="lg" className="mb-6" />
+                            <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-400 italic">
+                                {t("title")}<span className="text-accent-primary">.</span>
+                            </h1>
                         </div>
-                        <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">
-                            SILK<span className="text-accent-primary">BOT</span>
-                        </h1>
                     </motion.div>
                     <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
                 </div>

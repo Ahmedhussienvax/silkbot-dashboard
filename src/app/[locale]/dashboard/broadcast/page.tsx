@@ -18,7 +18,8 @@ import {
     Zap,
     History,
     FileJson,
-    Activity
+    Activity,
+    Plus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
@@ -226,27 +227,38 @@ export default function CampaignsPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black text-blue-400 tracking-widest uppercase italic">
-                                Signal Source: Active
+                                {t("signal_source")}
                             </span>
                             <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                                <History className="w-3 h-3" /> System Uptime: 99.9%
+                                <History className="w-3 h-3" /> {t("system_uptime")}
                             </div>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-500">
-                            {t("title") || "Campaign Command"}<span className="text-blue-500">.</span>
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-500 italic">
+                            {t("title")}
                         </h1>
                         <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
-                            {t("description") || "Orchestrate high-volume outreach with neural-optimized delivery protocols and real-time metrics."}
+                            {t("description")}
                         </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-6">
+                        <button 
+                            className="bg-accent-primary text-white px-8 py-5 rounded-3xl font-black uppercase text-xs tracking-widest italic flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_-10px_rgba(var(--accent-rgb),0.3)]"
+                            onClick={() => {
+                                // Trigger modal or scroll to payload composer
+                                document.getElementById("message-composer")?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                        >
+                            <Plus className="w-5 h-5" />
+                            {t("btn_new")}
+                        </button>
+
                         <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/5 p-5 rounded-3xl flex items-center gap-5 shadow-2xl">
-                            <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                            <div className="w-12 h-12 bg-accent-primary/10 rounded-2xl flex items-center justify-center border border-accent-primary/20 text-accent-primary shadow-[0_0_20px_rgba(var(--accent-rgb),0.1)]">
                                 <Target className="w-6 h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">Target Reach</p>
+                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{t("target_reach")}</p>
                                 <p className="text-2xl font-black text-white leading-none">
                                     <AnimatedCounter value={estimatedAudience} />
                                 </p>
@@ -265,21 +277,21 @@ export default function CampaignsPage() {
                                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
                                     <Users className="h-6 w-6" />
                                 </div>
-                                <h2 className="text-2xl font-black text-white tracking-tight">{t("audience_targeting") || "Audience Targeting"}</h2>
+                                <h2 className="text-2xl font-black text-white tracking-tight">{t("audience_targeting")}</h2>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-10">
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                         <Zap className="h-3 w-3 text-blue-500" />
-                                        {t("active_instance") || "Signal Hub Selection"}
+                                        {t("signal_hub_selection")}
                                     </label>
                                     <select 
                                         className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:ring-2 ring-blue-500/20 text-white font-bold transition-all appearance-none cursor-pointer"
                                         value={selectedInstance}
                                         onChange={(e) => setSelectedInstance(e.target.value)}
                                     >
-                                        <option value="" disabled>Select Signal Hub...</option>
+                                        <option value="" disabled>{t("select_hub_placeholder")}</option>
                                         {instances.map(inst => (
                                             <option key={inst.instanceName} value={inst.instanceName}>{inst.instanceName}</option>
                                         ))}
@@ -288,7 +300,7 @@ export default function CampaignsPage() {
                                 <div className="space-y-4">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
                                         <FileJson className="h-3 w-3 text-blue-400" />
-                                        {t("filter_tags") || "Segment Categorization"}
+                                        {t("segment_categorization")}
                                     </label>
                                     <div className="flex flex-wrap gap-3">
                                         {tags.length > 0 ? tags.map(tag => (
@@ -305,7 +317,7 @@ export default function CampaignsPage() {
                                                 {tag}
                                             </button>
                                         )) : (
-                                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic pt-2">No segments found</p>
+                                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic pt-2">{t("no_segments")}</p>
                                         )}
                                     </div>
                                 </div>
@@ -313,7 +325,7 @@ export default function CampaignsPage() {
                         </motion.section>
 
                         {/* Message Composer Card */}
-                        <motion.section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative group">
+                        <motion.section id="message-composer" className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative group">
                             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
                             
                             <div className="flex items-center justify-between mb-8">
@@ -321,11 +333,11 @@ export default function CampaignsPage() {
                                     <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
                                         <Send className="h-6 w-6" />
                                     </div>
-                                    <h2 className="text-2xl font-black text-white tracking-tight">{t("message_payload") || "Communication Payload"}</h2>
+                                    <h2 className="text-2xl font-black text-white tracking-tight">{t("message_payload")}</h2>
                                 </div>
                                 <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5">
                                     <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Protocol: Direct</span>
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("protocol_direct")}</span>
                                 </div>
                             </div>
 
@@ -337,14 +349,14 @@ export default function CampaignsPage() {
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
                                 <div className="absolute bottom-6 right-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
-                                    {message.length} Characters
+                                    {message.length} {t("characters")}
                                 </div>
                             </div>
 
                             <div className="mt-8 flex items-center gap-4 p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
                                 <AlertCircle className="h-5 w-5 text-blue-500/50 shrink-0" />
                                 <p className="text-xs text-slate-500 font-medium italic">
-                                    Throttling active: Transmission delay set to 1,500ms to ensure network stability and avoid detection.
+                                    {t("throttling_notice")}
                                 </p>
                             </div>
                         </motion.section>
@@ -357,12 +369,12 @@ export default function CampaignsPage() {
                             
                             <div className="relative z-10 space-y-10">
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">Deployment Matrix</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">{t("deployment_matrix")}</p>
                                     <div className="flex items-baseline gap-3">
                                         <span className="text-7xl font-black tabular-nums tracking-tighter">
                                             <AnimatedCounter value={estimatedAudience} />
                                         </span>
-                                        <span className="text-xl font-black opacity-50 uppercase tracking-widest italic">Nodes</span>
+                                        <span className="text-xl font-black opacity-50 uppercase tracking-widest italic">{t("nodes")}</span>
                                     </div>
                                 </div>
 
@@ -373,7 +385,7 @@ export default function CampaignsPage() {
                                         className="w-full py-6 bg-white text-blue-700 font-black rounded-3xl flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98] hover:shadow-white/20 transition-all outline-none text-lg tracking-tighter"
                                     >
                                         {sending ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6" />}
-                                        {sending ? "DEPLOYING..." : "ACTIVATE BROADCAST"}
+                                        {sending ? t("btn_deploying") : t("btn_activate")}
                                     </button>
 
                                     <button
@@ -382,7 +394,7 @@ export default function CampaignsPage() {
                                         className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-xs uppercase tracking-widest disabled:opacity-30"
                                     >
                                         {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                                        Export Node Registry
+                                        {t("btn_export_registry")}
                                     </button>
                                 </div>
                             </div>
@@ -392,8 +404,8 @@ export default function CampaignsPage() {
                         <section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl">
                             <div className="flex items-center justify-between mb-10">
                                 <div className="space-y-1">
-                                    <h2 className="text-xl font-black text-white tracking-tight uppercase tracking-tighter">Transmission Analytics</h2>
-                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Past 72H Cycle</p>
+                                    <h2 className="text-xl font-black text-white tracking-tight uppercase tracking-tighter">{t("transmission_analytics")}</h2>
+                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{t("cycle_72h")}</p>
                                 </div>
                                 <Activity className="w-5 h-5 text-blue-500" />
                             </div>
@@ -434,16 +446,16 @@ export default function CampaignsPage() {
                                     <span className="text-4xl font-black text-white tracking-tighter">
                                         {Math.round((analytics.delivered / (analytics.sent || 1)) * 100)}%
                                     </span>
-                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] italic">Success</span>
+                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] italic">{t("success_rate")}</span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mt-10">
                                 {[
-                                    { label: 'Transmitted', val: analytics.sent, icon: Clock, color: 'text-slate-500', bg: 'bg-slate-500/10' },
-                                    { label: 'Delivered', val: analytics.delivered, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                                    { label: 'Read/Ack', val: analytics.read, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-                                    { label: 'Failed/Null', val: analytics.failed, icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10' }
+                                    { label: t("stat_transmitted"), val: analytics.sent, icon: Clock, color: 'text-slate-500', bg: 'bg-slate-500/10' },
+                                    { label: t("stat_delivered"), val: analytics.delivered, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                                    { label: t("stat_read"), val: analytics.read, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                                    { label: t("stat_failed"), val: analytics.failed, icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10' }
                                 ].map((stat) => (
                                     <div key={stat.label} className="p-5 bg-white/[0.03] rounded-3xl border border-white/5 hover:bg-white/[0.05] transition-colors group/stat">
                                         <div className="flex items-center gap-3 mb-2">

@@ -320,7 +320,7 @@ export default function InboxPage() {
 
     const extractText = (content: any): string => {
         if (!content) return "";
-        return content.conversation || content.extendedTextMessage?.text || "📷 Media Received";
+        return content.conversation || content.extendedTextMessage?.text || t("media_received");
     };
 
     const filteredConversations = conversations.filter(c => {
@@ -342,7 +342,10 @@ export default function InboxPage() {
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-black text-white tracking-tighter">{t("title")}</h2>
                         <div className="flex gap-2">
-                            <button className="p-2 bg-white/5 rounded-xl border border-white/10 text-slate-400 hover:text-white transition-all">
+                            <button 
+                                aria-label="Refresh Neural Streams"
+                                className="p-2 bg-white/5 rounded-xl border border-white/10 text-slate-400 hover:text-white transition-all transform active:scale-90"
+                            >
                                 <Zap className="w-4 h-4" />
                             </button>
                         </div>
@@ -474,18 +477,18 @@ export default function InboxPage() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <h3 className="text-lg font-black text-white tracking-tight">{activeConvData?.contact_push_name || activeConvData?.contact_jid}</h3>
+                                    <h3 className="text-lg font-black text-white tracking-tight leading-none mb-1">{activeConvData?.contact_push_name || activeConvData?.contact_jid}</h3>
                                     <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        Encryption Active • {activeConvData?.instance_name}
+                                        {t("encryption_active")} • {activeConvData?.instance_name}
                                     </p>
                                 </div>
                             </div>
                             
                             <div className="flex items-center gap-4">
                                 <div className="hidden md:flex gap-2 mr-4 border-r border-white/10 pr-6">
-                                    <button className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Phone className="w-4 h-4" /></button>
-                                    <button className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Video className="w-4 h-4" /></button>
+                                    <button aria-label="Audio Call" className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Phone className="w-4 h-4" /></button>
+                                    <button aria-label="Video Call" className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Video className="w-4 h-4" /></button>
                                 </div>
                                 
                                 <div className="flex items-center gap-2 mr-4 border-r border-white/10 pr-6">
@@ -502,16 +505,17 @@ export default function InboxPage() {
 
                                 <Button 
                                     size="sm"
+                                    aria-label={activeConvData?.bot_active !== false ? "Switch to Manual Mode" : "Switch to AI Mode"}
                                     onClick={() => botToggleMutation.mutate({ conv: activeConvData!, newStatus: activeConvData?.bot_active === false })}
                                     variant={activeConvData?.bot_active !== false ? "gradient" : "outline"}
-                                    className="h-11 px-6 rounded-2xl gap-2"
+                                    className="h-11 px-6 rounded-2xl gap-2 active:scale-95 transition-transform"
                                 >
                                     {activeConvData?.bot_active !== false ? <Bot className="w-4 h-4" /> : <User className="w-4 h-4" />}
-                                    <span className="text-[10px] uppercase font-black tracking-widest">
-                                        {activeConvData?.bot_active !== false ? "AI Protocol" : "Manual Link"}
+                                    <span className="text-[10px] uppercase font-black tracking-widest decoration-slate-500">
+                                        {activeConvData?.bot_active !== false ? t("mode_ai") : t("mode_manual")}
                                     </span>
                                 </Button>
-                                <button className="p-3 bg-slate-800/40 rounded-2xl text-slate-400 border border-white/5"><MoreVertical className="w-4 h-4" /></button>
+                                <button aria-label="Conversation Options" className="p-3 bg-slate-800/40 rounded-2xl text-slate-400 border border-white/5 hover:bg-white/10 transition-colors"><MoreVertical className="w-4 h-4" /></button>
                             </div>
                         </header>
 
@@ -600,7 +604,7 @@ export default function InboxPage() {
                                             <div className="flex items-center gap-3 mb-4 pl-4">
                                                 <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full animate-pulse shadow-[0_0_15px_rgba(168,85,247,0.15)]">
                                                     <Cpu className="w-3 h-3 text-purple-400 animate-spin" />
-                                                    <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Neural Hub Active</span>
+                                                    <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">{t("neural_active")}</span>
                                                 </div>
                                             </div>
                                             <AIReasoningTrace steps={liveTraces} />
@@ -622,17 +626,18 @@ export default function InboxPage() {
                                     type="text" 
                                     value={newMsg} 
                                     onChange={(e) => setNewMsg(e.target.value)} 
-                                    placeholder="Type your message across the nexus..."
+                                    placeholder={t("input_placeholder")}
                                     className="flex-1 bg-transparent border-none px-2 py-4 text-white placeholder:text-slate-600 text-lg focus:ring-0 outline-none" 
                                 />
                                 
                                 <div className="flex items-center gap-2 pr-1">
-                                    <button type="button" className="p-3 text-slate-500 hover:text-white transition-colors"><Mic className="w-5 h-5" /></button>
+                                    <button aria-label="Voice Message" type="button" className="p-3 text-slate-500 hover:text-white transition-colors"><Mic className="w-5 h-5" /></button>
                                     <button 
+                                        aria-label="Send Transmission"
                                         type="submit" 
                                         disabled={!newMsg.trim() || sendMutation.isPending} 
                                         className={cn(
-                                            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl group-active:scale-95",
+                                            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-95",
                                             newMsg.trim() ? "bg-purple-500 text-white hover:bg-purple-600" : "bg-slate-800 text-slate-600"
                                         )}
                                     >
@@ -641,7 +646,7 @@ export default function InboxPage() {
                                 </div>
                             </form>
                             <p className="text-center text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em] mt-4">
-                                SilkBot Quantum Link Active • Zero Latency Encryption
+                                {t("quantum_link")}
                             </p>
                         </footer>
                     </>
@@ -657,9 +662,9 @@ export default function InboxPage() {
                         </div>
                         <div>
                             <h3 className="text-3xl font-black text-white tracking-tighter mb-2">{t("select_chat")}</h3>
-                            <p className="text-slate-500 font-medium max-w-xs">{t("select_chat_desc")}</p>
+                            <p className="text-slate-500 font-medium max-w-xs mx-auto">{t("select_chat_desc")}</p>
                         </div>
-                        <Button variant="outline" className="rounded-2xl border-white/10">Explore Documentation</Button>
+                        <Button variant="outline" className="rounded-2xl border-white/10">{t("btn_docs")}</Button>
                     </div>
                 )}
             </div>

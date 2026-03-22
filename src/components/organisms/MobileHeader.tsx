@@ -6,6 +6,7 @@ import { Menu, X, Zap, LayoutDashboard, MessageSquare, Send, Users, Settings, Lo
 import { Link, usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/atoms/Logo";
 
 export default function MobileHeader() {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,10 +26,8 @@ export default function MobileHeader() {
     return (
         <div className="lg:hidden fixed top-0 left-0 right-0 h-20 bg-black/40 backdrop-blur-xl border-b border-white/5 px-6 flex items-center justify-between z-[100]">
             <Link href="/dashboard" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center shadow-[0_0_20px_rgba(var(--accent-rgb),0.3)]">
-                    <Zap className="w-5 h-5 text-white fill-white/20" />
-                </div>
-                <span className="text-xl font-black text-white tracking-tighter italic">SILK<span className="text-accent-primary">BOT</span></span>
+                <Logo size="sm" />
+                <span className="text-xl font-black text-white tracking-tighter italic uppercase">SILK<span className="text-accent-primary">BOT</span></span>
             </Link>
 
             <button 

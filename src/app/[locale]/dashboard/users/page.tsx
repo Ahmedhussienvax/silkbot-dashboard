@@ -91,7 +91,7 @@ export default function ContactsPage() {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] gap-6 animate-pulse">
                 <div className="w-16 h-16 rounded-full border-2 border-t-indigo-500 border-indigo-500/20 animate-spin" />
-                <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">Synchronizing_Neural_Network...</div>
+                <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em]">{t("syncing")}</div>
             </div>
         );
     }
@@ -105,11 +105,10 @@ export default function ContactsPage() {
                         <div className="w-10 h-10 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                             <Users className="w-5 h-5 text-white" />
                         </div>
-                        <h1 className="text-3xl font-black text-white tracking-tighter italic">CONTACTS_REGISTRY</h1>
+                        <h1 className="text-3xl font-black text-white tracking-tighter italic">{t("title")}</h1>
                     </div>
                     <p className="text-slate-500 text-sm font-medium tracking-wide max-w-lg">
-                        Manage and classify neural endpoints within the SilkBot ecosystem. 
-                        Monitor activity pulses and assign metadata segments.
+                        {t("description")}
                     </p>
                 </div>
 
@@ -117,7 +116,7 @@ export default function ContactsPage() {
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
                     <input 
                         type="text"
-                        placeholder="SEARCH_IDENTIFIER..."
+                        placeholder={t("search_placeholder")}
                         className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-14 pr-6 text-sm font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all shadow-2xl"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -131,19 +130,27 @@ export default function ContactsPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-white/[0.02] border-b border-white/5">
-                                <th scope="col" role="columnheader" aria-label="Contact Identity" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Node_Identity</th>
-                                <th scope="col" role="columnheader" aria-label="Lead Source" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Signal_Source</th>
-                                <th scope="col" role="columnheader" aria-label="Valuation" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Neural_Value</th>
-                                <th scope="col" role="columnheader" aria-label="Tags and Segments" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Metadata_Segments</th>
-                                <th scope="col" role="columnheader" aria-label="Last Activity Timestamp" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Last_Activity</th>
+                                <th scope="col" role="columnheader" aria-label="Contact Identity" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">{t("header_node")}</th>
+                                <th scope="col" role="columnheader" aria-label="Lead Source" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">{t("header_signal")}</th>
+                                <th scope="col" role="columnheader" aria-label="Valuation" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">{t("header_value")}</th>
+                                <th scope="col" role="columnheader" aria-label="Tags and Segments" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">{t("header_metadata")}</th>
+                                <th scope="col" role="columnheader" aria-label="Last Activity Timestamp" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">{t("header_activity")}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {filtered.map((c, idx) => (
                                 <React.Fragment key={c.id || c.jid}>
                                 <tr 
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-expanded={expandedNode === c.jid}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            setExpandedNode(expandedNode === c.jid ? null : c.jid);
+                                        }
+                                    }}
                                     className={cn(
-                                        "hover:bg-white/[0.04] transition-all group/row cursor-pointer animate-in slide-in-from-bottom-2 duration-700",
+                                        "hover:bg-white/[0.04] transition-all group/row cursor-pointer animate-in slide-in-from-bottom-2 duration-700 outline-none focus:bg-white/[0.04]",
                                         expandedNode === c.jid && "bg-indigo-500/5 shadow-inner border-l-2 border-indigo-500"
                                     )}
                                     style={{ animationDelay: `${idx * 15}ms` }}
@@ -165,7 +172,7 @@ export default function ContactsPage() {
                                             </div>
                                             <div className="space-y-1">
                                                 <div className="text-white font-black tracking-tight text-lg italic group-hover/row:text-indigo-400 transition-colors">
-                                                    {c.push_name || "NULL_IDENTITY"}
+                                                    {c.push_name || t("null_identity")}
                                                 </div>
                                                 <div className="text-[10px] font-mono text-slate-500 flex items-center gap-2">
                                                     <Fingerprint className="w-3 h-3 text-indigo-500/50" />
@@ -179,7 +186,7 @@ export default function ContactsPage() {
                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
                                                 <Network className="w-4 h-4 text-indigo-400" />
                                             </div>
-                                            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest italic">{c.lead_source || "ORGANIC_LINK"}</span>
+                                            <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest italic">{c.lead_source || t("organic_link")}</span>
                                         </div>
                                     </td>
                                     <td className="px-10 py-8">
@@ -188,7 +195,7 @@ export default function ContactsPage() {
                                                 ${(c.lead_value || 0).toLocaleString()}
                                             </div>
                                             <div className="text-[9px] text-slate-500 font-black uppercase tracking-widest opacity-60 italic">
-                                                VALUE_NODE
+                                                {t("value_node")}
                                             </div>
                                         </div>
                                     </td>
@@ -212,7 +219,7 @@ export default function ContactsPage() {
                                     <td className="px-10 py-8">
                                         <div className="flex items-center gap-3 text-slate-500 text-[11px] font-black uppercase tracking-widest bg-black/20 px-4 py-2 rounded-xl border border-white/5 transition-all group-hover/row:border-indigo-500/20 group-hover/row:text-slate-300">
                                             <Clock className="w-3.5 h-3.5 opacity-40 group-hover/row:text-indigo-400 transition-colors" />
-                                            {c.last_message_at ? format(new Date(c.last_message_at * 1000), "MMM dd, HH:mm") : "VOID"}
+                                            {c.last_message_at ? format(new Date(c.last_message_at * 1000), "MMM dd, HH:mm") : t("void")}
                                         </div>
                                     </td>
                                 </tr>
@@ -252,11 +259,11 @@ export default function ContactsPage() {
                                                         <div className="space-y-6">
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-                                                                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 italic">Neural_Instance</div>
+                                                                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 italic">{t("neural_instance")}</div>
                                                                     <div className="text-sm font-black text-white">{c.instance_name}</div>
                                                                 </div>
                                                                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-                                                                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 italic">Signal_Hash</div>
+                                                                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2 italic">{t("signal_hash")}</div>
                                                                     <div className="text-xs font-mono text-slate-400 truncate">{c.jid}</div>
                                                                 </div>
                                                             </div>
@@ -265,9 +272,9 @@ export default function ContactsPage() {
                                                                     <div className="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center">
                                                                         <Sparkles className="w-5 h-5" />
                                                                     </div>
-                                                                    <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest italic">Core_Priority_Node</div>
+                                                                    <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest italic">{t("priority_node")}</div>
                                                                 </div>
-                                                                <div className="text-xl font-black text-white italic">LVL_01</div>
+                                                                <div className="text-xl font-black text-white italic">{t("level")}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -284,7 +291,7 @@ export default function ContactsPage() {
                                     <td colSpan={5} className="px-10 py-32 text-center">
                                         <div className="flex flex-col items-center gap-4 text-slate-600">
                                             <Database className="w-10 h-10 text-slate-500 opacity-40" />
-                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">NO_SIGNALS_DETECTED_IN_SECTOR</div>
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">{t("no_signals")}</div>
                                         </div>
                                     </td>
                                 </tr>
