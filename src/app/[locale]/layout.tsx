@@ -4,6 +4,7 @@ import { getMessages } from 'next-intl/server';
 import { Outfit, Cairo } from "next/font/google";
 import { Toaster } from 'sonner';
 import Providers from "@/components/organisms/Providers";
+import { ErrorBoundary } from '@/components/molecules/ErrorBoundary';
 import "../globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -13,8 +14,6 @@ export const metadata = {
     title: "SilkBot | Dashboard",
     description: "Next-gen WhatsApp AI automation.",
 };
-
-import { ErrorBoundary } from '@/components/molecules/ErrorBoundary';
 
 export default async function LocaleLayout({
     children,
@@ -28,9 +27,9 @@ export default async function LocaleLayout({
     const isRtl = locale === 'ar';
 
     return (
-        <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'}>
-            <body className={`${isRtl ? cairo.className : outfit.className} bg-slate-950 text-white antialiased`}>
-                <NextIntlClientProvider messages={messages}>
+        <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning>
+            <body className={`${isRtl ? cairo.className : outfit.className} antialiased`}>
+                <NextIntlClientProvider messages={messages} locale={locale}>
                     <ErrorBoundary>
                         <Providers>
                             {children}

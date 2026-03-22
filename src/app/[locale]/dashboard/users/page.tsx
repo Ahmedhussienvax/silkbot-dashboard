@@ -59,7 +59,8 @@ export default function ContactsPage() {
             if (error) throw error;
             setContacts(data || []);
         } catch (error: any) {
-            toast.error("Signal Disruption", { description: error.message });
+            console.error("🔴 [INFRA-01] Node Sync Failure:", error);
+            toast.error("Signal Disruption", { description: "Failed to synchronize with neural network. Please retry." });
         } finally {
             setLoading(false);
         }

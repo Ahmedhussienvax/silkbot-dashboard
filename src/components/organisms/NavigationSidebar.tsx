@@ -8,7 +8,8 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { Link, usePathname } from "@/i18n/routing";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
+import { useLocale } from "next-intl";
 import Logo from "@/components/atoms/Logo";
 
 import { useTranslations } from "next-intl";
@@ -19,10 +20,12 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
     const t = useTranslations("Sidebar");
     const { theme, setTheme } = useTheme();
     const pathname = usePathname();
+    const router = useRouter();
+    const locale = useLocale();
 
     const navItems = [
         { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
-        { id: "pipelines", icon: Columns, label: t("pipelines"), href: "/dashboard/pipelines" },
+        { id: "kanban", icon: Columns, label: t("kanban"), href: "/dashboard/kanban" },
         { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
         { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
         { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
@@ -93,27 +96,51 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
             <div className="relative z-10 space-y-8">
                 {/* Theme Switcher Premium */}
-                <div className="bg-black/40 p-2 rounded-3xl border border-white/5 flex items-center justify-between gap-1 shadow-2xl">
-                    <button 
-                        onClick={() => setTheme("light")}
-                        className={cn(
-                            "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
-                            theme === "light" ? "bg-white text-black shadow-xl" : "text-slate-500 hover:bg-white/5"
-                        )}
-                    >
-                        <Sun className="w-4 h-4" />
-                        <span>Light</span>
-                    </button>
-                    <button 
-                        onClick={() => setTheme("dark")}
-                        className={cn(
-                            "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
-                            theme === "dark" ? "bg-accent-primary text-white shadow-xl shadow-accent-primary/20" : "text-slate-500 hover:bg-white/5"
-                        )}
-                    >
-                        <Moon className="w-4 h-4" />
-                        <span>Dark</span>
-                    </button>
+                <div className="bg-black/40 p-2 rounded-3xl border border-white/5 flex flex-col gap-2 shadow-2xl">
+                    <div className="flex items-center justify-between gap-1">
+                        <button 
+                            onClick={() => setTheme("light")}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
+                                theme === "light" ? "bg-white text-black shadow-xl" : "text-slate-500 hover:bg-white/5"
+                            )}
+                        >
+                            <Sun className="w-4 h-4" />
+                            <span>Light</span>
+                        </button>
+                        <button 
+                            onClick={() => setTheme("dark")}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
+                                theme === "dark" ? "bg-accent-primary text-white shadow-xl shadow-accent-primary/20" : "text-slate-500 hover:bg-white/5"
+                            )}
+                        >
+                            <Moon className="w-4 h-4" />
+                            <span>Dark</span>
+                        </button>
+                    </div>
+                    
+                    {/* Language Switcher UI-10 */}
+                    <div className="flex items-center justify-between gap-1 border-t border-white/5 pt-2 mt-1">
+                        <button 
+                            onClick={() => router.replace(pathname, { locale: 'en' })}
+                            className={cn(
+                                "flex-1 flex items-center justify-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                                locale === 'en' ? "bg-white/10 text-white border border-white/10" : "text-slate-500 hover:text-slate-300"
+                            )}
+                        >
+                            EN
+                        </button>
+                        <button 
+                            onClick={() => router.replace(pathname, { locale: 'ar' })}
+                            className={cn(
+                                "flex-1 flex items-center justify-center py-2.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                                locale === 'ar' ? "bg-white/10 text-white border border-white/10" : "text-slate-500 hover:text-slate-300"
+                            )}
+                        >
+                            AR
+                        </button>
+                    </div>
                 </div>
 
                 <div className="p-6 rounded-3xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/5 relative overflow-hidden group/upgrade">
@@ -125,11 +152,11 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     </button>
                 </div>
 
-                <button className="w-full group/logout flex items-center gap-4 p-4 text-slate-500 hover:text-white transition-colors">
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/logout:bg-red-500/10 group-hover/logout:text-red-500 transition-all">
+                <button className="w-full group/logout flex items-center gap-4 p-4 rounded-2xl border border-transparent hover:border-red-500/20 hover:bg-red-500/5 transition-all transition-colors">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/logout:bg-red-500 text-slate-500 group-hover/logout:text-white transition-all shadow-lg active:scale-95">
                         <LogOut className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-black uppercase tracking-widest">{t("logout")}</span>
+                    <span className="text-xs font-black uppercase tracking-widest group-hover/logout:text-white">{t("logout")}</span>
                 </button>
             </div>
 

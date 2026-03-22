@@ -191,7 +191,8 @@ export default function CampaignsPage() {
             toast.success(`${t("broadcast_started")} (${jidList.length})`);
             setMessage("");
         } catch (error: any) {
-            toast.error(error.message || t("broadcast_failed"));
+            console.error("🔴 [INFRA-01] Broadcast Execution Failure:", error);
+            toast.error(t("broadcast_failed"));
         } finally {
             setSending(false);
         }

@@ -16,7 +16,7 @@ interface Lead {
 }
 
 export default function PipelinesPage() {
-  const t = useTranslations('Pipelines');
+  const t = useTranslations('Kanban');
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();

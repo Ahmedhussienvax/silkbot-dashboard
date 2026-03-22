@@ -1,4 +1,12 @@
 {
+  "Common": {
+    "about": "About Us",
+    "contact": "Contact Support",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "careers": "Careers",
+    "blog": "Neural Blog"
+  },
   "Landing": {
     "title": "SilkBot",
     "subtitle": "The next-generation {span_start}WhatsApp AI{span_end} platform.",
@@ -108,7 +116,7 @@
   },
   "Sidebar": {
     "dashboard": "Dashboard",
-    "pipelines": "Pipelines",
+    "kanban": "Kanban",
     "inbox": "Inbox",
     "contacts": "Contacts",
     "bot_settings": "Bot Settings",
@@ -188,6 +196,16 @@
     "tz_cairo": "Africa/Cairo (EET)",
     "tz_riyadh": "Asia/Riyadh (AST)",
     "tz_dubai": "Asia/Dubai (GST)",
+    "ai_cognition": "AI Cognition Layer",
+    "system_prompt": "Global System Prompt",
+    "prompt_placeholder": "Define your AI's core persona and constraints...",
+    "neural_ingress": "WhatsApp Neural Ingress",
+    "qr_description": "Scan the QR code to pair your device with the SilkBot infrastructure.",
+    "qr_refresh": "Refresh Signal",
+    "account_management": "Account Security",
+    "user_email": "Identity Email",
+    "change_password": "Update Encryption Key",
+    "sign_out": "Terminate Session",
     "save": "Save Changes",
     "success": "Settings saved successfully",
     "loading": "Loading...",
@@ -314,17 +332,17 @@
     "delete_success": "Document purged successfully",
     "error_prefix": "Error:"
   },
-  "Pipelines": {
-    "title": "Sales Pipelines",
+  "Kanban": {
+    "title": "Neural Kanban",
     "description": "Visualize and manage your lead acquisition flow across neural stages.",
-    "new": "New Leads",
-    "warm": "Warm",
-    "hot": "Hot",
-    "closed": "Closed",
+    "new": "New Signal",
+    "warm": "Warm Link",
+    "hot": "Active Protocol",
+    "closed": "Converged",
     "add_lead": "Inject Lead",
-    "no_leads": "No leads in this stage",
+    "no_leads": "No signals in this sector",
     "value": "Value",
-    "move_success": "Pipeline stage updated",
+    "move_success": "Node stage updated",
     "move_error": "Failed to update node stage"
   },
   "Login": {

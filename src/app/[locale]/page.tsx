@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Play, Sparkles, Shield, Rocket, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/atoms/Logo";
+import Footer from "@/components/organisms/Footer";
 
 /**
  * Landing Page Refactoring (Revision 2 - Deep Re-evaluation)
@@ -134,10 +135,7 @@ export default function Home() {
                 )}
             </AnimatePresence>
 
-            {/* Footer SEO Mark */}
-            <div className="absolute bottom-10 text-[10px] font-black text-slate-800 uppercase tracking-[0.5em] pointer-events-none">
-                SilkBot Neural Infrastructure v4.5
-            </div>
+            <Footer />
         </main>
     );
 }

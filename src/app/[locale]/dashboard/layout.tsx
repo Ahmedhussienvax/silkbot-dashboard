@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import NavigationSidebar from "@/components/organisms/NavigationSidebar";
 import MobileHeader from "@/components/organisms/MobileHeader";
+import Footer from "@/components/organisms/Footer";
 import { getTranslations } from 'next-intl/server';
 
 export default async function DashboardLayout({
@@ -25,6 +26,7 @@ export default async function DashboardLayout({
                 <div className="flex-1 pt-20 lg:pt-0">
                     {children}
                 </div>
+                <Footer />
             </div>
         </div>
     );
