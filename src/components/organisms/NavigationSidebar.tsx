@@ -3,7 +3,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
     LayoutDashboard, MessageSquare, Send, Settings,
-    ChevronRight, LogOut, Sun, Moon, Zap, Users
+    ChevronRight, LogOut, Sun, Moon, Zap, Users,
+    Columns
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
     const navItems = [
         { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
+        { id: "pipelines", icon: Columns, label: t("pipelines"), href: "/dashboard/pipelines" },
         { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
         { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
         { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },

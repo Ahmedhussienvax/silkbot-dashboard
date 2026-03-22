@@ -13,10 +13,10 @@ import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage(props: { 
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ q?: string }>;
+    searchParams: Promise<{ search?: string }>;
 }) {
     const { locale } = await props.params;
-    const { q: searchQuery } = await props.searchParams;
+    const { search: searchQuery } = await props.searchParams;
     const t = await getTranslations("Dashboard");
     
     const supabase = await createClient();

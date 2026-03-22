@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase-client";
 
 import { useTranslations } from "next-intl";
+import { premiumEntrance, hoverLift } from "@/lib/motion";
 
 interface Stats {
     conversations: number;
@@ -84,23 +85,26 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
         }
     ];
 
+    const cardVariants = {
+        ...premiumEntrance,
+        ...hoverLift
+    };
+
     return (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
             {statItems.map((stat, idx) => (
                 <motion.div
-                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ 
-                        delay: idx * 0.1, 
-                        duration: 0.6, 
-                        ease: [0.23, 1, 0.32, 1] 
-                    }}
+                    variants={cardVariants}
+                    initial="initial"
+                    animate="animate"
+                    whileHover="hover"
+                    whileTap="tap"
                     key={stat.id}
                     onClick={() => onCardClick?.(stat.id)}
                     className={cn(
                         "overflow-hidden group relative cursor-pointer",
                         "glass-card p-6 border border-zinc-200/50 dark:border-white/5 hover:border-accent-primary/30",
-                        "premium-hover shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
+                        "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
                     )}
                 >
                     {/* Animated Background Mesh */}
@@ -110,11 +114,18 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                     )} />
                     
                     <div className="flex items-start justify-between mb-6 relative z-10">
-                        <div className="w-12 h-12 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl flex items-center justify-center text-foreground border border-zinc-200 dark:border-white/10 shadow-inner group-hover:rotate-[10deg] transition-all duration-500">
-                            <div className="text-accent-primary group-hover:scale-110 transition-transform duration-500">
+                        <motion.div 
+                            className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br",
+                                stat.color
+                            )}
+                            whileHover={{ scale: 1.1, rotate: 8 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 12 }}
+                        >
+                            <div className="drop-shadow-md">
                                 {stat.icon}
                             </div>
-                        </div>
+                        </motion.div>
                         <div className={cn(
                             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border self-start",
                             stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10"
@@ -137,7 +148,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                         </div>
                     </div>
                     
-                    <p className="text-[9px] text-slate-500 mt-4 font-bold leading-relaxed tracking-wide group-hover:text-slate-300 transition-colors uppercase opacity-60">
+                    <p className="text-[9px] text-slate-500 mt-4 font-black leading-relaxed tracking-[0.15em] group-hover:text-slate-300 transition-colors uppercase opacity-60 italic">
                         {stat.desc}
                     </p>
 

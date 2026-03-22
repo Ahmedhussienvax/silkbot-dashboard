@@ -9,24 +9,24 @@ export default function SearchInput({ placeholder }: { placeholder: string }) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
-    const [query, setQuery] = useState(searchParams.get("q")?.toString() || "");
+    const [query, setQuery] = useState(searchParams.get("search")?.toString() || "");
 
     useEffect(() => {
         // Initial sync if URL changes externally
-        setQuery(searchParams.get("q")?.toString() || "");
+        setQuery(searchParams.get("search")?.toString() || "");
     }, [searchParams]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             const params = new URLSearchParams(searchParams);
-            const currentQ = params.get("q") || "";
+            const currentQ = params.get("search") || "";
             
             if (query === currentQ) return;
 
             if (query) {
-                params.set("q", query);
+                params.set("search", query);
             } else {
-                params.delete("q");
+                params.delete("search");
             }
 
             startTransition(() => {

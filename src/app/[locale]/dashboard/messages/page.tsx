@@ -36,6 +36,7 @@ interface Conversation {
     last_message: Record<string, any> | null;
     last_message_at: number | null;
     bot_active?: boolean;
+    status?: 'new' | 'pending' | 'resolved';
 }
 
 interface Message {
@@ -58,8 +59,9 @@ export default function InboxPage() {
     const [activeConv, setActiveConv] = useState<string | null>(null);
     const [newMsg, setNewMsg] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [filter, setFilter] = useState<"all" | "bot" | "human">("all");
+    const [filter, setFilter] = useState<"all" | "bot" | "human" | "open" | "pending" | "resolved">("all");
     const [selectedTraceMsg, setSelectedTraceMsg] = useState<string | null>(null);
+    const [liveTraces, setLiveTraces] = useState<any[]>([]);
     const msgEndRef = useRef<HTMLDivElement>(null);
     const supabase = createClient();
 
@@ -67,7 +69,21 @@ export default function InboxPage() {
     const { data: conversations = [], isLoading: loadingConvs } = useQuery({
         queryKey: ["conversations"],
         queryFn: async () => {
-            const { data, error } = await supabase.from("silkbot_chats").select("*").order("last_message_at", { ascending: false });
+            const { data, error } = await supabase
+                .schema("silkbot")
+                .from("conversations")
+                .select(`
+                    composite_chat_id: id,
+                    instance_name,
+                    contact_jid,
+                    contact_push_name: contact_name,
+                    contact_avatar,
+                    last_message,
+                    last_message_at: updated_at,
+                    bot_active,
+                    status: ticket_status
+                `)
+                .order("last_message_at", { ascending: false });
             if (error) throw error;
             return (data as unknown as Conversation[]) || [];
         },
@@ -88,13 +104,7 @@ export default function InboxPage() {
             
             const processMessages = ((data as unknown as any[]) || []).map(msg => {
                 const isBot = msg.is_from_me === "true" || msg.is_from_me === true;
-                // Fetch from metadata if available, otherwise generate mock for bot messages
-                const aiTrace = msg.metadata?.ai_trace || (isBot ? [
-                    { id: `${msg.message_id}-t1`, type: "analysis", content: "Intent Classification: User query requires Support parameters.", timestamp: new Date(msg.sent_at * 1000 - 1500).toLocaleTimeString() },
-                    { id: `${msg.message_id}-t2`, type: "retrieval", content: "RAG Active: Matched 2 context docs with high confidence (0.92)", timestamp: new Date(msg.sent_at * 1000 - 1000).toLocaleTimeString() },
-                    { id: `${msg.message_id}-t3`, type: "reasoning", content: "Synthesized fallback logic into localized semantic response.", timestamp: new Date(msg.sent_at * 1000 - 500).toLocaleTimeString() },
-                    { id: `${msg.message_id}-t4`, type: "generation", content: "Response compiled via SilkBot Neural Engine.", timestamp: new Date(msg.sent_at * 1000).toLocaleTimeString() }
-                ] : null);
+                const aiTrace = msg.metadata?.ai_trace || null;
 
                 return {
                     ...msg,
@@ -107,6 +117,8 @@ export default function InboxPage() {
         },
         enabled: !!activeConv,
     });
+
+    const activeConvData = conversations.find(c => c.composite_chat_id === activeConv);
 
     // Real-time listener for new messages
     useEffect(() => {
@@ -129,11 +141,61 @@ export default function InboxPage() {
         return () => { supabase.removeChannel(channel); };
     }, [supabase, queryClient]);
 
+    // Clear live traces when a new bot message arrives or when switching conversations
+    useEffect(() => {
+        if (messages.length > 0) {
+            const lastMsg = messages[messages.length - 1];
+            if (lastMsg.is_from_me === "true") {
+                setLiveTraces([]);
+            }
+        }
+    }, [messages]);
+
+    useEffect(() => {
+        setLiveTraces([]);
+    }, [activeConv]);
+
     useEffect(() => { 
         if (messages.length > 0) {
             msgEndRef.current?.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
+
+    // Real-time listener for AI traces
+    useEffect(() => {
+        if (!activeConvData) return;
+
+        const channel = supabase
+            .channel(`live-traces-${activeConvData.composite_chat_id}`)
+            .on(
+                "postgres_changes",
+                { 
+                    event: "INSERT", 
+                    schema: "public", 
+                    table: "ai_traces",
+                    filter: `conversation_id=eq.${activeConvData.contact_jid}`
+                },
+                (payload) => {
+                    const newTrace = payload.new as any;
+                    setLiveTraces(prev => {
+                        // Deduplicate
+                        if (prev.some(t => t.id === newTrace.id)) return prev;
+                        return [...prev, {
+                            id: newTrace.id,
+                            type: newTrace.trace_type,
+                            severity: newTrace.severity,
+                            content: newTrace.content,
+                            timestamp: new Date(newTrace.created_at).toLocaleTimeString(),
+                            metadata: newTrace.metadata
+                        }];
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
+    }, [activeConvData, supabase]);
+
 
     // Send Message Mutation
     const sendMutation = useMutation({
@@ -188,13 +250,52 @@ export default function InboxPage() {
         },
     });
 
+    const statusMutation = useMutation({
+        mutationFn: async ({ conv, status }: { conv: Conversation, status: string }) => {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/api/gateway/crm/update-ticket`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-api-key": process.env.NEXT_PUBLIC_GATEWAY_API_KEY || ""
+                },
+                body: JSON.stringify({ 
+                    remoteJid: conv.contact_jid,
+                    instanceId: conv.instance_name,
+                    status 
+                })
+            });
+            if (!res.ok) throw new Error("Failed to update status");
+        },
+        onMutate: async ({ conv, status }) => {
+            await queryClient.cancelQueries({ queryKey: ["conversations"] });
+            const previousConvs = queryClient.getQueryData<Conversation[]>(["conversations"]);
+            queryClient.setQueryData(["conversations"], (old: Conversation[] = []) => 
+                old.map(c => c.composite_chat_id === conv.composite_chat_id ? { ...c, status: status as any } : c)
+            );
+            return { previousConvs };
+        },
+        onError: (err, variables, context) => {
+            queryClient.setQueryData(["conversations"], context?.previousConvs);
+            toast.error(t("move_error"));
+        },
+        onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
+    });
+
     const botToggleMutation = useMutation({
         mutationFn: async ({ conv, newStatus }: { conv: Conversation, newStatus: boolean }) => {
-            const { error } = await supabase.from("silkbot_contacts")
-                .update({ bot_active: newStatus })
-                .eq("instance_name", conv.instance_name)
-                .eq("contact_jid", conv.contact_jid);
-            if (error) throw error;
+            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/api/gateway/crm/update-lead`, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-api-key": process.env.NEXT_PUBLIC_GATEWAY_API_KEY || ""
+                },
+                body: JSON.stringify({ 
+                    remoteJid: conv.contact_jid,
+                    instanceId: conv.instance_name,
+                    bot_active: newStatus 
+                })
+            });
+            if (!res.ok) throw new Error("Failed to toggle AI mode");
         },
         onMutate: async ({ conv, newStatus }) => {
             await queryClient.cancelQueries({ queryKey: ["conversations"] });
@@ -210,8 +311,6 @@ export default function InboxPage() {
         },
         onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
     });
-
-    const activeConvData = conversations.find(c => c.composite_chat_id === activeConv);
 
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
@@ -229,7 +328,8 @@ export default function InboxPage() {
                               c.contact_jid.includes(searchQuery));
         const matchesFilter = filter === "all" || 
                              (filter === "bot" && c.bot_active !== false) || 
-                             (filter === "human" && c.bot_active === false);
+                             (filter === "human" && c.bot_active === false) ||
+                             (filter === c.status);
         return matchesSearch && matchesFilter;
     });
 
@@ -267,6 +367,12 @@ export default function InboxPage() {
                         <button onClick={() => setFilter("human")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "human" ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20" : "text-slate-500 hover:text-white")}>
                             <User className="w-3 h-3" /> {t("filter_human")}
                         </button>
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 mt-2">
+                        <button onClick={() => setFilter("open")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "open" ? "bg-blue-500 text-white" : "text-slate-500")}>{t("status_new")}</button>
+                        <button onClick={() => setFilter("pending")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "pending" ? "bg-amber-500 text-white" : "text-slate-500")}>{t("status_pending")}</button>
+                        <button onClick={() => setFilter("resolved")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "resolved" ? "bg-emerald-500 text-white" : "text-slate-500")}>{t("status_resolved")}</button>
                     </div>
                 </div>
 
@@ -312,10 +418,41 @@ export default function InboxPage() {
                                                 {conv.last_message_at ? new Date(conv.last_message_at * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ""}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-500 truncate font-medium">
-                                            {conv.bot_active !== false && <span className="text-purple-400 mr-1.5 font-black uppercase text-[9px]">AI:</span>}
-                                            {extractText(conv.last_message)}
+                                        <p className="text-xs text-slate-500 truncate font-medium flex items-center gap-1">
+                                            {conv.bot_active !== false ? (
+                                                <span className="flex items-center gap-1 text-purple-400 font-bold uppercase text-[8px] bg-purple-500/10 px-1.5 py-0.5 rounded-md border border-purple-500/20">
+                                                    <Brain className="w-2 h-2" /> AI
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1 text-cyan-400 font-bold uppercase text-[8px] bg-cyan-500/10 px-1.5 py-0.5 rounded-md border border-cyan-500/20">
+                                                    <User className="w-2 h-2" /> MNL
+                                                </span>
+                                            )}
+                                            <span className="truncate">{extractText(conv.last_message)}</span>
                                         </p>
+                                        <div className="flex items-center justify-between mt-2">
+                                            {conv.status && (
+                                                <div className={cn(
+                                                    "inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border",
+                                                    conv.status === 'new' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
+                                                    conv.status === 'pending' ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+                                                    "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                                )}>
+                                                    {t(`status_${conv.status}`)}
+                                                </div>
+                                            )}
+                                            
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    botToggleMutation.mutate({ conv, newStatus: conv.bot_active === false });
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 p-1.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all"
+                                                title={conv.bot_active !== false ? "Switch to Manual" : "Switch to AI"}
+                                            >
+                                                {conv.bot_active !== false ? <User className="w-3 h-3 text-cyan-400" /> : <Bot className="w-3 h-3 text-purple-400" />}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.button>
@@ -351,6 +488,18 @@ export default function InboxPage() {
                                     <button className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Video className="w-4 h-4" /></button>
                                 </div>
                                 
+                                <div className="flex items-center gap-2 mr-4 border-r border-white/10 pr-6">
+                                    <select 
+                                        value={activeConvData?.status || 'new'}
+                                        onChange={(e) => statusMutation.mutate({ conv: activeConvData!, status: e.target.value })}
+                                        className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 outline-none focus:ring-1 focus:ring-purple-500/50 transition-all cursor-pointer"
+                                    >
+                                        <option value="new" className="bg-slate-900">{t("status_new")}</option>
+                                        <option value="pending" className="bg-slate-900">{t("status_pending")}</option>
+                                        <option value="resolved" className="bg-slate-900">{t("status_resolved")}</option>
+                                    </select>
+                                </div>
+
                                 <Button 
                                     size="sm"
                                     onClick={() => botToggleMutation.mutate({ conv: activeConvData!, newStatus: activeConvData?.bot_active === false })}
@@ -438,6 +587,26 @@ export default function InboxPage() {
                                         </div>
                                     );
                                 })}
+                                
+                                {/* Live Trace Area */}
+                                {liveTraces.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        className="flex justify-start mb-6"
+                                    >
+                                        <div className="max-w-[85%] w-full">
+                                            <div className="flex items-center gap-3 mb-4 pl-4">
+                                                <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full animate-pulse shadow-[0_0_15px_rgba(168,85,247,0.15)]">
+                                                    <Cpu className="w-3 h-3 text-purple-400 animate-spin" />
+                                                    <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">Neural Hub Active</span>
+                                                </div>
+                                            </div>
+                                            <AIReasoningTrace steps={liveTraces} />
+                                        </div>
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                             <div ref={msgEndRef} className="h-4" />
                         </div>

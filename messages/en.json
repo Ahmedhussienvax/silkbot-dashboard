@@ -95,6 +95,7 @@
   },
   "Sidebar": {
     "dashboard": "Dashboard",
+    "pipelines": "Pipelines",
     "inbox": "Inbox",
     "contacts": "Contacts",
     "bot_settings": "Bot Settings",
@@ -195,6 +196,9 @@
     "send": "Send",
     "select_chat": "Select a conversation",
     "select_chat_desc": "Choose from the list to start chatting",
+    "status_new": "New",
+    "status_pending": "Pending",
+    "status_resolved": "Resolved",
     "search_contacts": "Search contacts...",
     "filter_all": "All",
     "filter_ai": "AI",
@@ -220,7 +224,12 @@
     "search": "Search...",
     "name": "Name",
     "phone": "Phone",
-    "last_seen": "Last Seen",
+    "last_seen": "Last Activity",
+    "lead_value": "Node Value",
+    "lead_source": "Entry Protocol",
+    "notes": "Internal Notes",
+    "save_notes": "Sync Notes",
+    "notes_placeholder": "Add internal intelligence notes about this node...",
     "no_contacts": "No contacts found"
   },
   "Knowledge": {
@@ -245,5 +254,18 @@
     "deleting": "Deleting document...",
     "delete_success": "Document purged successfully",
     "error_prefix": "Error:"
+  },
+  "Pipelines": {
+    "title": "Sales Pipelines",
+    "description": "Visualize and manage your lead acquisition flow across neural stages.",
+    "new": "New Leads",
+    "warm": "Warm",
+    "hot": "Hot",
+    "closed": "Closed",
+    "add_lead": "Inject Lead",
+    "no_leads": "No leads in this stage",
+    "value": "Value",
+    "move_success": "Pipeline stage updated",
+    "move_error": "Failed to update node stage"
   }
 }

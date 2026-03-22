@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Cpu, Zap, Activity } from "lucide-react";
 
 import { useTranslations } from "next-intl";
+import { premiumEntrance, hoverLift, staggerContainer, staggerItem } from "@/lib/motion";
 
 interface MetricsBentoProps {}
 
@@ -16,11 +17,18 @@ export default function MetricsBento({}: MetricsBentoProps) {
         { name: t("queued"), value: 10, color: "hsla(var(--accent-secondary-hsl), 0.3)" },
     ];
 
+    const containerVariants = {
+        ...premiumEntrance,
+        ...hoverLift
+    };
+
     return (
         <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            variants={containerVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+            whileTap="tap"
             className="bento-item-l glass-card p-8 flex flex-col justify-between group/metrics overflow-hidden relative"
         >
             {/* Background Glow */}
@@ -35,9 +43,13 @@ export default function MetricsBento({}: MetricsBentoProps) {
                         {t("resource_utilization")}
                     </p>
                 </div>
-                <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 group-hover/metrics:border-accent-primary/30 transition-colors">
-                    <Cpu className="w-5 h-5 text-accent-primary group-hover/metrics:scale-110 transition-transform" />
-                </div>
+                <motion.div 
+                    className="p-3 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 group-hover/metrics:border-accent-primary/30 transition-colors shadow-inner"
+                    whileHover={{ scale: 1.1, rotate: -8 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                    <Cpu className="w-5 h-5 text-accent-primary" />
+                </motion.div>
             </div>
 
             <div className="h-48 w-full relative group/pie">
@@ -57,10 +69,11 @@ export default function MetricsBento({}: MetricsBentoProps) {
                         </Pie>
                         <Tooltip 
                             contentStyle={{ 
-                                backgroundColor: 'var(--card)', 
-                                backdropFilter: 'blur(10px)', 
+                                backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+                                backdropFilter: 'blur(16px) saturate(180%)', 
                                 borderRadius: '16px', 
-                                border: '1px solid var(--border)',
+                                border: '1px solid rgba(255, 255, 255, 0.12)',
+                                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
                                 color: 'var(--foreground)',
                                 fontWeight: '900',
                                 fontSize: '10px'
@@ -76,22 +89,27 @@ export default function MetricsBento({}: MetricsBentoProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-zinc-200 dark:border-white/5">
-                <div className="space-y-1">
+            <motion.div 
+                className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-zinc-200 dark:border-white/5"
+                variants={staggerContainer}
+                initial="initial"
+                animate="animate"
+            >
+                <motion.div className="space-y-1" variants={staggerItem}>
                     <div className="flex items-center gap-2 text-accent-secondary">
                         <Zap className="w-3 h-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest">{t("active_nodes")}</span>
                     </div>
                     <p className="text-lg font-black text-foreground">12,482</p>
-                </div>
-                <div className="space-y-1">
+                </motion.div>
+                <motion.div className="space-y-1" variants={staggerItem}>
                     <div className="flex items-center gap-2 text-muted-foreground">
                         <Activity className="w-3 h-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest">{t("latency")}</span>
                     </div>
                     <p className="text-lg font-black text-foreground">18ms</p>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
 
             {/* Premium Progress Bar */}
             <div className="mt-8">

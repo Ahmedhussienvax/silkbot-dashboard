@@ -15,6 +15,29 @@ interface ChartData {
     sent: number;
 }
 
+const GlassTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="glass-card p-5 border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] backdrop-blur-3xl animate-in fade-in zoom-in duration-300">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 italic">{label}</p>
+                <div className="space-y-3">
+                    {payload.map((item: any, idx: number) => (
+                        <div key={idx} className="flex items-center justify-between gap-8">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.stroke }} />
+                                <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">{item.name}</span>
+                            </div>
+                            <span className="text-sm font-black text-white tabular-nums drop-shadow-sm">{item.value.toLocaleString()}</span>
+                        </div>
+                    ))}
+                </div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-accent-primary/20 via-transparent to-accent-secondary/20 blur-xl -z-10 opacity-50" />
+            </div>
+        );
+    }
+    return null;
+};
+
 export default function MainChartBento({ data }: { data: ChartData[] }) {
     const t = useTranslations("Dashboard");
     const [activeTab, setActiveTab] = React.useState("day");
@@ -95,35 +118,30 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                             fontWeight="bold"
                         />
                         <Tooltip 
-                            contentStyle={{ 
-                                backgroundColor: 'var(--card)', 
-                                backdropFilter: 'blur(16px)', 
-                                border: '1px solid var(--border)', 
-                                borderRadius: '24px', 
-                                boxShadow: '0 40px 100px -20px rgba(0,0,0,0.7)',
-                                padding: '20px'
-                            }}
-                            itemStyle={{ color: 'var(--foreground)', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase' }}
-                            cursor={{ stroke: 'var(--accent)', strokeWidth: 2, strokeOpacity: 0.2 }}
-                            animationDuration={1000}
+                            content={<GlassTooltip />}
+                            cursor={{ stroke: 'var(--accent)', strokeWidth: 2, strokeDasharray: '5 5' }}
                         />
                         <Area 
                             type="monotone" 
                             dataKey="received" 
                             stroke="var(--accent)" 
-                            strokeWidth={5} 
+                            strokeWidth={4} 
                             fillOpacity={1} 
                             fill="url(#colorReceived)" 
-                            animationDuration={2000}
+                            strokeDasharray="10 5"
+                            className="drop-shadow-[0_0_8px_var(--glow-primary)]"
+                            animationDuration={2500}
                         />
                         <Area 
                             type="monotone" 
                             dataKey="sent" 
                             stroke="var(--accent-secondary)" 
-                            strokeWidth={5} 
+                            strokeWidth={4} 
                             fillOpacity={1} 
                             fill="url(#colorSent)" 
-                            animationDuration={2000}
+                            strokeDasharray="5 10"
+                            className="drop-shadow-[0_0_8px_var(--glow-secondary)]"
+                            animationDuration={2500}
                         />
                     </AreaChart>
                 </ResponsiveContainer>

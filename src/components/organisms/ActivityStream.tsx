@@ -1,18 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, UserPlus, Server, ShieldCheck, Clock, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase-client";
 import { useTranslations } from "next-intl";
+import { MessageSquare, UserPlus, Server, ShieldCheck, Clock, Activity, Brain, Sparkles } from "lucide-react";
 
 interface ActivityItem {
     id: string;
-    type: "message" | "user" | "system" | "security";
+    type: "message" | "user" | "system" | "security" | "ai";
     user: string;
     action: string;
     time: string;
-    status: "success" | "warning" | "info";
+    status: "success" | "warning" | "info" | "ai";
 }
 
 interface ActivityStreamProps {
@@ -29,7 +29,7 @@ export default function ActivityStream({ activities: initialActivities }: Activi
 
     useEffect(() => {
         const channel = supabase
-            .channel('realtime_messages')
+            .channel('realtime_activities')
             .on(
                 'postgres_changes',
                 {
@@ -50,6 +50,29 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                     setActivities(prev => [newActivity, ...prev].slice(0, 10));
                 }
             )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'ai_traces',
+                },
+                (payload) => {
+                    const newTrace = payload.new as any;
+                    // Only show important trace types in the global stream (e.g., action, error, generation)
+                    if (["action", "error", "generation"].includes(newTrace.trace_type)) {
+                        const newActivity: ActivityItem = {
+                            id: newTrace.id,
+                            type: "ai",
+                            user: `AI Agent (${newTrace.agent_name})`,
+                            action: newTrace.content,
+                            time: new Date(newTrace.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            status: newTrace.trace_type === "error" ? "warning" : "ai"
+                        };
+                        setActivities(prev => [newActivity, ...prev].slice(0, 10));
+                    }
+                }
+            )
             .subscribe();
 
         return () => {
@@ -61,6 +84,7 @@ export default function ActivityStream({ activities: initialActivities }: Activi
             case "message": return <MessageSquare className="w-4 h-4" />;
             case "user": return <UserPlus className="w-4 h-4" />;
             case "security": return <ShieldCheck className="w-4 h-4" />;
+            case "ai": return <Sparkles className="w-4 h-4" />;
             default: return <Server className="w-4 h-4" />;
         }
     };
@@ -69,6 +93,7 @@ export default function ActivityStream({ activities: initialActivities }: Activi
         switch (status) {
             case "success": return "text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20";
             case "warning": return "text-amber-400 bg-amber-400/10 border-amber-400/20";
+            case "ai": return "text-fuchsia-400 bg-fuchsia-400/10 border-fuchsia-400/20";
             default: return "text-accent-primary bg-accent-primary/10 border-accent-primary/20";
         }
     };
