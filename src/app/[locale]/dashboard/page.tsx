@@ -105,7 +105,9 @@ export default async function DashboardPage(props: {
                     </div>
 
                     <div className="bento-grid">
-                        <StatsBento stats={stats} />
+                        <div className="bento-item-xl">
+                            <StatsBento stats={stats} />
+                        </div>
                         <MainChartBento data={chartData} />
                         <MetricsBento />
                         <ActivityStream activities={activities} />

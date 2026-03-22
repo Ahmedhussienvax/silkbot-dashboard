@@ -125,10 +125,10 @@ export default function SettingsPage() {
                                         onChange={(e) => setTenant(prev => prev ? { ...prev, timezone: e.target.value } : null)}
                                         className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white focus:ring-2 focus:ring-purple-500/30 outline-none transition-all appearance-none cursor-pointer hover:bg-black/60"
                                     >
-                                        <option value="UTC">UTC (Universal Time)</option>
-                                        <option value="Africa/Cairo">Africa/Cairo (EET)</option>
-                                        <option value="Asia/Riyadh">Asia/Riyadh (AST)</option>
-                                        <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                                        <option value="UTC">{t("tz_utc")}</option>
+                                        <option value="Africa/Cairo">{t("tz_cairo")}</option>
+                                        <option value="Asia/Riyadh">{t("tz_riyadh")}</option>
+                                        <option value="Asia/Dubai">{t("tz_dubai")}</option>
                                     </select>
                                     <Globe className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none group-hover:text-purple-400 transition-colors" />
                                 </div>
