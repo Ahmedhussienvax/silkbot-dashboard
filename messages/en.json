@@ -267,5 +267,21 @@
     "value": "Value",
     "move_success": "Pipeline stage updated",
     "move_error": "Failed to update node stage"
+  },
+  "Login": {
+    "title": "SilkBot",
+    "subtitle": "AI Platform for WhatsApp",
+    "card_title": "Login 👋",
+    "card_desc": "Enter your credentials to access the dashboard",
+    "email_label": "Email",
+    "email_placeholder": "you@example.com",
+    "password_label": "Password",
+    "password_placeholder": "••••••••",
+    "btn_login": "Login Now 🚀",
+    "btn_checking": "Verifying...",
+    "error_credentials": "Invalid email or password",
+    "error_unexpected": "An unexpected error occurred",
+    "error_server": "Could not connect to server. Check Supabase settings.",
+    "footer": "SilkBot & copy; 2026. Powered by Supabase + Next.js"
   }
 }

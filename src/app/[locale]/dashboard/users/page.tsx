@@ -131,11 +131,11 @@ export default function ContactsPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-white/[0.02] border-b border-white/5">
-                                <th className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Node_Identity</th>
-                                <th className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Signal_Source</th>
-                                <th className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Neural_Value</th>
-                                <th className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Metadata_Segments</th>
-                                <th className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Last_Activity</th>
+                                <th scope="col" role="columnheader" aria-label="Contact Identity" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Node_Identity</th>
+                                <th scope="col" role="columnheader" aria-label="Lead Source" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Signal_Source</th>
+                                <th scope="col" role="columnheader" aria-label="Valuation" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Neural_Value</th>
+                                <th scope="col" role="columnheader" aria-label="Tags and Segments" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Metadata_Segments</th>
+                                <th scope="col" role="columnheader" aria-label="Last Activity Timestamp" className="px-10 py-8 font-black text-[10px] uppercase tracking-[0.3em] text-slate-400">Last_Activity</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -283,8 +283,8 @@ export default function ContactsPage() {
                                 <tr>
                                     <td colSpan={5} className="px-10 py-32 text-center">
                                         <div className="flex flex-col items-center gap-4 text-slate-600">
-                                            <Database className="w-10 h-10 opacity-20" />
-                                            <div className="text-[10px] font-black uppercase tracking-[0.4em]">NO_SIGNALS_DETECTED_IN_SECTOR</div>
+                                            <Database className="w-10 h-10 text-slate-500 opacity-40" />
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">NO_SIGNALS_DETECTED_IN_SECTOR</div>
                                         </div>
                                     </td>
                                 </tr>

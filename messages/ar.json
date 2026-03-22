@@ -267,5 +267,21 @@
     "value": "القيمة",
     "move_success": "تم تحديث مرحلة العميل",
     "move_error": "فشل تحديث المرحلة"
+  },
+  "Login": {
+    "title": "SilkBot",
+    "subtitle": "منصة الذكاء الاصطناعي للواتساب",
+    "card_title": "تسجيل الدخول 👋",
+    "card_desc": "أدخل بياناتك للوصول إلى لوحة التحكم",
+    "email_label": "البريد الإلكتروني",
+    "email_placeholder": "you@example.com",
+    "password_label": "كلمة المرور",
+    "password_placeholder": "••••••••",
+    "btn_login": "دخول الآن 🚀",
+    "btn_checking": "جاري التحقق...",
+    "error_credentials": "خطأ في البريد الإلكتروني أو كلمة المرور",
+    "error_unexpected": "حدث خطأ غير متوقع",
+    "error_server": "تعذر الاتصال بالسيرفر، تأكد من إعدادات Supabase",
+    "footer": "SilkBot &copy; 2026. Powered by Supabase + Next.js"
   }
 }

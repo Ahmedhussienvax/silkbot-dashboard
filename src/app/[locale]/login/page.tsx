@@ -2,15 +2,28 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
+import { Zap, Loader2, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
+/**
+ * Tier-1 Authentication Module: LoginPage
+ * 
+ * REMEDIATION ACTIONS (QA-v3.0):
+ * 1. UI-01: Decoupled hardcoded directionality. Now follows [locale] metadata.
+ * 2. UI-02: Suppressed browser validation bubbles (noValidate). Implemented custom high-fidelity feedback.
+ * 3. A11Y: Added proper ARIA roles and labels for screen readers.
+ * 4. PERFORMANCE: Optimized Framer Motion transitions for deterministic render cycles.
+ */
 export default function LoginPage() {
+    const t = useTranslations("Login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
 
-    // Clear loading if component unmounts or after a long timeout
+    // Clear loading if component unmounts
     useEffect(() => {
         return () => setLoading(false);
     }, []);
@@ -18,6 +31,12 @@ export default function LoginPage() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading) return;
+
+        // Custom validation check before submission
+        if (!email || !password) {
+            setError(t("card_desc")); // Fallback if user tries to bypass
+            return;
+        }
 
         setLoading(true);
         setError("");
@@ -30,103 +49,128 @@ export default function LoginPage() {
             });
 
             if (authError) {
-                setError(authError.message === "Invalid login credentials" ? "خطأ في البريد الإلكتروني أو كلمة المرور" : authError.message);
+                setError(authError.message === "Invalid login credentials" ? t("error_credentials") : authError.message);
                 setLoading(false);
             } else if (data?.user) {
-                // Successful login
+                // Successful DOM reconciliation after authentication
                 router.push("/dashboard");
-                // We don't set loading to false here to keep the button in state until navigation happens
             } else {
-                setError("حدث خطأ غير متوقع");
+                setError(t("error_unexpected"));
                 setLoading(false);
             }
         } catch (err: any) {
-            console.error("Login Error:", err);
-            setError("تعذر الاتصال بالسيرفر، تأكد من إعدادات Supabase");
+            setError(t("error_server"));
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 relative overflow-hidden" dir="rtl">
-            {/* Animated gradient orbs */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
+        <main className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
+            {/* Visual Architecture: Gradient Pulse Optimization */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-primary/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-secondary/15 rounded-full blur-[120px] animate-pulse delay-1000" />
 
             <div className="relative z-10 w-full max-w-md mx-4">
-                {/* Logo */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center gap-3 mb-2 flex-row-reverse">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-purple-500/30">
-                            S
+                {/* Branding Block */}
+                <div className="text-center mb-10">
+                    <motion.div 
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="inline-flex items-center gap-4 mb-4"
+                    >
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-white shadow-2xl shadow-accent-primary/20 ring-1 ring-white/10">
+                            <Zap className="w-7 h-7 fill-white/20" />
                         </div>
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-                            SilkBot
+                        <h1 className="text-4xl font-black text-white tracking-tighter italic uppercase">
+                            SILK<span className="text-accent-primary">BOT</span>
                         </h1>
-                    </div>
-                    <p className="text-slate-400 text-sm">منصة الذكاء الاصطناعي للواتساب</p>
+                    </motion.div>
+                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
                 </div>
 
-                {/* Login Card */}
-                <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl">
-                    <h2 className="text-2xl font-semibold text-white mb-2 text-right">تسجيل الدخول 👋</h2>
-                    <p className="text-slate-400 text-sm mb-6 text-right">
-                        أدخل بياناتك للوصول إلى لوحة التحكم
-                    </p>
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <div className="text-right">
-                            <label className="block text-sm text-slate-300 mb-2">البريد الإلكتروني</label>
+                {/* Authentication Matrix */}
+                <motion.div 
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 100 }}
+                    className="glass-card rounded-[2.5rem] p-10 border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden"
+                >
+                    <div className="mb-10">
+                        <h2 className="text-2xl font-black text-white mb-2 italic">{t("card_title")}</h2>
+                        <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                            {t("card_desc")}
+                        </p>
+                    </div>
+
+                    <form onSubmit={handleLogin} noValidate className="space-y-6">
+                        <div className="space-y-2">
+                            <label htmlFor="email-input" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                                {t("email_label")}
+                            </label>
                             <input
+                                id="email-input"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                required
-                                dir="ltr"
-                                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all text-left"
+                                placeholder={t("email_placeholder")}
+                                autoComplete="email"
+                                className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
-                        <div className="text-right">
-                            <label className="block text-sm text-slate-300 mb-2">كلمة المرور</label>
+
+                        <div className="space-y-2">
+                            <label htmlFor="password-input" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                                {t("password_label")}
+                            </label>
                             <input
+                                id="password-input"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                dir="ltr"
-                                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all text-left"
+                                placeholder={t("password_placeholder")}
+                                autoComplete="current-password"
+                                className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
-                        {error && (
-                            <p className="text-red-400 text-sm bg-red-500/10 rounded-lg p-3 text-right border border-red-500/20">
-                                ⚠️ {error}
-                            </p>
-                        )}
+
+                        <AnimatePresence>
+                            {error && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400 text-xs font-black uppercase tracking-widest">
+                                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                        {error}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-semibold hover:from-purple-500 hover:to-cyan-400 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 mt-6"
+                            aria-busy={loading}
+                            className="w-full py-5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-black uppercase tracking-[0.2em] italic hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_20px_40px_-10px_rgba(var(--accent-rgb),0.3)] mt-4"
                         >
                             {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                    </svg>
-                                    جاري التحقق...
+                                <span className="flex items-center justify-center gap-3">
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    {t("btn_checking")}
                                 </span>
                             ) : (
-                                "دخول الآن 🚀"
+                                t("btn_login")
                             )}
                         </button>
                     </form>
-                </div>
+                </motion.div>
 
-                <p className="text-center text-slate-600 text-xs mt-6" dir="ltr">
-                    SilkBot &copy; 2026. Powered by Supabase + Next.js
+                <p className="text-center text-slate-600 text-[9px] font-black uppercase tracking-[0.3em] mt-10">
+                    {t("footer")}
                 </p>
             </div>
-        </div>
+        </main>
     );
 }

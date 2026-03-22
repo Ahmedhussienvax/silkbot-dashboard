@@ -33,7 +33,9 @@ export default function MobileHeader() {
 
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 active:scale-90 transition-transform"
+                aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={isOpen}
+                className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 active:scale-95 transition-all duration-200 hover:bg-white/10"
             >
                 {isOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
             </button>
