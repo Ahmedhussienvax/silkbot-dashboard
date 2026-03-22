@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Brain, Sparkles, MessageSquare, Zap, Target, History } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase-client";
 
 interface TraceStep {
     id: string;
@@ -11,7 +13,40 @@ interface TraceStep {
     timestamp: string;
 }
 
-export default function AIReasoningTrace({ steps = [] }: { steps?: TraceStep[] }) {
+export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?: TraceStep[] }) {
+    const [steps, setSteps] = useState<TraceStep[]>(initialSteps);
+
+    useEffect(() => {
+        setSteps(initialSteps);
+    }, [initialSteps]);
+
+    useEffect(() => {
+        const channel = supabase
+            .channel('realtime_traces')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'silkbot',
+                    table: 'ai_traces',
+                },
+                (payload) => {
+                    const newTrace = payload.new as any;
+                    const newStep: TraceStep = {
+                        id: newTrace.trace_id || Math.random().toString(),
+                        type: (newTrace.step_type || 'reasoning') as any,
+                        content: newTrace.content || "Processing...",
+                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    };
+                    setSteps(prev => [newStep, ...prev].slice(0, 10));
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
     const t = useTranslations("Bot");
 
     const getIcon = (type: string) => {
@@ -35,17 +70,17 @@ export default function AIReasoningTrace({ steps = [] }: { steps?: TraceStep[] }
     };
 
     return (
-        <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/5 rounded-[2.5rem] p-8 mt-8 overflow-hidden relative group">
+        <div className="bg-zinc-100/50 dark:bg-slate-900/60 backdrop-blur-2xl border border-zinc-200 dark:border-white/5 rounded-[2.5rem] p-8 mt-8 overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/5 blur-[100px] -z-10 group-hover:bg-purple-600/10 transition-all duration-1000" />
             
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-white/5 rounded-2xl border border-white/10 shadow-inner">
+                    <div className="p-3 bg-zinc-100 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-inner">
                         <History className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-black text-white tracking-tight">AI Reasoning Trace</h3>
-                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Live thought transparency</p>
+                        <h3 className="text-xl font-black text-foreground tracking-tight">{t("reasoning_trace_title") || "AI Reasoning Trace"}</h3>
+                        <p className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{t("reasoning_trace_subtitle") || "Live thought transparency"}</p>
                     </div>
                 </div>
                 <div className="flex gap-1.5">
@@ -58,10 +93,10 @@ export default function AIReasoningTrace({ steps = [] }: { steps?: TraceStep[] }
             <div className="space-y-6 relative">
                 {steps.length === 0 ? (
                     <div className="py-12 text-center space-y-4 opacity-40">
-                        <div className="w-12 h-12 rounded-full border-2 border-dashed border-white/10 mx-auto flex items-center justify-center animate-spin-slow">
-                            <Brain className="w-6 h-6 text-slate-500" />
+                        <div className="w-12 h-12 rounded-full border-2 border-dashed border-zinc-200 dark:border-white/10 mx-auto flex items-center justify-center animate-spin-slow">
+                            <Brain className="w-6 h-6 text-muted-foreground" />
                         </div>
-                        <p className="text-sm font-medium text-slate-500 italic">Waiting for incoming thoughts...</p>
+                        <p className="text-sm font-medium text-muted-foreground italic">{t("waiting_thoughts") || "Waiting for incoming thoughts..."}</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -87,9 +122,9 @@ export default function AIReasoningTrace({ steps = [] }: { steps?: TraceStep[] }
                                         <span className={cn("text-[10px] font-black uppercase tracking-widest", getColor(step.type).split(' ')[0])}>
                                             {step.type}
                                         </span>
-                                        <span className="text-[9px] text-slate-600 font-mono">{step.timestamp}</span>
+                                        <span className="text-[9px] text-muted-foreground font-mono">{step.timestamp}</span>
                                     </div>
-                                    <p className="text-sm text-slate-300 leading-relaxed font-medium bg-black/20 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                                    <p className="text-sm text-foreground/80 leading-relaxed font-medium bg-zinc-100/50 dark:bg-black/20 p-4 rounded-2xl border border-zinc-200 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10 transition-colors">
                                         {step.content}
                                     </p>
                                 </div>

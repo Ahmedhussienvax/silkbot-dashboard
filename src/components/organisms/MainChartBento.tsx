@@ -7,20 +7,17 @@ import {
 import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useTranslations } from "next-intl";
+
 interface ChartData {
     name: string;
     received: number;
     sent: number;
 }
 
-interface MainChartBentoProps {
-    data: ChartData[];
-    activeTab: string;
-    setActiveTab: (tab: string) => void;
-    translations: any;
-}
-
-export default function MainChartBento({ data, activeTab, setActiveTab, translations: t }: MainChartBentoProps) {
+export default function MainChartBento({ data }: { data: ChartData[] }) {
+    const t = useTranslations("Dashboard");
+    const [activeTab, setActiveTab] = React.useState("day");
     return (
         <motion.section 
             initial={{ opacity: 0, y: 40 }}
@@ -34,7 +31,7 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 relative z-10">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                        <h3 className="text-white font-black text-3xl tracking-tight leading-none">
+                        <h3 className="text-foreground font-black text-3xl tracking-tight leading-none">
                             {t("message_activity")}
                         </h3>
                         <div className="relative">
@@ -55,8 +52,8 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
                             className={cn(
                                 "px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
                                 activeTab === tab.toLowerCase() 
-                                    ? "bg-white/10 text-white shadow-[0_10px_20px_rgba(0,0,0,0.5)] border border-white/5" 
-                                    : "text-slate-500 hover:text-slate-300"
+                                    ? "bg-zinc-200 dark:bg-white/10 text-foreground dark:text-white shadow-[0_10px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_20px_rgba(0,0,0,0.5)] border border-zinc-300 dark:border-white/5" 
+                                    : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             {tab}
@@ -78,7 +75,7 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
                                 <stop offset="95%" stopColor="hsl(150, 80%, 65%)" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsla(210, 40%, 100%, 0.02)" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.1} />
                         <XAxis 
                             dataKey="name" 
                             stroke="#475569" 
@@ -99,15 +96,15 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
                         />
                         <Tooltip 
                             contentStyle={{ 
-                                backgroundColor: 'hsla(230, 50%, 3%, 0.9)', 
+                                backgroundColor: 'var(--card)', 
                                 backdropFilter: 'blur(16px)', 
-                                border: '1px solid hsla(270, 95%, 75%, 0.1)', 
+                                border: '1px solid var(--border)', 
                                 borderRadius: '24px', 
                                 boxShadow: '0 40px 100px -20px rgba(0,0,0,0.7)',
                                 padding: '20px'
                             }}
-                            itemStyle={{ color: '#fff', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase' }}
-                            cursor={{ stroke: 'hsla(270, 95%, 75%, 0.2)', strokeWidth: 2 }}
+                            itemStyle={{ color: 'var(--foreground)', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase' }}
+                            cursor={{ stroke: 'var(--accent)', strokeWidth: 2, strokeOpacity: 0.2 }}
                             animationDuration={1000}
                         />
                         <Area 
@@ -122,7 +119,7 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
                         <Area 
                             type="monotone" 
                             dataKey="sent" 
-                            stroke="hsl(150, 80%, 65%)" 
+                            stroke="var(--accent-secondary)" 
                             strokeWidth={5} 
                             fillOpacity={1} 
                             fill="url(#colorSent)" 
@@ -132,7 +129,7 @@ export default function MainChartBento({ data, activeTab, setActiveTab, translat
                 </ResponsiveContainer>
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-12 pt-10 border-t border-white/5 relative z-10">
+            <div className="mt-12 flex flex-wrap gap-12 pt-10 border-t border-zinc-200 dark:border-white/5 relative z-10">
                 <div className="flex items-center gap-5 group/stat-mini">
                     <div className="w-14 h-14 rounded-[1.25rem] bg-accent-primary/10 flex items-center justify-center text-accent-primary border border-accent-primary/20 shadow-lg group-hover/stat-mini:rotate-6 transition-transform">
                         <ArrowUpRight className="w-6 h-6" />

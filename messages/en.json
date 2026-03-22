@@ -77,7 +77,21 @@
     "no_events_found": "No events found",
     "system_health": "System Health",
     "efficiency": "Efficiency",
-    "active_nodes": "Active Nodes"
+    "active_nodes": "Active Nodes",
+    "system_admin": "System Admin",
+    "pulse_notifications": "Pulse Notifications",
+    "cluster_status_msg": "Instance cluster-01 just finished indexing knowledge base.",
+    "realtime_intel_feed": "Real-time Intelligence Feed",
+    "growth_velocity": "Growth Velocity",
+    "neural_efficiency": "Neural Efficiency",
+    "analysis_quote": "\"The neural pathways are expanding... processing vectors at sub-atomic speeds.\"",
+    "processing": "Processing",
+    "idle": "Idle",
+    "queued": "Queued",
+    "premium": "Premium",
+    "new_count": "{count} NEW",
+    "ai_trace_detected": "New AI Trace detected",
+    "cluster_label": "Cluster {id}"
   },
   "Sidebar": {
     "dashboard": "Dashboard",
@@ -144,7 +158,10 @@
     "error": "Failed to save settings",
     "loading": "Loading settings...",
     "error_loading": "Failed to load neural configuration.",
-    "success_description": "AI behavior configurations synchronized across all nodes."
+    "success_description": "AI behavior configurations synchronized across all nodes.",
+    "reasoning_trace_title": "AI Reasoning Trace",
+    "reasoning_trace_subtitle": "Live thought transparency",
+    "waiting_thoughts": "Waiting for incoming thoughts..."
   },
   "Settings": {
     "title": "General Settings",

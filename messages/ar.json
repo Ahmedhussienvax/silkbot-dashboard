@@ -77,7 +77,21 @@
     "no_events_found": "لم يتم العثور على أحداث",
     "system_health": "صحة النظام",
     "efficiency": "الكفاءة",
-    "active_nodes": "العقد النشطة"
+    "active_nodes": "العقد النشطة",
+    "system_admin": "مسؤول النظام",
+    "pulse_notifications": "إشعارات النبض",
+    "cluster_status_msg": "أنهى العنقود cluster-01 عملية فهرسة قاعدة المعرفة.",
+    "realtime_intel_feed": "موجز الاستخبارات اللحظي",
+    "growth_velocity": "سرعة النمو",
+    "neural_efficiency": "الكفاءة العصبية",
+    "analysis_quote": "\"المسارات العصبية في توسع مستمر... معالجة المتجهات بسرعات ذرية.\"",
+    "processing": "جاري المعالجة",
+    "idle": "خامل",
+    "queued": "في الانتظار",
+    "premium": "بريميوم",
+    "new_count": "{count} جديد",
+    "ai_trace_detected": "تم اكتشاف تتبع AI جديد",
+    "cluster_label": "كلاستر {id}"
   },
   "Sidebar": {
     "dashboard": "لوحة التحكم",
@@ -144,7 +158,10 @@
     "error": "فشل في حفظ الإعدادات",
     "loading": "جاري تحميل الإعدادات...",
     "error_loading": "فشل تحميل إعدادات الذكاء.",
-    "success_description": "تمت مزامنة إعدادات سلوك الذكاء عبر جميع العقد."
+    "success_description": "تمت مزامنة إعدادات سلوك الذكاء عبر جميع العقد.",
+    "reasoning_trace_title": "تتبع تفكير الذكاء الاصطناعي",
+    "reasoning_trace_subtitle": "شفافية التفكير المباشر",
+    "waiting_thoughts": "في انتظار الأفكار الواردة..."
   },
   "Settings": {
     "title": "الإعدادات العامة",

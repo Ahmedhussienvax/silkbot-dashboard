@@ -32,13 +32,22 @@
         --accent: hsl(270, 95%, 75%);
     }
 
-    [data-theme='light'] {
+    .light {
         color-scheme: light;
         --background: hsl(210, 40%, 98%);
         --foreground: hsl(230, 50%, 3%);
         --card: hsl(210, 40%, 100%);
         --border: hsla(0, 0%, 0%, 0.08);
         --accent: hsl(270, 95%, 60%);
+        --mesh-color-1: hsla(270, 95%, 75%, 0.1);
+        --mesh-color-2: hsla(150, 80%, 65%, 0.1);
+        --mesh-color-3: hsla(210, 40%, 98%, 1);
+    }
+
+    :root {
+        --mesh-color-1: hsla(270, 95%, 75%, 0.03);
+        --mesh-color-2: hsla(150, 80%, 65%, 0.03);
+        --mesh-color-3: hsla(230, 50%, 3%, 1);
     }
 
     * {
@@ -55,9 +64,9 @@
         color: var(--foreground);
         /* Multi-layered premium radial mesh */
         background-image: 
-            radial-gradient(circle at 15% 15%, hsla(270, 95%, 75%, 0.03) 0%, transparent 40%),
-            radial-gradient(circle at 85% 85%, hsla(150, 80%, 65%, 0.03) 0%, transparent 40%),
-            radial-gradient(circle at 50% 50%, hsla(230, 50%, 3%, 1) 0%, transparent 100%);
+            radial-gradient(circle at 15% 15%, var(--mesh-color-1) 0%, transparent 40%),
+            radial-gradient(circle at 85% 85%, var(--mesh-color-2) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, var(--mesh-color-3) 0%, transparent 100%);
         @apply antialiased overflow-x-hidden transition-colors duration-700;
         user-select: none;
     }
@@ -100,9 +109,9 @@
         @apply rounded-[2.5rem] transition-all duration-500 hover:border-white/20;
     }
 
-    [data-theme='light'] .glass-card {
-        background: hsla(0, 0%, 100%, 0.7);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+    .light .glass-card {
+        background: hsla(0, 0%, 100%, 0.8);
+        box-shadow: 0 8px 32px 0 rgba(0, 10, 50, 0.05);
         border: 1px solid hsla(0, 0%, 0%, 0.05);
     }
 

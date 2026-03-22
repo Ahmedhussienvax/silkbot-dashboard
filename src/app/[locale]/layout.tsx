@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Outfit, Cairo } from "next/font/google";
 import { Toaster } from 'sonner';
-import Providers from "@/components/Providers";
+import Providers from "@/components/organisms/Providers";
 import "../globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -14,7 +14,7 @@ export const metadata = {
     description: "Next-gen WhatsApp AI automation.",
 };
 
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/molecules/ErrorBoundary';
 
 export default async function LocaleLayout({
     children,

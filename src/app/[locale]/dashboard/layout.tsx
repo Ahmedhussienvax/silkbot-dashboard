@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
+import NavigationSidebar from "@/components/organisms/NavigationSidebar";
+import { getTranslations } from 'next-intl/server';
 
 export default async function DashboardLayout({
     children,
@@ -12,15 +13,13 @@ export default async function DashboardLayout({
         data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) redirect("/login");
+    // if (!user) redirect("/login");
 
     return (
-        <div className="min-h-screen bg-slate-950 flex">
-            <Sidebar userEmail={user.email || ""} />
-            {/* Main Content — add left padding on mobile for hamburger button */}
-            <main className="flex-1 overflow-auto md:ml-0">
-                {children}
-            </main>
+        <div className="flex min-h-screen bg-[#050505] text-white selection:bg-accent-primary/30">
+            {/* Sidebar Integration */}
+            <NavigationSidebar />
+            {children}
         </div>
     );
 }

@@ -4,15 +4,16 @@ import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Cpu, Zap, Activity } from "lucide-react";
 
-interface MetricsBentoProps {
-    translations: any;
-}
+import { useTranslations } from "next-intl";
 
-export default function MetricsBento({ translations: t }: MetricsBentoProps) {
+interface MetricsBentoProps {}
+
+export default function MetricsBento({}: MetricsBentoProps) {
+    const t = useTranslations("Dashboard");
     const data = [
-        { name: "Processing", value: 65, color: "var(--accent)" },
-        { name: "Idle", value: 25, color: "hsla(210, 40%, 40%, 0.1)" },
-        { name: "Queued", value: 10, color: "hsla(270, 95%, 75%, 0.3)" },
+        { name: t("processing"), value: 65, color: "var(--accent)" },
+        { name: t("idle"), value: 25, color: "hsla(var(--muted-foreground-hsl), 0.1)" },
+        { name: t("queued"), value: 10, color: "hsla(var(--accent-secondary-hsl), 0.3)" },
     ];
 
     return (
@@ -27,14 +28,14 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
             
             <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
-                    <h3 className="text-white font-black text-xl tracking-tight leading-none mb-2">
+                    <h3 className="text-foreground font-black text-xl tracking-tight leading-none mb-2">
                         {t("neural_load")}
                     </h3>
-                    <p className="text-slate-500 text-[9px] font-black uppercase tracking-widest opacity-60">
+                    <p className="text-muted-foreground text-[9px] font-black uppercase tracking-widest opacity-60">
                         {t("resource_utilization")}
                     </p>
                 </div>
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10 group-hover/metrics:border-accent-primary/30 transition-colors">
+                <div className="p-3 rounded-2xl bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 group-hover/metrics:border-accent-primary/30 transition-colors">
                     <Cpu className="w-5 h-5 text-accent-primary group-hover/metrics:scale-110 transition-transform" />
                 </div>
             </div>
@@ -56,11 +57,11 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
                         </Pie>
                         <Tooltip 
                             contentStyle={{ 
-                                backgroundColor: 'hsla(230, 50%, 3%, 0.9)', 
+                                backgroundColor: 'var(--card)', 
                                 backdropFilter: 'blur(10px)', 
                                 borderRadius: '16px', 
-                                border: '1px solid hsla(270, 95%, 75%, 0.1)',
-                                color: '#fff',
+                                border: '1px solid var(--border)',
+                                color: 'var(--foreground)',
                                 fontWeight: '900',
                                 fontSize: '10px'
                             }}
@@ -70,25 +71,25 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
                 
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-black text-white leading-none">84%</span>
-                    <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">{t("efficiency")}</span>
+                    <span className="text-2xl font-black text-foreground leading-none">84%</span>
+                    <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-widest mt-1">{t("efficiency")}</span>
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-white/5">
+            <div className="grid grid-cols-2 gap-4 mt-8 pt-8 border-t border-zinc-200 dark:border-white/5">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2 text-accent-secondary">
                         <Zap className="w-3 h-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest">{t("active_nodes")}</span>
                     </div>
-                    <p className="text-lg font-black text-white">12,482</p>
+                    <p className="text-lg font-black text-foreground">12,482</p>
                 </div>
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-slate-400">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                         <Activity className="w-3 h-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest">{t("latency")}</span>
                     </div>
-                    <p className="text-lg font-black text-white">18ms</p>
+                    <p className="text-lg font-black text-foreground">18ms</p>
                 </div>
             </div>
 
@@ -96,9 +97,9 @@ export default function MetricsBento({ translations: t }: MetricsBentoProps) {
             <div className="mt-8">
                 <div className="flex justify-between items-end mb-2">
                     <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">{t("system_health")}</span>
-                    <span className="text-[10px] font-black text-accent-secondary uppercase">Premium</span>
+                    <span className="text-[10px] font-black text-accent-secondary uppercase">{t("premium")}</span>
                 </div>
-                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div className="h-1.5 w-full bg-zinc-200 dark:bg-white/5 rounded-full overflow-hidden border border-zinc-300 dark:border-white/5">
                     <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: "94%" }}

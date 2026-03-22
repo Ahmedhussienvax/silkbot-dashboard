@@ -3,28 +3,30 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
     LayoutDashboard, MessageSquare, Send, Settings,
-    ChevronRight, LogOut, Sun, Moon, Zap, Users, UserPlus, Server, ShieldCheck, Clock, Activity
+    ChevronRight, LogOut, Sun, Moon, Zap, Users
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { Link, usePathname } from "@/i18n/routing";
 
-interface NavigationSidebarProps {
-    activeItem: string;
-    setActiveItem: (id: string) => void;
-    translations: any;
-    locale: string;
-}
+import { useTranslations } from "next-intl";
 
-export default function NavigationSidebar({ activeItem, setActiveItem, translations: t, locale }: NavigationSidebarProps) {
+interface NavigationSidebarProps {}
+
+export default function NavigationSidebar({}: NavigationSidebarProps) {
+    const t = useTranslations("Sidebar");
     const { theme, setTheme } = useTheme();
+    const pathname = usePathname();
 
     const navItems = [
-        { id: "dashboard", icon: LayoutDashboard, label: t("dashboard") },
-        { id: "messages", icon: MessageSquare, label: t("inbox") },
-        { id: "broadcast", icon: Send, label: t("campaigns") },
-        { id: "users", icon: Users, label: t("contacts") },
-        { id: "settings", icon: Settings, label: t("settings") },
+        { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
+        { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
+        { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
+        { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
+        { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
     ];
+
+    const activeItem = navItems.find(item => pathname === item.href)?.id || "dashboard";
 
     return (
         <motion.aside 
@@ -37,7 +39,7 @@ export default function NavigationSidebar({ activeItem, setActiveItem, translati
             <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-accent-primary/5 to-transparent pointer-events-none" />
 
             <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-16 group/logo cursor-pointer">
+                <Link href="/dashboard" className="flex items-center gap-4 mb-16 group/logo cursor-pointer">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center shadow-[0_0_30px_rgba(var(--accent-rgb),0.3)] group-hover:scale-110 transition-transform duration-500">
                         <Zap className="w-7 h-7 text-white fill-white/20" />
                     </div>
@@ -45,13 +47,13 @@ export default function NavigationSidebar({ activeItem, setActiveItem, translati
                         <span className="text-2xl font-black text-white tracking-tighter leading-none italic">SILK<span className="text-accent-primary">BOT</span></span>
                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1 opacity-60">Architect v2.0</span>
                     </div>
-                </div>
+                </Link>
 
                 <nav className="space-y-4">
                     {navItems.map((item) => (
-                        <button 
+                        <Link 
                             key={item.id}
-                            onClick={() => setActiveItem(item.id)}
+                            href={item.href as any}
                             className={cn(
                                 "w-full group/nav flex items-center justify-between p-4 rounded-2xl transition-all duration-500 relative",
                                 activeItem === item.id 
@@ -83,7 +85,7 @@ export default function NavigationSidebar({ activeItem, setActiveItem, translati
                                 "w-4 h-4 transition-all duration-500",
                                 activeItem === item.id ? "text-accent-primary translate-x-1" : "text-slate-700 opacity-0 group-hover/nav:opacity-100 group-hover/nav:translate-x-1"
                             )} />
-                        </button>
+                        </Link>
                     ))}
                 </nav>
             </div>

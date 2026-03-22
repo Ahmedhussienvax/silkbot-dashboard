@@ -1,8 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, MessageSquare, Send, Users, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { supabase } from "@/lib/supabase-client";
+
+import { useTranslations } from "next-intl";
 
 interface Stats {
     conversations: number;
@@ -13,12 +17,37 @@ interface Stats {
 
 interface StatsBentoProps {
     stats: Stats;
-    translations: any;
+    onCardClick?: (id: string) => void;
 }
 
-export default function StatsBento({ stats, translations: t }: StatsBentoProps) {
+export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
+    const t = useTranslations("Dashboard");
+    const [pulse, setPulse] = useState<string | null>(null);
+
+    useEffect(() => {
+        const channel = supabase
+            .channel('realtime_stats_pulse')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'silkbot',
+                    table: 'silkbot_messages',
+                },
+                () => {
+                    setPulse("messages");
+                    setTimeout(() => setPulse(null), 3000);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
     const statItems = [
         {
+            id: "conversations",
             label: t("conversations"),
             value: stats.conversations,
             icon: <MessageSquare className="w-6 h-6" />,
@@ -27,6 +56,7 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
             desc: t("conversations_desc")
         },
         {
+            id: "messages",
             label: t("messages"),
             value: stats.messages,
             icon: <Send className="w-6 h-6" />,
@@ -35,6 +65,7 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
             desc: t("messages_desc")
         },
         {
+            id: "contacts",
             label: t("contacts"),
             value: stats.contacts,
             icon: <Users className="w-6 h-6" />,
@@ -43,10 +74,11 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
             desc: t("contacts_desc")
         },
         {
+            id: "bot_status",
             label: t("bot_status"),
             value: stats.botEnabled ? t("active") : t("inactive"),
-            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-slate-500")} />,
-            color: stats.botEnabled ? "from-emerald-500 to-teal-400" : "from-slate-700 to-slate-800",
+            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-muted-foreground")} />,
+            color: stats.botEnabled ? "from-emerald-500 to-teal-400" : "from-zinc-200 to-zinc-300 dark:from-slate-700 dark:to-slate-800",
             trend: stats.botEnabled ? "STABLE" : "OFF",
             desc: t("bot_status_desc")
         }
@@ -63,11 +95,12 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
                         duration: 0.6, 
                         ease: [0.23, 1, 0.32, 1] 
                     }}
-                    key={stat.label}
+                    key={stat.id}
+                    onClick={() => onCardClick?.(stat.id)}
                     className={cn(
-                        "overflow-hidden group relative",
-                        "glass-card p-6 border border-white/5 hover:border-accent-primary/30",
-                        "premium-hover shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
+                        "overflow-hidden group relative cursor-pointer",
+                        "glass-card p-6 border border-zinc-200/50 dark:border-white/5 hover:border-accent-primary/30",
+                        "premium-hover shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
                     )}
                 >
                     {/* Animated Background Mesh */}
@@ -77,17 +110,17 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
                     )} />
                     
                     <div className="flex items-start justify-between mb-6 relative z-10">
-                        <div className="w-12 h-12 bg-white/[0.03] rounded-2xl flex items-center justify-center text-white border border-white/10 shadow-inner group-hover:rotate-[10deg] transition-all duration-500">
+                        <div className="w-12 h-12 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl flex items-center justify-center text-foreground border border-zinc-200 dark:border-white/10 shadow-inner group-hover:rotate-[10deg] transition-all duration-500">
                             <div className="text-accent-primary group-hover:scale-110 transition-transform duration-500">
                                 {stat.icon}
                             </div>
                         </div>
                         <div className={cn(
                             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border self-start",
-                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-white/5 border-white/10"
+                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10"
                         )}>
-                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-slate-500")} />
-                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-slate-500")}>
+                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")} />
+                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")}>
                                 {stat.trend}
                             </span>
                         </div>
@@ -107,6 +140,14 @@ export default function StatsBento({ stats, translations: t }: StatsBentoProps) 
                     <p className="text-[9px] text-slate-500 mt-4 font-bold leading-relaxed tracking-wide group-hover:text-slate-300 transition-colors uppercase opacity-60">
                         {stat.desc}
                     </p>
+
+                    {/* Live Pulse Indicator */}
+                    {stat.id === pulse && (
+                        <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full animate-in fade-in zoom-in slide-in-from-top-2 duration-500 relative z-20">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                            <span className="text-[8px] font-black text-emerald-500 uppercase tracking-[0.2em]">Live</span>
+                        </div>
+                    )}
 
                     {/* Light Reflection Sweep */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none" />
