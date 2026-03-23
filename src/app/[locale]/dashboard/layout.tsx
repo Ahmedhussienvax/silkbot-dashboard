@@ -4,6 +4,7 @@ import NavigationSidebar from "@/components/organisms/NavigationSidebar";
 import MobileHeader from "@/components/organisms/MobileHeader";
 import Footer from "@/components/organisms/Footer";
 import { getTranslations } from 'next-intl/server';
+import DashboardHeader from "@/components/molecules/DashboardHeader";
 
 export default async function DashboardLayout({
     children,
@@ -17,12 +18,15 @@ export default async function DashboardLayout({
 
     // if (!user) redirect("/login");
 
+    const t = await getTranslations("Dashboard");
+
     return (
         <div className="flex min-h-screen bg-background text-foreground selection:bg-accent-primary/30 transition-colors duration-700">
             {/* Sidebar Integration */}
             <NavigationSidebar />
             <div className="flex-1 flex flex-col min-h-screen">
                 <MobileHeader />
+                <DashboardHeader searchPlaceholder={t("search_placeholder")} />
                 <div className="flex-1 pt-20 lg:pt-0">
                     {children}
                 </div>

@@ -26,7 +26,7 @@ export default function DashboardHeader({ searchPlaceholder }: { searchPlacehold
     };
 
     return (
-        <header className="h-24 sticky top-0 z-40 bg-white/5 backdrop-blur-3xl border-b border-white/5 px-10 flex items-center justify-between">
+        <header className="h-24 sticky top-0 z-40 bg-white/5 backdrop-blur-3xl border-b border-white/5 px-10 hidden lg:flex items-center justify-between">
             <div className="flex items-center gap-12 flex-1">
                 <SearchInput placeholder={searchPlaceholder} />
             </div>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase-browser";
 import { useTranslations } from "next-intl";
 import {
@@ -24,7 +25,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Contact {
-    id: number;
+    id: string | number;
     jid: string;
     push_name: string;
     last_message_at: number;
@@ -33,13 +34,15 @@ interface Contact {
     lead_value?: number;
     lead_source?: string;
     notes?: string;
+    bot_active?: boolean;
 }
 
 export default function ContactsPage() {
     const t = useTranslations("Contacts");
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState("");
+    const searchParams = useSearchParams();
+    const search = searchParams.get("search") || "";
     const [expandedNode, setExpandedNode] = useState<string | null>(null);
     const [notesBuffer, setNotesBuffer] = useState<string>("");
     const supabase = createClient();
@@ -58,12 +61,12 @@ export default function ContactsPage() {
 
             if (error) throw error;
             
-            // Map the view fields to the internal Contact interface
+            // Map the view fields to the internal Contact interface (v5.7.1 Schema)
             const mappedData: Contact[] = (data || []).map((c: any) => ({
-                id: c.id,
-                jid: c.phone ? `${c.phone}@s.whatsapp.net` : c.jid,
+                id: c.id?.toString() || Math.random().toString(),
+                jid: c.phone ? `${c.phone}@s.whatsapp.net` : (c.jid || ""),
                 push_name: c.name || "UNIDENTIFIED",
-                last_message_at: c.updated_at ? new Date(c.updated_at).getTime() / 1000 : (c.last_message_at ? new Date(c.last_message_at).getTime() / 1000 : 0),
+                last_message_at: c.last_message_at ? new Date(c.last_message_at).getTime() / 1000 : 0,
                 instance_name: c.tenant_id || "hub-alpha",
                 lead_value: Number(c.lead_value || 0),
                 lead_source: c.lead_source || "Organic",
@@ -88,7 +91,7 @@ export default function ContactsPage() {
         const newTags = (contact.tags || []).filter(t => t !== tagToRemove);
         setContacts(prev => prev.map(c => c.jid === jid && c.instance_name === instance_name ? { ...c, tags: newTags } : c));
         
-        await supabase.from("Contact").update({ tags: newTags }).eq("id", contact.id);
+        await supabase.schema("silkbot").from("contacts").update({ tags: newTags }).eq("id", contact.id);
         toast.info("Segment Purged", { description: `Tag ${tagToRemove} removed from node identifiers.` });
     };
 
@@ -97,7 +100,7 @@ export default function ContactsPage() {
         if (!contact) return;
 
         setContacts(prev => prev.map(c => c.jid === jid && c.instance_name === instance_name ? { ...c, notes: notesBuffer } : c));
-        await supabase.from("Contact").update({ lead_notes: notesBuffer }).eq("id", contact.id);
+        await supabase.schema("silkbot").from("contacts").update({ notes: notesBuffer }).eq("id", contact.id);
         toast.success("Intelligence Updated", { description: "Internal notes synchronized with the core registry." });
     };
 
@@ -131,16 +134,6 @@ export default function ContactsPage() {
                     </p>
                 </div>
 
-                <div className="relative group min-w-[320px]">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim group-focus-within:text-accent-primary transition-colors" />
-                    <input 
-                        type="text"
-                        placeholder={t("search_placeholder")}
-                        className="w-full bg-surface border border-glass-border rounded-2xl py-4 pl-14 pr-6 text-sm font-medium text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all shadow-2xl"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
             </div>
 
             {/* Contacts Table */}

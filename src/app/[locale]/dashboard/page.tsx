@@ -85,7 +85,7 @@ export default async function DashboardPage(props: {
     return (
         <DashboardClient>
             <main className="flex-1 flex flex-col relative overflow-hidden">
-                <DashboardHeader searchPlaceholder={t("search_placeholder")} />
+                {/* Global DashboardHeader is now in the layout */}
 
                 <div className="p-10 space-y-12 relative z-10 overflow-y-auto max-h-[calc(100vh-6rem)]">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
