@@ -383,5 +383,24 @@
     "error_unexpected": "حدث خطأ غير متوقع",
     "error_server": "تعذر الاتصال بالسيرفر، تأكد من إعدادات Supabase",
     "footer": "SilkBot &copy; 2026. Powered by Supabase + Next.js"
+  },
+  "Register": {
+    "title": "SilkBot",
+    "subtitle": "انضم إلى الشبكة العصبية",
+    "card_title": "إنشاء حساب 🚀",
+    "card_desc": "ابدأ رحلتك في التنسيق المستقل لواتساب",
+    "name_label": "الاسم الكامل",
+    "name_placeholder": "أحمد محمد",
+    "email_label": "البريد الإلكتروني",
+    "email_placeholder": "you@example.com",
+    "password_label": "إنشاء كلمة مرور",
+    "password_placeholder": "••••••••",
+    "btn_register": "تسجيل الآن ✨",
+    "btn_creating": "جاري التهيئة...",
+    "error_email_exists": "البريد الإلكتروني مسجل بالفعل",
+    "error_short_password": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "success": "تم التسجيل بنجاح! جاري التوصيل بلوحة التحكم...",
+    "footer": "لديك حساب بالفعل؟ سجل دخولك"
   }
 }
+

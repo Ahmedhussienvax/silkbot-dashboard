@@ -49,9 +49,12 @@ export default function PricingPage() {
                                     ))}
                                 </div>
 
-                                <button className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${plan.popular ? 'bg-accent-primary text-white hover:scale-105 shadow-lg' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'}`}>
+                                <Link 
+                                    href="/register"
+                                    className={`block w-full text-center py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${plan.popular ? 'bg-accent-primary text-white hover:scale-105 shadow-lg' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'}`}
+                                >
                                     Initialize Node
-                                </button>
+                                </Link>
                             </div>
                         ))}
                     </div>

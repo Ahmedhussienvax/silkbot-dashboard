@@ -378,5 +378,24 @@
     "error_unexpected": "An unexpected error occurred",
     "error_server": "Could not connect to server. Check Supabase settings.",
     "footer": "SilkBot & copy; 2026. Powered by Supabase + Next.js"
+  },
+  "Register": {
+    "title": "SilkBot",
+    "subtitle": "Join the Neural Network",
+    "card_title": "Create Account 🚀",
+    "card_desc": "Start your journey into autonomous WhatsApp orchestration",
+    "name_label": "Full Name",
+    "name_placeholder": "John Doe",
+    "email_label": "Email Address",
+    "email_placeholder": "you@example.com",
+    "password_label": "Create Password",
+    "password_placeholder": "••••••••",
+    "btn_register": "Register Now ✨",
+    "btn_creating": "Initializing...",
+    "error_email_exists": "Email already registered",
+    "error_short_password": "Password must be at least 6 characters",
+    "success": "Registration Successful! Redirecting to dashboard...",
+    "footer": "Already have an account? Login here"
   }
 }
+

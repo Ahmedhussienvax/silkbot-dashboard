@@ -130,9 +130,12 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     <div className="absolute top-0 right-0 w-20 h-20 bg-accent-secondary/10 blur-2xl rounded-full" />
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 italic">Pro Version</p>
                     <p className="text-foreground font-black text-sm mb-4 leading-snug">Empower your AI with Cloud Sync</p>
-                    <button className="w-full py-3 bg-foreground text-background font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-transform active:scale-95 shadow-xl">
+                    <Link 
+                        href="/pricing"
+                        className="block w-full text-center py-3 bg-foreground text-background font-bold text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-transform active:scale-95 shadow-xl"
+                    >
                         Upgrade
-                    </button>
+                    </Link>
                 </div>
 
                 <button 

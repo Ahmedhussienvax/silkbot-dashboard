@@ -5,38 +5,42 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import Logo from "@/components/atoms/Logo";
-import { Zap, Loader2, AlertCircle } from "lucide-react";
+import { Zap, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 /**
- * Tier-1 Authentication Module: LoginPage
+ * Tier-1 Authentication Module: RegisterPage
  * 
- * REMEDIATION ACTIONS (QA-v3.0):
- * 1. UI-01: Decoupled hardcoded directionality. Now follows [locale] metadata.
- * 2. UI-02: Suppressed browser validation bubbles (noValidate). Implemented custom high-fidelity feedback.
- * 3. A11Y: Added proper ARIA roles and labels for screen readers.
- * 4. PERFORMANCE: Optimized Framer Motion transitions for deterministic render cycles.
+ * DESIGN SPECIFICATION:
+ * 1. High-fidelity glassmorphism.
+ * 2. Supabase Auth Integration with metadata orchestration.
+ * 3. Localized error handling and success states.
  */
-export default function LoginPage() {
-    const t = useTranslations("Login");
+export default function RegisterPage() {
+    const t = useTranslations("Register");
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
     const router = useRouter();
 
-    // Clear loading if component unmounts
     useEffect(() => {
         return () => setLoading(false);
     }, []);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading) return;
 
-        // Custom validation check before submission
-        if (!email || !password) {
-            setError(t("card_desc")); // Fallback if user tries to bypass
+        if (!email || !password || !name) {
+            setError(t("card_desc"));
+            return;
+        }
+
+        if (password.length < 6) {
+            setError(t("error_short_password"));
             return;
         }
 
@@ -45,35 +49,41 @@ export default function LoginPage() {
         
         try {
             const supabase = createClient();
-            const { data, error: authError } = await supabase.auth.signInWithPassword({
+            const { data, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
+                options: {
+                    data: {
+                        full_name: name,
+                    }
+                }
             });
 
             if (authError) {
-                setError(authError.message === "Invalid login credentials" ? t("error_credentials") : authError.message);
+                setError(authError.message === "User already registered" ? t("error_email_exists") : authError.message);
                 setLoading(false);
             } else if (data?.user) {
-                // Successful DOM reconciliation after authentication
-                router.push("/dashboard");
+                setSuccess(true);
+                setTimeout(() => {
+                    router.push("/dashboard");
+                }, 2000);
             } else {
-                setError(t("error_unexpected"));
+                setError("Unexpected response from neural hub.");
                 setLoading(false);
             }
         } catch (err: any) {
-            setError(t("error_server"));
+            setError("Connectivity failure. Check endpoint settings.");
             setLoading(false);
         }
     };
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden transition-colors duration-700">
-            {/* Visual Architecture: Gradient Pulse Optimization */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-primary/20 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-secondary/15 rounded-full blur-[120px] animate-pulse delay-1000" />
+            {/* Visual Architecture */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-secondary/20 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-primary/15 rounded-full blur-[120px] animate-pulse delay-1000" />
 
             <div className="relative z-10 w-full max-w-md mx-4">
-                {/* Branding Block */}
                 <div className="text-center mb-10">
                     <motion.div 
                         initial={{ y: -20, opacity: 0 }}
@@ -89,7 +99,6 @@ export default function LoginPage() {
                     <p className="text-text-dim text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
                 </div>
 
-                {/* Authentication Matrix */}
                 <motion.div 
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -97,44 +106,55 @@ export default function LoginPage() {
                     className="glass-card rounded-[2.5rem] p-10 border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden"
                 >
                     <div className="mb-10">
-                        <h2 className="text-2xl font-black text-foreground mb-2 italic">{t("card_title")}</h2>
+                        <h2 className="text-2xl font-black text-white mb-2 italic">{t("card_title")}</h2>
                         <p className="text-text-muted text-sm font-medium leading-relaxed">
                             {t("card_desc")}
                         </p>
                     </div>
 
-                    <form onSubmit={handleLogin} noValidate className="space-y-6">
+                    <form onSubmit={handleRegister} noValidate className="space-y-6">
                         <div className="space-y-2">
-                            <label htmlFor="email-input" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                                {t("name_label")}
+                            </label>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder={t("name_placeholder")}
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
                                 {t("email_label")}
                             </label>
                             <input
-                                id="email-input"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t("email_placeholder")}
                                 autoComplete="email"
-                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label htmlFor="password-input" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
                                 {t("password_label")}
                             </label>
                             <input
-                                id="password-input"
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder={t("password_placeholder")}
-                                autoComplete="current-password"
-                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                autoComplete="new-password"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
-                        <AnimatePresence>
+                        <AnimatePresence mode="wait">
                             {error && (
                                 <motion.div 
                                     initial={{ height: 0, opacity: 0 }}
@@ -148,21 +168,32 @@ export default function LoginPage() {
                                     </div>
                                 </motion.div>
                             )}
+                            {success && (
+                                <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-emerald-400 text-xs font-black uppercase tracking-widest">
+                                        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                        {t("success")}
+                                    </div>
+                                </motion.div>
+                            )}
                         </AnimatePresence>
 
                         <button
                             type="submit"
-                            disabled={loading}
-                            aria-busy={loading}
+                            disabled={loading || success}
                             className="w-full py-5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-black uppercase tracking-[0.2em] italic hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_20px_40px_-10px_rgba(var(--accent-rgb),0.3)] mt-4"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-3">
                                     <Loader2 className="h-5 w-5 animate-spin" />
-                                    {t("btn_checking")}
+                                    {t("btn_creating")}
                                 </span>
                             ) : (
-                                t("btn_login")
+                                t("btn_register")
                             )}
                         </button>
                     </form>
@@ -170,10 +201,10 @@ export default function LoginPage() {
 
                 <div className="text-center mt-10">
                     <Link 
-                        href="/register"
+                        href="/login"
                         className="text-text-dim text-[10px] font-black uppercase tracking-[0.3em] hover:text-accent-primary transition-colors italic decoration-accent-primary underline-offset-4 hover:underline"
                     >
-                        {t("footer") || "Don't have an account? Create one"}
+                        {t("footer")}
                     </Link>
                 </div>
             </div>
