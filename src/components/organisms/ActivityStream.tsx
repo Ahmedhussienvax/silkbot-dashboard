@@ -160,24 +160,24 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                                     
                                     {/* Action Tags */}
                                     <div className="flex gap-2 mt-3 opacity-0 group-hover/item:opacity-100 transition-opacity translate-y-2 group-hover/item:translate-y-0 duration-500">
-                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-primary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">{t("details")}</button>
-                                        <button className="px-3 py-1 bg-white/5 border border-white/5 hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-slate-400 hover:text-white uppercase transition-all">{t("log")}</button>
+                                        <button className="px-3 py-1 bg-foreground/5 border border-glass-border hover:border-accent-primary/50 rounded-full text-[8px] font-black text-text-dim hover:text-accent-primary uppercase transition-all">{t("details")}</button>
+                                        <button className="px-3 py-1 bg-foreground/5 border border-glass-border hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-text-dim hover:text-accent-secondary uppercase transition-all">{t("log")}</button>
                                     </div>
                                 </div>
                             </motion.div>
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full py-20 opacity-40">
-                            <div className="w-20 h-20 rounded-full bg-white/5 border border-dashed border-white/20 flex items-center justify-center mb-6">
-                                <Activity className="w-8 h-8 text-slate-600" />
+                            <div className="w-20 h-20 rounded-full bg-foreground/5 border border-dashed border-glass-border flex items-center justify-center mb-6">
+                                <Activity className="w-8 h-8 text-text-muted" />
                             </div>
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-600">{t("no_events_found")}</p>
+                            <p className="text-xs font-black uppercase tracking-widest text-text-muted">{t("no_events_found")}</p>
                         </div>
                     )}
                 </AnimatePresence>
             </div>
 
-            <button className="mt-8 w-full py-4 bg-white/5 border border-white/5 hover:border-accent-primary/20 rounded-2xl text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-all group-hover/stream:shadow-inner">
+            <button className="mt-8 w-full py-4 bg-foreground/5 border border-glass-border hover:border-accent-primary/20 rounded-2xl text-[10px] font-black text-text-muted hover:text-foreground uppercase tracking-[0.2em] transition-all group-hover/stream:shadow-inner shadow-xl">
                 {t("view_full_history")}
             </button>
         </motion.div>

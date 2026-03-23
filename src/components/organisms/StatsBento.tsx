@@ -61,7 +61,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
             label: t("messages"),
             value: stats.messages,
             icon: <Send className="w-6 h-6" />,
-            color: "from-blue-500 to-cyan-400",
+            color: "from-blue-600/80 to-indigo-500/80",
             trend: "+8.2%",
             desc: t("messages_desc")
         },
@@ -70,7 +70,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
             label: t("contacts"),
             value: stats.contacts,
             icon: <Users className="w-6 h-6" />,
-            color: "from-purple-500 to-pink-500",
+            color: "from-violet-600/80 to-fuchsia-500/80",
             trend: "+24%",
             desc: t("contacts_desc")
         },
@@ -78,8 +78,8 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
             id: "bot_status",
             label: t("bot_status"),
             value: stats.botEnabled ? t("active") : t("inactive"),
-            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-muted-foreground")} />,
-            color: stats.botEnabled ? "from-emerald-500 to-teal-400" : "from-zinc-200 to-zinc-300 dark:from-slate-700 dark:to-slate-800",
+            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-text-muted")} />,
+            color: stats.botEnabled ? "from-emerald-600/80 to-teal-500/80" : "from-foreground/[0.05] to-foreground/[0.1]",
             trend: stats.botEnabled ? "STABLE" : "OFF",
             desc: t("bot_status_desc")
         }
@@ -103,8 +103,8 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                     onClick={() => onCardClick?.(stat.id)}
                     className={cn(
                         "overflow-hidden group relative text-left w-full outline-none",
-                        "glass-card p-6 border border-zinc-200/50 dark:border-white/5 hover:border-accent-primary/30",
-                        "shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]"
+                        "glass-card p-6 border border-glass-border hover:border-accent-primary/40",
+                        "shadow-2xl dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] transition-all duration-700"
                     )}
                 >
                     {/* Animated Background Mesh */}
@@ -128,17 +128,17 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                         </motion.div>
                         <div className={cn(
                             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border self-start",
-                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10"
+                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-foreground/[0.03] border-glass-border"
                         )}>
-                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")} />
-                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")}>
+                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-text-muted")} />
+                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-text-muted")}>
                                 {stat.trend}
                             </span>
                         </div>
                     </div>
 
                     <div className="space-y-1 relative z-10">
-                        <h3 className="text-slate-500 text-[10px] font-black uppercase tracking-[0.25em]">
+                        <h3 className="text-text-dim text-[10px] font-black uppercase tracking-[0.25em]">
                             {stat.label}
                         </h3>
                         <div className="flex items-baseline gap-2">
@@ -148,7 +148,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                         </div>
                     </div>
                     
-                    <p className="text-[9px] text-slate-500 mt-4 font-black leading-relaxed tracking-[0.15em] group-hover:text-slate-300 transition-colors uppercase opacity-60 italic">
+                    <p className="text-[9px] text-text-muted mt-4 font-black leading-relaxed tracking-[0.15em] group-hover:text-accent-primary transition-colors uppercase italic">
                         {stat.desc}
                     </p>
 

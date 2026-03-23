@@ -18,14 +18,14 @@ interface ChartData {
 const GlassTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="glass-card p-5 border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] backdrop-blur-3xl animate-in fade-in zoom-in duration-300">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3 italic">{label}</p>
+            <div className="glass-card p-5 border border-glass-border shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in duration-300">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-text-dim mb-3 italic drop-shadow-sm">{label}</p>
                 <div className="space-y-3">
                     {payload.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center justify-between gap-8">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.stroke }} />
-                                <span className="text-[11px] font-black text-foreground/70 uppercase tracking-widest">{item.name}</span>
+                                <span className="text-[11px] font-black text-text-muted uppercase tracking-widest leading-none">{item.name}</span>
                             </div>
                             <span className="text-sm font-black text-foreground tabular-nums drop-shadow-sm">{item.value.toLocaleString()}</span>
                         </div>
@@ -64,10 +64,10 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                             <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent-secondary rounded-full animate-ping opacity-75" />
                         </div>
                     </div>
-                    <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.1em] opacity-80">{t("network_throughput_overview")}</p>
+                    <p className="text-text-dim text-xs font-bold uppercase tracking-[0.1em] opacity-80 italic">{t("network_throughput_overview")}</p>
                 </div>
 
-                <div className="flex bg-black/40 backdrop-blur-3xl p-1.5 rounded-3xl border border-white/5 shadow-2xl">
+                <div className="flex bg-foreground/[0.03] backdrop-blur-3xl p-1.5 rounded-3xl border border-glass-border shadow-2xl">
                     {[t("tab_day"), t("tab_week"), t("tab_month")].map((tab) => (
                         <button 
                             key={tab}
@@ -75,8 +75,8 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                             className={cn(
                                 "px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
                                 activeTab === tab.toLowerCase() 
-                                    ? "bg-zinc-200 dark:bg-white/10 text-foreground dark:text-white shadow-[0_10px_20px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_20px_rgba(0,0,0,0.5)] border border-zinc-300 dark:border-white/5" 
-                                    : "text-muted-foreground hover:text-foreground"
+                                    ? "bg-foreground/[0.08] text-foreground shadow-[0_10px_20px_rgba(0,0,0,0.05)] border border-glass-border" 
+                                    : "text-text-dim hover:text-foreground hover:bg-foreground/[0.04]"
                             )}
                         >
                             {tab}
@@ -90,32 +90,34 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                     <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorReceived" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+                                <stop offset="5%" stopColor="hsl(var(--accent-primary-hsl))" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="hsl(var(--accent-primary-hsl))" stopOpacity={0} />
                             </linearGradient>
                             <linearGradient id="colorSent" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="hsl(150, 80%, 65%)" stopOpacity={0.3} />
-                                <stop offset="95%" stopColor="hsl(150, 80%, 65%)" stopOpacity={0} />
+                                <stop offset="5%" stopColor="hsl(var(--accent-secondary-hsl))" stopOpacity={0.3} />
+                                <stop offset="95%" stopColor="hsl(var(--accent-secondary-hsl))" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.1} />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--glass-border-hsl, 240 5% 50%))" strokeOpacity={0.1} />
                         <XAxis 
                             dataKey="name" 
-                            stroke="#475569" 
+                            stroke="hsl(var(--foreground-hsl))" 
                             fontSize={9} 
                             tickLine={false} 
                             axisLine={false} 
                             dy={15} 
                             fontFamily="inherit"
-                            fontWeight="bold"
+                            fontWeight="900"
+                            opacity={0.4}
                         />
                         <YAxis 
-                            stroke="#475569" 
+                            stroke="hsl(var(--foreground-hsl))" 
                             fontSize={9} 
                             tickLine={false} 
                             axisLine={false}
                             fontFamily="inherit"
-                            fontWeight="bold"
+                            fontWeight="900"
+                            opacity={0.4}
                         />
                         <Tooltip 
                             content={<GlassTooltip />}
@@ -147,13 +149,13 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                 </ResponsiveContainer>
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-12 pt-10 border-t border-zinc-200 dark:border-white/5 relative z-10">
+            <div className="mt-12 flex flex-wrap gap-12 pt-10 border-t border-glass-border relative z-10">
                 <div className="flex items-center gap-5 group/stat-mini">
                     <div className="w-14 h-14 rounded-[1.25rem] bg-accent-primary/10 flex items-center justify-center text-accent-primary border border-accent-primary/20 shadow-lg group-hover/stat-mini:rotate-6 transition-transform">
                         <ArrowUpRight className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
+                        <p className="text-[10px] text-text-muted font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
                         <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("peak_volume_value")}</p>
                     </div>
                 </div>
@@ -162,7 +164,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                         <CheckCircle2 className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
+                        <p className="text-[10px] text-text-muted font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
                         <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("success_rate_value")}</p>
                     </div>
                 </div>

@@ -122,14 +122,14 @@ export default function AuditPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-8 bg-[#020617]">
+            <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-8 bg-background transition-colors duration-700">
                 <div className="relative">
-                    <div className="w-32 h-32 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin shadow-[0_0_50px_rgba(168,85,247,0.2)]" />
-                    <BrainCircuit className="w-12 h-12 text-purple-500 absolute inset-0 m-auto animate-pulse" />
+                    <div className="w-32 h-32 border-4 border-accent-primary/10 border-t-accent-primary rounded-full animate-spin shadow-[0_0_50px_rgba(var(--accent-primary-rgb),0.2)]" />
+                    <BrainCircuit className="w-12 h-12 text-accent-primary absolute inset-0 m-auto animate-pulse" />
                 </div>
                 <div className="text-center space-y-2">
-                    <h2 className="text-white font-black text-xl tracking-tighter uppercase italic">Accessing Neural Archive</h2>
-                    <p className="text-slate-500 text-[10px] font-mono uppercase tracking-[0.3em] animate-pulse">Decrypting encrypted synapses...</p>
+                    <h2 className="text-foreground font-black text-xl tracking-tighter uppercase italic">Accessing Neural Archive</h2>
+                    <p className="text-text-dim text-[10px] font-mono uppercase tracking-[0.3em] animate-pulse">Decrypting encrypted synapses...</p>
                 </div>
             </div>
         );
@@ -147,10 +147,10 @@ export default function AuditPage() {
                         <Activity className="w-3.5 h-3.5 text-purple-400" />
                         <span className="text-purple-400 font-black text-[10px] uppercase tracking-widest">Realtime_Synapse_Stream</span>
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter italic leading-none">
-                        Neural Audit<span className="text-purple-500">.</span>
+                    <h1 className="text-6xl md:text-8xl font-black text-foreground tracking-tighter italic leading-none">
+                        Neural Audit<span className="text-accent-primary">.</span>
                     </h1>
-                    <p className="text-slate-400 text-xl font-medium max-w-3xl leading-relaxed">
+                    <p className="text-text-muted text-xl font-medium max-w-3xl leading-relaxed">
                         Deep-level instrumentation of autonomous decision patterns, KG mapping accuracy, and synthetic cognition outputs.
                     </p>
                 </div>
@@ -161,7 +161,7 @@ export default function AuditPage() {
                     <input 
                         type="text" 
                         placeholder="Scan neural logs (Msg, JID, Instance)..." 
-                        className="w-full pl-16 pr-8 py-6 bg-slate-900/40 border border-white/5 rounded-3xl text-white text-sm focus:outline-none focus:ring-0 focus:border-purple-500/50 transition-all placeholder:text-slate-600 backdrop-blur-3xl font-bold font-mono shadow-2xl"
+                        className="w-full pl-16 pr-8 py-6 bg-surface border border-glass-border rounded-3xl text-foreground text-sm focus:outline-none focus:ring-0 focus:border-accent-primary/50 transition-all placeholder:text-text-dim backdrop-blur-3xl font-bold font-mono shadow-2xl"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -181,62 +181,62 @@ export default function AuditPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={stat.label}
-                        className="p-8 bg-slate-900/30 border border-white/5 rounded-[2.5rem] backdrop-blur-3xl space-y-4 group hover:bg-slate-800/40 transition-all shadow-xl"
+                        className="p-8 bg-surface border border-glass-border rounded-[2.5rem] backdrop-blur-3xl space-y-4 group hover:bg-surface-hover transition-all shadow-xl"
                     >
-                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-white/5 border border-white/5 group-hover:scale-110 transition-transform", stat.color)}>
+                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-foreground/5 border border-glass-border group-hover:scale-110 transition-transform", stat.color)}>
                             {stat.icon}
                         </div>
                         <div>
-                            <div className="text-4xl font-black text-white tracking-tighter">{stat.value}</div>
-                            <div className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em] mt-1">{stat.label}</div>
+                            <div className="text-4xl font-black text-foreground tracking-tighter">{stat.value}</div>
+                            <div className="text-[10px] text-text-dim font-black uppercase tracking-[0.2em] mt-1">{stat.label}</div>
                         </div>
                     </motion.div>
                 ))}
             </section>
 
             {/* Audit Table */}
-            <div className="bg-slate-900/30 border border-white/5 rounded-[3.5rem] overflow-hidden backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,0.4)] relative border-t-white/10">
+            <div className="bg-surface border border-glass-border rounded-[3.5rem] overflow-hidden backdrop-blur-3xl shadow-[0_50px_100px_rgba(0,0,0,0.4)] relative border-t-glass-border/50">
                 <div className="overflow-x-auto relative">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-white/[0.03] border-b border-white/5">
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Temporal_Marker</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Subject_Cluster</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Inbound_Signal</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Synthetic_Synthesis</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-slate-500">Logic_Health</th>
+                            <tr className="bg-foreground/[0.03] border-b border-glass-border">
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Temporal_Marker</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Subject_Cluster</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Inbound_Signal</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Synthetic_Synthesis</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Logic_Health</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
+                        <tbody className="divide-y divide-glass-border">
                             {filteredLogs.map((log, idx) => (
                                 <tr 
                                     key={log.id} 
                                     onClick={() => setSelectedLog(log)}
-                                    className="hover:bg-purple-500/[0.03] transition-all group/row cursor-pointer"
+                                    className="hover:bg-accent-primary/[0.03] transition-all group/row cursor-pointer"
                                 >
                                     <td className="px-10 py-10 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="text-white font-mono text-sm font-black group-hover/row:text-purple-400 transition-colors">
+                                            <span className="text-foreground font-mono text-sm font-black group-hover/row:text-accent-primary transition-colors">
                                                 {format(new Date(log.created_at), "HH:mm:ss")}
                                             </span>
-                                            <span className="text-slate-600 font-black text-[9px] uppercase tracking-tighter mt-1">
+                                            <span className="text-text-dim font-black text-[9px] uppercase tracking-tighter mt-1">
                                                 {format(new Date(log.created_at), "MMM dd, yyyy")}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-10 py-10 whitespace-nowrap">
                                         <div className="space-y-1.5">
-                                            <div className="font-mono text-sm text-slate-300 group-hover/row:text-white transition-colors">{log.contact_jid}</div>
+                                            <div className="font-mono text-sm text-text-muted group-hover/row:text-foreground transition-colors">{log.contact_jid}</div>
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] group-hover/row:text-slate-400 transition-colors">
+                                                <span className="text-[9px] text-text-dim font-black uppercase tracking-[0.2em] group-hover/row:text-text-muted transition-colors">
                                                     {log.instance_name || "MASTER_CORE"}
                                                 </span>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-10 min-w-[300px] max-w-[400px]">
-                                        <div className="text-slate-400 text-sm leading-relaxed p-5 bg-white/[0.02] border border-white/5 rounded-[1.5rem] group-hover/row:border-white/10 transition-colors line-clamp-2">
+                                        <div className="text-text-muted text-sm leading-relaxed p-5 bg-foreground/[0.02] border border-glass-border rounded-[1.5rem] group-hover/row:border-foreground/10 transition-colors line-clamp-2">
                                             {log.user_msg || <span className="opacity-40 italic font-medium text-xs">[Signal_Null]</span>}
                                         </div>
                                     </td>
@@ -284,25 +284,25 @@ export default function AuditPage() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full xl:w-[600px] bg-[#020617] border-l border-white/10 z-[60] shadow-[-50px_0_100px_rgba(0,0,0,0.8)] overflow-y-auto"
+                            className="fixed top-0 right-0 h-full w-full xl:w-[600px] bg-background border-l border-glass-border z-[60] shadow-[-50px_0_100px_rgba(0,0,0,0.8)] overflow-y-auto"
                         >
                             <div className="p-12 space-y-12 pb-32">
                                 {/* Drawer Header */}
                                 <header className="flex items-center justify-between">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
-                                                <Zap className="w-4 h-4 text-purple-400" />
+                                            <div className="p-2 bg-accent-primary/10 rounded-lg border border-accent-primary/20">
+                                                <Zap className="w-4 h-4 text-accent-primary" />
                                             </div>
-                                            <h2 className="text-2xl font-black text-white tracking-tight uppercase italic">Trace_Inspector</h2>
+                                            <h2 className="text-2xl font-black text-foreground tracking-tight uppercase italic">Trace_Inspector</h2>
                                         </div>
-                                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest pl-9">Synapse ID: {selectedLog.id.split('-')[0]}...</p>
+                                        <p className="text-[10px] text-text-dim font-black uppercase tracking-widest pl-9">Synapse ID: {selectedLog.id.split('-')[0]}...</p>
                                     </div>
                                     <button 
                                         onClick={() => setSelectedLog(null)}
-                                        className="p-3 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10 group"
+                                        className="p-3 bg-foreground/5 rounded-2xl hover:bg-foreground/10 transition-colors border border-glass-border group"
                                     >
-                                        <X className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" />
+                                        <X className="w-6 h-6 text-text-muted group-hover:text-foreground transition-colors" />
                                     </button>
                                 </header>
 

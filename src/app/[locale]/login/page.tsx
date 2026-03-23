@@ -67,7 +67,7 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
+        <main className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden transition-colors duration-700">
             {/* Visual Architecture: Gradient Pulse Optimization */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-primary/20 rounded-full blur-[120px] animate-pulse" />
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-secondary/15 rounded-full blur-[120px] animate-pulse delay-1000" />
@@ -81,12 +81,12 @@ export default function LoginPage() {
                     >
                        <div className="flex flex-col items-center mb-10 overflow-visible">
                             <Logo size="lg" className="mb-6" />
-                            <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-400 italic">
+                            <h1 className="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-text-dim italic">
                                 {t("title")}<span className="text-accent-primary">.</span>
                             </h1>
                         </div>
                     </motion.div>
-                    <p className="text-slate-500 text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
+                    <p className="text-text-dim text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
                 </div>
 
                 {/* Authentication Matrix */}
@@ -97,8 +97,8 @@ export default function LoginPage() {
                     className="glass-card rounded-[2.5rem] p-10 border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden"
                 >
                     <div className="mb-10">
-                        <h2 className="text-2xl font-black text-white mb-2 italic">{t("card_title")}</h2>
-                        <p className="text-slate-400 text-sm font-medium leading-relaxed">
+                        <h2 className="text-2xl font-black text-foreground mb-2 italic">{t("card_title")}</h2>
+                        <p className="text-text-muted text-sm font-medium leading-relaxed">
                             {t("card_desc")}
                         </p>
                     </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t("email_placeholder")}
                                 autoComplete="email"
-                                className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
@@ -130,7 +130,7 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder={t("password_placeholder")}
                                 autoComplete="current-password"
-                                className="w-full px-6 py-4 rounded-2xl bg-white/[0.03] border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
@@ -168,7 +168,7 @@ export default function LoginPage() {
                     </form>
                 </motion.div>
 
-                <p className="text-center text-slate-600 text-[9px] font-black uppercase tracking-[0.3em] mt-10">
+                <p className="text-center text-text-dim text-[9px] font-black uppercase tracking-[0.3em] mt-10">
                     {t("footer")}
                 </p>
             </div>

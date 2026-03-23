@@ -25,7 +25,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { cn } from "@/lib/utils";
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+const COLORS = [
+    'hsl(var(--accent-primary))',
+    'hsl(var(--accent-secondary))',
+    'hsl(var(--accent-tertiary, 280 80% 60%))',
+    '#ef4444' // Error state remains red for urgency
+];
 
 // --- Premium Animated Counter ---
 function AnimatedCounter({ value, className }: { value: number; className?: string }) {
@@ -207,17 +212,17 @@ export default function CampaignsPage() {
 
     if (loading) {
         return (
-            <div className="flex h-[80vh] items-center justify-center bg-[#020617]">
+            <div className="flex h-[80vh] items-center justify-center bg-background">
                 <div className="relative">
-                    <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-                    <div className="absolute inset-0 blur-xl bg-blue-500/20 animate-pulse" />
+                    <Loader2 className="h-12 w-12 animate-spin text-accent-primary" />
+                    <div className="absolute inset-0 blur-xl bg-accent-primary/20 animate-pulse" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#020617] text-slate-200 p-4 md:p-10 font-sans selection:bg-blue-500/30">
+        <div className="min-h-screen bg-background text-foreground p-4 md:p-10 font-sans selection:bg-accent-primary/30">
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -227,17 +232,17 @@ export default function CampaignsPage() {
                 <header className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black text-blue-400 tracking-widest uppercase italic">
+                            <span className="px-3 py-1 bg-accent-primary/10 border border-accent-primary/20 rounded-full text-[10px] font-black text-accent-primary tracking-widest uppercase italic">
                                 {t("signal_source")}
                             </span>
-                            <div className="flex items-center gap-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                            <div className="flex items-center gap-1 text-[10px] text-text-dim font-bold uppercase tracking-wider">
                                 <History className="w-3 h-3" /> {t("system_uptime")}
                             </div>
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-slate-500 italic">
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-text-muted italic">
                             {t("title")}
                         </h1>
-                        <p className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+                        <p className="text-text-muted text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
                             {t("description")}
                         </p>
                     </div>
@@ -254,13 +259,13 @@ export default function CampaignsPage() {
                             {t("btn_new")}
                         </button>
 
-                        <div className="bg-slate-900/40 backdrop-blur-3xl border border-white/5 p-5 rounded-3xl flex items-center gap-5 shadow-2xl">
+                        <div className="glass-card p-5 flex items-center gap-5 shadow-2xl">
                             <div className="w-12 h-12 bg-accent-primary/10 rounded-2xl flex items-center justify-center border border-accent-primary/20 text-accent-primary shadow-[0_0_20px_rgba(var(--accent-rgb),0.1)]">
                                 <Target className="w-6 h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest mb-1">{t("target_reach")}</p>
-                                <p className="text-2xl font-black text-white leading-none">
+                                <p className="text-[10px] text-text-dim font-black uppercase tracking-widest mb-1">{t("target_reach")}</p>
+                                <p className="text-2xl font-black text-foreground leading-none">
                                     <AnimatedCounter value={estimatedAudience} />
                                 </p>
                             </div>
@@ -271,36 +276,36 @@ export default function CampaignsPage() {
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
                     <div className="xl:col-span-8 space-y-10">
                         {/* Audience Targeting Card */}
-                        <motion.section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                        <motion.section className="glass-card p-10 space-y-10 relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-primary/20 to-transparent" />
                             
-                            <div className="flex items-center gap-4 mb-10">
-                                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="w-12 h-12 bg-foreground/5 rounded-2xl flex items-center justify-center border border-glass-border text-accent-primary">
                                     <Users className="h-6 w-6" />
                                 </div>
-                                <h2 className="text-2xl font-black text-white tracking-tight">{t("audience_targeting")}</h2>
+                                <h2 className="text-2xl font-black text-foreground tracking-tight italic uppercase tracking-tighter">{t("audience_targeting")}</h2>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-10">
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                        <Zap className="h-3 w-3 text-blue-500" />
+                                    <label className="text-[10px] font-black text-text-dim uppercase tracking-[0.2em] flex items-center gap-2 italic">
+                                        <Zap className="h-3 w-3 text-accent-primary" />
                                         {t("signal_hub_selection")}
                                     </label>
                                     <select 
-                                        className="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 outline-none focus:ring-2 ring-blue-500/20 text-white font-bold transition-all appearance-none cursor-pointer"
+                                        className="w-full bg-foreground/[0.03] border border-glass-border rounded-2xl px-6 py-4 outline-none focus:ring-2 ring-accent-primary/20 text-foreground font-bold transition-all appearance-none cursor-pointer hover:bg-foreground/[0.05]"
                                         value={selectedInstance}
                                         onChange={(e) => setSelectedInstance(e.target.value)}
                                     >
-                                        <option value="" disabled>{t("select_hub_placeholder")}</option>
+                                        <option value="" disabled className="bg-background text-foreground">{t("select_hub_placeholder")}</option>
                                         {instances.map(inst => (
-                                            <option key={inst.instanceName} value={inst.instanceName}>{inst.instanceName}</option>
+                                            <option key={inst.instanceName} value={inst.instanceName} className="bg-background text-foreground">{inst.instanceName}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                                        <FileJson className="h-3 w-3 text-blue-400" />
+                                    <label className="text-[10px] font-black text-text-dim uppercase tracking-[0.2em] flex items-center gap-2 italic">
+                                        <FileJson className="h-3 w-3 text-accent-secondary" />
                                         {t("segment_categorization")}
                                     </label>
                                     <div className="flex flex-wrap gap-3">
@@ -311,14 +316,14 @@ export default function CampaignsPage() {
                                                 className={cn(
                                                     "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
                                                     selectedTags.includes(tag) 
-                                                        ? "bg-blue-500/20 border-blue-500/40 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.2)]" 
-                                                        : "bg-white/5 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-white/10"
+                                                        ? "bg-accent-primary/20 border-accent-primary/40 text-accent-primary shadow-[0_0_20px_rgba(var(--accent-rgb),0.2)]" 
+                                                        : "bg-foreground/5 border-glass-border text-text-muted hover:text-foreground hover:bg-foreground/10"
                                                 )}
                                             >
                                                 {tag}
                                             </button>
                                         )) : (
-                                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic pt-2">{t("no_segments")}</p>
+                                            <p className="text-[10px] text-text-dim font-bold uppercase tracking-widest italic pt-2">{t("no_segments")}</p>
                                         )}
                                     </div>
                                 </div>
@@ -326,37 +331,37 @@ export default function CampaignsPage() {
                         </motion.section>
 
                         {/* Message Composer Card */}
-                        <motion.section id="message-composer" className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl relative group">
-                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                        <motion.section id="message-composer" className="glass-card p-10 shadow-2xl relative group">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-primary/20 to-transparent" />
                             
                             <div className="flex items-center justify-between mb-8">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 text-blue-400">
+                                    <div className="w-12 h-12 bg-foreground/5 rounded-2xl flex items-center justify-center border border-glass-border text-accent-primary">
                                         <Send className="h-6 w-6" />
                                     </div>
-                                    <h2 className="text-2xl font-black text-white tracking-tight">{t("message_payload")}</h2>
+                                    <h2 className="text-2xl font-black text-foreground tracking-tight underline-offset-4 decoration-accent-primary italic uppercase tracking-tighter">{t("message_payload")}</h2>
                                 </div>
-                                <div className="flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5">
-                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t("protocol_direct")}</span>
+                                <div className="flex items-center gap-2 px-4 py-1.5 bg-foreground/5 rounded-full border border-glass-border">
+                                    <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
+                                    <span className="text-[10px] font-black text-text-muted uppercase tracking-widest italic">{t("protocol_direct")}</span>
                                 </div>
                             </div>
 
                             <div className="relative">
                                 <textarea 
-                                    className="w-full bg-black/40 border border-white/5 rounded-3xl p-8 min-h-[300px] outline-none focus:border-blue-500/30 text-slate-300 transition-all font-medium text-lg leading-relaxed shadow-inner"
+                                    className="w-full bg-foreground/[0.03] border border-glass-border rounded-3xl p-8 min-h-[300px] outline-none focus:border-accent-primary/30 text-foreground transition-all font-medium text-lg leading-relaxed shadow-inner"
                                     placeholder={t("message_placeholder") || "Construct your campaign transmission..."}
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                 />
-                                <div className="absolute bottom-6 right-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                                <div className="absolute bottom-6 right-8 text-[10px] font-black text-text-dim uppercase tracking-widest">
                                     {message.length} {t("characters")}
                                 </div>
                             </div>
 
-                            <div className="mt-8 flex items-center gap-4 p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-                                <AlertCircle className="h-5 w-5 text-blue-500/50 shrink-0" />
-                                <p className="text-xs text-slate-500 font-medium italic">
+                            <div className="mt-8 flex items-center gap-4 p-5 bg-accent-primary/5 border border-accent-primary/10 rounded-2xl">
+                                <AlertCircle className="h-5 w-5 text-accent-primary/50 shrink-0" />
+                                <p className="text-xs text-text-muted font-medium italic">
                                     {t("throttling_notice")}
                                 </p>
                             </div>
@@ -365,12 +370,13 @@ export default function CampaignsPage() {
 
                     <div className="xl:col-span-4 space-y-10">
                         {/* Deployment Status Card */}
-                        <motion.section className="bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-[3rem] shadow-[0_40px_100px_rgba(59,130,246,0.3)] text-white relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[80px] -mr-32 -mt-32 rounded-full group-hover:bg-white/20 transition-all duration-700" />
+                        <motion.section className="glass-card p-10 bg-gradient-to-br from-accent-primary to-accent-secondary shadow-[0_40px_100px_rgba(var(--accent-rgb),0.4)] text-white relative overflow-hidden group border-none">
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-white/20 blur-[100px] -mr-32 -mt-32 rounded-full group-hover:bg-white/30 transition-all duration-1000" />
+                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-black/10 blur-[80px] rounded-full group-hover:bg-black/20 transition-all duration-1000" />
                             
                             <div className="relative z-10 space-y-10">
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">{t("deployment_matrix")}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/70 italic drop-shadow-sm">{t("deployment_matrix")}</p>
                                     <div className="flex items-baseline gap-3">
                                         <span className="text-7xl font-black tabular-nums tracking-tighter">
                                             <AnimatedCounter value={estimatedAudience} />
@@ -383,7 +389,7 @@ export default function CampaignsPage() {
                                     <button
                                         onClick={handleSendBroadcast}
                                         disabled={sending || estimatedAudience === 0 || !message.trim()}
-                                        className="w-full py-6 bg-white text-blue-700 font-black rounded-3xl flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98] hover:shadow-white/20 transition-all outline-none text-lg tracking-tighter"
+                                        className="w-full py-6 bg-white text-accent-primary font-black rounded-3xl flex items-center justify-center gap-4 shadow-2xl active:scale-[0.98] hover:shadow-white/20 transition-all outline-none text-lg tracking-tighter"
                                     >
                                         {sending ? <Loader2 className="h-6 w-6 animate-spin" /> : <Zap className="h-6 w-6" />}
                                         {sending ? t("btn_deploying") : t("btn_activate")}
@@ -392,7 +398,7 @@ export default function CampaignsPage() {
                                     <button
                                         onClick={handleExportCSV}
                                         disabled={downloading || estimatedAudience === 0}
-                                        className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-xs uppercase tracking-widest disabled:opacity-30"
+                                        className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all text-[10px] uppercase tracking-[0.2em] italic disabled:opacity-30"
                                     >
                                         {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                                         {t("btn_export_registry")}
@@ -402,13 +408,13 @@ export default function CampaignsPage() {
                         </motion.section>
 
                         {/* Analytics Card */}
-                        <section className="bg-slate-900/30 backdrop-blur-sm border border-white/5 rounded-[3rem] p-10 shadow-2xl">
+                        <section className="glass-card p-10 shadow-2xl">
                             <div className="flex items-center justify-between mb-10">
                                 <div className="space-y-1">
-                                    <h2 className="text-xl font-black text-white tracking-tight uppercase tracking-tighter">{t("transmission_analytics")}</h2>
-                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{t("cycle_72h")}</p>
+                                    <h2 className="text-xl font-black text-foreground tracking-tight uppercase tracking-tighter italic">{t("transmission_analytics")}</h2>
+                                    <p className="text-[10px] text-text-dim font-black uppercase tracking-widest">{t("cycle_72h")}</p>
                                 </div>
-                                <Activity className="w-5 h-5 text-blue-500" />
+                                <Activity className="w-5 h-5 text-accent-primary" />
                             </div>
 
                             <div className="h-[240px] w-full relative group/chart">
@@ -432,40 +438,44 @@ export default function CampaignsPage() {
                                         </Pie>
                                         <RechartsTooltip 
                                             contentStyle={{ 
-                                                backgroundColor: 'rgba(2, 6, 23, 0.95)', 
-                                                backdropFilter: 'blur(10px)', 
-                                                border: '1px solid rgba(255,255,255,0.1)', 
-                                                borderRadius: '20px', 
-                                                color: '#fff',
-                                                fontSize: '12px',
-                                                fontWeight: 'bold'
-                                            }} 
+                                                backgroundColor: 'hsl(var(--card))', 
+                                                backdropFilter: 'blur(16px)', 
+                                                border: '1px solid hsl(var(--glass-border))', 
+                                                borderRadius: '24px', 
+                                                color: 'hsl(var(--foreground))',
+                                                fontSize: '11px',
+                                                fontWeight: '900',
+                                                textTransform: 'uppercase',
+                                                letterSpacing: '0.1em',
+                                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                                            }}
+                                            itemStyle={{ color: 'hsl(var(--foreground))' }}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                                    <span className="text-4xl font-black text-white tracking-tighter">
+                                    <span className="text-4xl font-black text-foreground tracking-tighter">
                                         {Math.round((analytics.delivered / (analytics.sent || 1)) * 100)}%
                                     </span>
-                                    <span className="text-[9px] text-slate-500 font-black uppercase tracking-[0.2em] italic">{t("success_rate")}</span>
+                                    <span className="text-[9px] text-text-dim font-black uppercase tracking-[0.2em] italic">{t("success_rate")}</span>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mt-10">
                                 {[
-                                    { label: t("stat_transmitted"), val: analytics.sent, icon: Clock, color: 'text-slate-500', bg: 'bg-slate-500/10' },
+                                    { label: t("stat_transmitted"), val: analytics.sent, icon: Clock, color: 'text-text-muted', bg: 'bg-foreground/5' },
                                     { label: t("stat_delivered"), val: analytics.delivered, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-                                    { label: t("stat_read"), val: analytics.read, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+                                    { label: t("stat_read"), val: analytics.read, icon: Zap, color: 'text-accent-primary', bg: 'bg-accent-primary/10' },
                                     { label: t("stat_failed"), val: analytics.failed, icon: XCircle, color: 'text-red-500', bg: 'bg-red-500/10' }
                                 ].map((stat) => (
-                                    <div key={stat.label} className="p-5 bg-white/[0.03] rounded-3xl border border-white/5 hover:bg-white/[0.05] transition-colors group/stat">
+                                    <div key={stat.label} className="p-5 bg-foreground/[0.02] rounded-3xl border border-glass-border hover:bg-foreground/[0.05] transition-colors group/stat">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center text-[10px]", stat.bg, stat.color)}>
                                                 <stat.icon className="h-3 w-3" />
                                             </div>
-                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</span>
+                                            <span className="text-[9px] font-black text-text-dim uppercase tracking-widest italic">{stat.label}</span>
                                         </div>
-                                        <div className="text-2xl font-black text-white tracking-tight group-hover/stat:text-blue-400 transition-colors">
+                                        <div className="text-2xl font-black text-foreground tracking-tight group-hover/stat:text-accent-primary transition-colors">
                                             <AnimatedCounter value={stat.val} />
                                         </div>
                                     </div>

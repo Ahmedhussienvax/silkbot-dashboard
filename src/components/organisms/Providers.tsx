@@ -19,11 +19,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
       <MotionConfig transition={{ type: "spring", damping: 20, stiffness: 100 }}>
         <QueryClientProvider client={queryClient}>
           {children}
-          <Toaster position="bottom-right" richColors theme="dark" />
+          <Toaster position="bottom-right" richColors theme="system" />
         </QueryClientProvider>
       </MotionConfig>
     </ThemeProvider>
