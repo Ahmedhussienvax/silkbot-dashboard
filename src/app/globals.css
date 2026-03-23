@@ -57,15 +57,18 @@
 
     * {
         @apply outline-none transition-colors duration-200;
-        cursor: none !important;
+        user-select: none;
+        -webkit-user-select: none;
     }
 
-    input, textarea, [contenteditable="true"], .cursor-auto {
-        cursor: text !important;
+    input, textarea, [contenteditable="true"], .selectable-text {
+        user-select: text;
+        -webkit-user-select: text;
+        cursor: text;
     }
 
     a, button, [role="button"], .cursor-pointer {
-        cursor: none !important;
+        cursor: pointer;
     }
 
     body {

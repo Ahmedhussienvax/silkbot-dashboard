@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Link } from "@/i18n/routing";
-import { ChevronLeft, Zap, Target, Shield, Check } from "lucide-react";
+import { ChevronLeft, Zap, Target, Shield, Check, Sparkles } from "lucide-react";
 import Footer from "@/components/organisms/Footer";
 import { createClient } from "@/lib/supabase-browser";
 import { useEffect, useState } from "react";
@@ -39,11 +39,12 @@ export default function PricingPage() {
                         </p>
                     </header>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
                         {[
                             { icon: Target, name: "Node", price: "$49", desc: "Core Automation Hub", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", features: ["1,000 Messages/mo", "Basic Agent", "1 Neural Ingress", "7 Days Free Trial"] },
                             { icon: Zap, name: "Hub", price: "$149", desc: "Scale Your Intelligence", color: "text-accent-primary", bg: "bg-accent-primary/10", border: "border-accent-primary/20", features: ["10,000 Messages/mo", "Advanced Reasoning", "3 Neural Ingresses", "Custom Prompting", "7 Days Free Trial"], popular: true },
-                            { icon: Shield, name: "Matrix", price: "Custom", desc: "Enterprise Infrastructure", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", features: ["Unlimited Throughput", "Dedicated Instance", "SLA & Hardware Vault", "Direct API Support", "Custom Trial Period"] }
+                            { icon: Shield, name: "Matrix", price: "Custom", desc: "Enterprise Infrastructure", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", features: ["Unlimited Throughput", "Dedicated Instance", "SLA & Hardware Vault", "Direct API Support", "Custom Trial Period"] },
+                            { icon: Sparkles, name: "Trial", price: "Free", desc: "System Evaluation", color: "text-slate-400", bg: "bg-slate-400/10", border: "border-slate-400/20", features: ["100 Test Messages", "Basic Agent", "1 Neural Ingress", "Full Dashboard Access", "7 Days Expiry"] }
                         ].map((plan, i) => (
                             <div key={i} className={`p-10 glass-card border ${plan.border} relative group ${plan.popular ? 'scale-110 z-10 shadow-[0_0_80px_rgba(168,85,247,0.1)]' : ''}`}>
                                 {plan.popular && (
@@ -69,7 +70,7 @@ export default function PricingPage() {
                                     href={user ? `/checkout?plan=${plan.name}&price=${plan.price}` as any : "/register"}
                                     className={`block w-full text-center py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${plan.popular ? 'bg-accent-primary text-white hover:scale-105 shadow-lg' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'}`}
                                 >
-                                    {plan.name === "Matrix" ? "Contact Support" : (user ? (plan.price === "Free" ? "Current Protocol" : "Join 7-Day Trial") : "Initialize Node")}
+                                    {plan.name === "Matrix" ? "Contact Support" : (user ? (plan.name === "Trial" ? "Initialize Trial" : "Join 7-Day Trial") : "Initialize Node")}
                                 </Link>
                             </div>
                         ))}
