@@ -168,14 +168,15 @@ export default function LoginPage() {
                     </form>
                 </motion.div>
 
-                <div className="text-center mt-10 space-y-4">
+                <div className="text-center mt-12 space-y-6">
                     <Link 
                         href="/register"
-                        className="block text-accent-primary text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all italic decoration-accent-primary underline-offset-8 hover:underline"
+                        className="inline-block text-accent-primary text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all italic decoration-accent-primary underline-offset-8 hover:underline"
                     >
                         {t("no_account")}
                     </Link>
-                    <p className="text-text-dim text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
+                    <div className="h-[1px] w-8 bg-foreground/10 mx-auto opacity-20" />
+                    <p className="text-text-dim text-[9px] font-bold uppercase tracking-[0.3em] opacity-40">
                         {t("footer")}
                     </p>
                 </div>

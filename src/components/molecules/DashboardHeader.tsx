@@ -26,25 +26,26 @@ export default function DashboardHeader({ searchPlaceholder }: { searchPlacehold
     };
 
     return (
-        <header className="h-24 sticky top-0 z-40 bg-white/5 backdrop-blur-3xl border-b border-white/5 px-10 hidden lg:flex items-center justify-between">
-            <div className="flex items-center gap-12 flex-1">
+        <header className="h-24 sticky top-0 z-40 bg-foreground/[0.03] backdrop-blur-3xl border-b border-glass-border px-10 hidden lg:flex items-center justify-between">
+            <div className="flex items-center gap-12 flex-1 relative">
                 <SearchInput placeholder={searchPlaceholder} />
+                <div className="absolute -bottom-[1px] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-primary/20 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
             </div>
 
             <div className="flex items-center gap-6">
                 {/* Language Switcher (UX-01) */}
                 <button 
                     onClick={toggleLocale}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-accent-primary/30 hover:bg-accent-primary/5 transition-all group"
+                    className="flex items-center gap-2 px-4 py-2 bg-foreground/5 border border-glass-border rounded-xl hover:border-accent-primary/30 hover:bg-accent-primary/5 transition-all group shadow-sm"
                 >
-                    <Globe className="w-4 h-4 text-slate-500 group-hover:text-accent-primary transition-colors" />
+                    <Globe className="w-4 h-4 text-text-muted group-hover:text-accent-primary transition-colors" />
                     <span className="text-[10px] font-black text-foreground uppercase tracking-widest">{locale === 'en' ? 'AR' : 'EN'}</span>
                 </button>
 
                 {/* Logout Action (UX-01 / UI-09) */}
                 <button 
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
+                    className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all group shadow-sm"
                 >
                     <LogOut className="w-4 h-4 text-red-500 group-hover:text-white transition-colors" />
                     <span className="text-[10px] font-black text-red-500 group-hover:text-white uppercase tracking-widest transition-colors">{t("logout") || "Logout"}</span>

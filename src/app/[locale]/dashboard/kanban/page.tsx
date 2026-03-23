@@ -62,7 +62,7 @@ export default function PipelinesPage() {
           <Loader2 className="w-8 h-8 text-accent-secondary absolute inset-0 m-auto animate-pulse" />
         </div>
         <p className="text-text-muted font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">
-          Synchronizing_Neural_Pathways...
+          {t('syncing_pathways')}
         </p>
       </div>
     );
@@ -77,7 +77,7 @@ export default function PipelinesPage() {
           <div className="inline-flex items-center gap-3 px-4 py-2 bg-accent-secondary/10 border border-accent-secondary/20 rounded-full">
             <LayoutGrid className="w-3.5 h-3.5 text-accent-secondary" />
             <span className="text-accent-secondary font-black text-[10px] uppercase tracking-widest italic">
-              Strategy_Interface_v2.1
+              {t('strategy_interface')}
             </span>
           </div>
           <div>
@@ -95,7 +95,7 @@ export default function PipelinesPage() {
           <div className="glass-card p-4 rounded-2xl">
             <div className="flex items-center gap-3 mb-1">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span className="text-[10px] uppercase font-bold text-text-dim tracking-widest italic">Pipeline_Value</span>
+              <span className="text-[10px] uppercase font-bold text-text-dim tracking-widest italic">{t('pipeline_value')}</span>
             </div>
             <div className="text-2xl font-black text-foreground">
               ${totalValue.toLocaleString()}

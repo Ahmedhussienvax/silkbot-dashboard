@@ -118,10 +118,10 @@ export default function OnboardingWizard({ show, onComplete }: OnboardingWizardP
                 initial={{ scale: 0.9, opacity: 0, y: 40 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 transition={{ type: "spring", damping: 30, stiffness: 200 }}
-                className="bg-slate-900/40 border border-white/10 rounded-[3.5rem] w-full max-w-6xl overflow-hidden shadow-[0_100px_200px_rgba(0,0,0,0.8)] flex flex-col xl:flex-row min-h-[750px] backdrop-blur-3xl relative"
+                className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] md:rounded-[3.5rem] w-full max-w-6xl overflow-hidden shadow-[0_100px_200px_rgba(0,0,0,0.8)] flex flex-col xl:flex-row min-h-0 md:min-h-[750px] max-h-[90vh] md:max-h-none backdrop-blur-3xl relative"
             >
                 {/* Left Sidebar Strategy Panel */}
-                <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-black p-12 xl:w-1/3 flex flex-col justify-between border-r border-white/5 relative">
+                <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-black p-8 md:p-12 xl:w-1/3 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/5 relative">
                     <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
                     
                     <div className="relative space-y-10">
@@ -137,7 +137,7 @@ export default function OnboardingWizard({ show, onComplete }: OnboardingWizardP
                             </div>
                         </div>
 
-                        <nav className="space-y-12 mt-16">
+                        <nav className="space-y-8 md:space-y-12 mt-8 md:mt-16 flex md:flex-col gap-4 overflow-x-auto md:overflow-x-visible no-scrollbar pb-4 md:pb-0">
                             {STEPS.map((s) => (
                                 <div key={s.id} className="relative group">
                                     <div className="flex items-center gap-6 relative z-10 transition-all duration-700">
@@ -181,7 +181,7 @@ export default function OnboardingWizard({ show, onComplete }: OnboardingWizardP
                 </div>
 
                 {/* Right Content Viewport */}
-                <div className="p-8 md:p-16 xl:w-2/3 flex flex-col bg-slate-950/20 relative">
+                <div className="p-6 md:p-16 xl:w-2/3 flex flex-col bg-slate-950/20 relative flex-1 overflow-y-auto">
                     <AnimatePresence mode="wait">
                         {isChecking ? (
                             <motion.div 
@@ -236,7 +236,7 @@ export default function OnboardingWizard({ show, onComplete }: OnboardingWizardP
                                 </div>
                                 
                                 <div className="space-y-6 max-w-xl px-4">
-                                    <h3 className="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-tight">
+                                    <h3 className="text-3xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-tight">
                                         {currentStepData.title}
                                     </h3>
                                     <p className="text-slate-400 font-medium text-lg leading-relaxed">
@@ -258,7 +258,7 @@ export default function OnboardingWizard({ show, onComplete }: OnboardingWizardP
                     </AnimatePresence>
 
                     {/* Footer Controls */}
-                    <div className="flex justify-between items-center mt-auto pt-10 border-t border-white/5">
+                    <div className="flex flex-col sm:flex-row justify-between items-center mt-auto pt-10 border-t border-white/5 gap-6">
                         <button 
                             onClick={() => typeof onComplete === 'function' && onComplete()} 
                             className="text-slate-700 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.3em] disabled:opacity-0"

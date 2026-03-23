@@ -53,16 +53,25 @@ export default function ContactsPage() {
 
     const fetchContacts = async () => {
         try {
-            // Updated to source from the 'silkbot.contacts' secure view (v5.7.1 Enterprise Specification)
-            const { data, error } = await supabase
+            setLoading(true);
+            // Attempt 1: Schema-based secure view (Enterprise Specification)
+            let result = await supabase
                 .schema("silkbot")
                 .from("contacts")
                 .select("*");
 
-            if (error) throw error;
+            // Attempt 2: Fallback to public schema if silkbot fails (Community/Legacy Specification)
+            if (result.error) {
+                console.warn("⚠️ [RETRY] Falling back to public schema for contacts...");
+                result = await supabase
+                    .from("contacts")
+                    .select("*");
+            }
+
+            if (result.error) throw result.error;
             
-            // Map the view fields to the internal Contact interface (v5.7.1 Schema)
-            const mappedData: Contact[] = (data || []).map((c: any) => ({
+            // Map the view fields to the internal Contact interface
+            const mappedData: Contact[] = (result.data || []).map((c: any) => ({
                 id: c.id?.toString() || Math.random().toString(),
                 jid: c.phone ? `${c.phone}@s.whatsapp.net` : (c.jid || ""),
                 push_name: c.name || "UNIDENTIFIED",
@@ -78,7 +87,16 @@ export default function ContactsPage() {
             setContacts(mappedData);
         } catch (error: any) {
             console.error("🔴 [FAIL-03] Node Sync Failure:", error);
-            toast.error("Signal Disruption", { description: "Failed to synchronize with neural network. Please retry." });
+            // Ignore common missing view/schema errors for fresh accounts to avoid distracting user
+            const isExpectedMissingError = error.code === 'PGRST116' || 
+                                          error.message?.includes('not found') || 
+                                          error.message?.includes('does not exist');
+
+            if (!isExpectedMissingError) {
+                toast.error(t("error_sync"), { 
+                    description: `${t("error_sync_desc")}: ${error.message || "Unknown Failure"}` 
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -219,7 +237,7 @@ export default function ContactsPage() {
                                                     onClick={(e) => { e.stopPropagation(); removeTag(c.jid, c.instance_name, tag); }}
                                                     className="group/tag inline-flex items-center gap-2 bg-foreground/[0.03] hover:bg-red-500/10 text-text-dim hover:text-red-400 px-3 py-1.5 rounded-lg border border-glass-border hover:border-red-500/20 text-[9px] font-black uppercase tracking-widest transition-all"
                                                 >
-                                                    {tag}
+                                                    {tag.replace(/_/g, ' ')}
                                                     <X className="w-2.5 h-2.5 opacity-0 group-hover/tag:opacity-100 transition-opacity" />
                                                 </button>
                                             ))}
@@ -272,7 +290,7 @@ export default function ContactsPage() {
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div className="p-6 bg-surface border border-glass-border rounded-2xl">
                                                                     <div className="text-[9px] font-black text-text-dim uppercase tracking-widest mb-2 italic">{t("neural_instance")}</div>
-                                                                    <div className="text-sm font-black text-foreground">{c.instance_name}</div>
+                                                                    <div className="text-sm font-black text-foreground">{c.instance_name.replace(/_/g, ' ')}</div>
                                                                 </div>
                                                                 <div className="p-6 bg-surface border border-glass-border rounded-2xl">
                                                                     <div className="text-[9px] font-black text-text-dim uppercase tracking-widest mb-2 italic">{t("signal_hash")}</div>

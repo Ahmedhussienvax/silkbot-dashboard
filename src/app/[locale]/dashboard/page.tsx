@@ -87,10 +87,10 @@ export default async function DashboardPage(props: {
             <main className="flex-1 flex flex-col relative overflow-hidden">
                 {/* Global DashboardHeader is now in the layout */}
 
-                <div className="p-10 space-y-12 relative z-10 overflow-y-auto max-h-[calc(100vh-6rem)]">
+                <div className="p-6 md:p-10 space-y-8 md:space-y-12 relative z-10 overflow-y-auto max-h-[calc(100vh-6rem)]">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-2">
-                            <h1 className="text-4xl font-black tracking-tight text-foreground leading-none">
+                            <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground leading-none">
                                 {t("title")} <span className="text-accent-primary italic">.</span>
                             </h1>
                             <p className="text-[var(--text-muted)] font-bold text-sm opacity-80">{t("welcome")}</p>

@@ -46,12 +46,12 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="bento-item-xl glass-card p-10 relative overflow-hidden group/chart-host"
+            className="bento-item-xl glass-card p-6 md:p-10 relative overflow-hidden group/chart-host"
         >
             {/* Top Indicator Line */}
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent-primary/40 to-transparent" />
             
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 relative z-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-8 md:mb-16 relative z-10">
                 <div className="space-y-2">
                     <div className="flex items-center gap-3">
                         <h3 className="text-foreground font-black text-3xl tracking-tight leading-none">
@@ -85,7 +85,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                 </div>
             </div>
 
-            <div className="h-[400px] w-full relative z-10 group/chart-plot">
+            <div className="h-[250px] md:h-[400px] w-full relative z-10 group/chart-plot">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data}>
                         <defs>
@@ -149,7 +149,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                 </ResponsiveContainer>
             </div>
 
-            <div className="mt-12 flex flex-wrap gap-12 pt-10 border-t border-glass-border relative z-10">
+            <div className="mt-8 md:mt-12 flex flex-wrap gap-6 md:gap-12 pt-8 md:pt-10 border-t border-glass-border relative z-10">
                 <div className="flex items-center gap-5 group/stat-mini">
                     <div className="w-14 h-14 rounded-[1.25rem] bg-accent-primary/10 flex items-center justify-center text-accent-primary border border-accent-primary/20 shadow-lg group-hover/stat-mini:rotate-6 transition-transform">
                         <ArrowUpRight className="w-6 h-6" />

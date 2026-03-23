@@ -129,7 +129,10 @@ export default function SettingsPage() {
     };
 
     const handleConnectWs = async () => {
-        if (!tenant?.wa_session) return;
+        if (!tenant?.wa_session || tenant.wa_session === "null") {
+            toast.error(wt("tunnel_id_required"));
+            return;
+        }
         setWsStatus("connecting");
         const key = tenant.api_key || MASTER_KEY || "";
         try {
@@ -203,7 +206,8 @@ export default function SettingsPage() {
                 name: tenant.name,
                 industry: tenant.industry,
                 timezone: tenant.timezone,
-                settings: tenant.settings
+                settings: tenant.settings,
+                wa_session: tenant.wa_session
             }).eq("id", tenant.id);
             
             if (tError) throw tError;
@@ -236,8 +240,8 @@ export default function SettingsPage() {
                 <Activity className="absolute inset-0 m-auto w-8 h-8 text-accent-primary opacity-50" />
             </div>
             <div className="flex flex-col items-center gap-2">
-                <div className="text-[12px] font-black text-foreground uppercase tracking-[0.6em] italic">CALIBRATING_NEXUS</div>
-                <div className="text-[8px] font-bold text-text-dim uppercase tracking-[0.4em]">Synchronizing Cluster Nodes...</div>
+                <div className="text-[12px] font-black text-foreground uppercase tracking-[0.6em] italic">{t("calibrating_nexus")}</div>
+                <div className="text-[8px] font-bold text-text-dim uppercase tracking-[0.4em]">{t("syncing_cluster")}</div>
             </div>
         </div>
     );
@@ -258,22 +262,22 @@ export default function SettingsPage() {
                     <div className="flex items-center gap-4">
                         <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-accent-primary/10 border border-accent-primary/20 rounded-full shadow-lg shadow-accent-primary/5">
                             <div className="w-2.5 h-2.5 rounded-full bg-accent-primary animate-pulse shadow-[0_0_10px_rgba(var(--accent-primary-rgb),0.5)]" />
-                            <span className="text-[11px] font-black text-accent-primary uppercase tracking-[0.2em] italic">Nexus Core v5.7.1-Stable</span>
+                            <span className="text-[11px] font-black text-accent-primary uppercase tracking-[0.2em] italic">{t("nexus_version")}</span>
                         </div>
                         {saving && (
                             <div className="flex items-center gap-2 text-[10px] font-black text-accent-secondary uppercase tracking-widest animate-pulse">
                                 <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-                                Synchronizing...
+                                {t("syncing_nexus")}
                             </div>
                         )}
                     </div>
                     <h1 className="text-6xl md:text-7xl font-black text-foreground tracking-tighter italic uppercase leading-[0.9] flex flex-col">
-                        SYSTEM<br />
-                        <span className="text-accent-primary">ARCHITECTURE_</span>
+                        {t("system_title")}<br />
+                        <span className="text-accent-primary">{t("system_architecture")}</span>
                     </h1>
                     <p className="text-text-dim flex items-center gap-4 font-bold uppercase tracking-[0.2em] text-[12px] max-w-2xl leading-relaxed">
                         <Shield className="w-6 h-6 text-accent-primary opacity-40 shrink-0" />
-                        Configure the neural pathways, communication ingress, and core behavioral tokens of the SilkBot ecosystem.
+                        {t("system_paths_desc")}
                     </p>
                 </div>
 
@@ -282,10 +286,30 @@ export default function SettingsPage() {
                         onClick={handleGlobalSave} 
                         variant="gradient" 
                         loading={saving}
-                        className="h-16 px-16 rounded-3xl shadow-[0_25px_50px_rgba(var(--accent-primary-rgb),0.2)] font-black uppercase tracking-[0.4em] italic text-[13px] hover:scale-[1.03] transition-all active:scale-95 group"
+                        className="h-16 px-16 rounded-3xl shadow-[0_25px_50px_rgba(var(--accent-primary-rgb),0.2)] font-black uppercase tracking-[0.4em] italic text-[13px] hover:scale-[1.03] transition-all active:scale-95 group relative overflow-hidden"
                     >
-                        <Zap className="w-5 h-5 mr-3 group-hover:animate-bounce" />
-                        Commit_Architecture
+                        <AnimatePresence>
+                            {saving ? (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="flex items-center gap-3"
+                                >
+                                    <RefreshCcw className="w-5 h-5 animate-spin" />
+                                    {t("syncing_nexus")}
+                                </motion.div>
+                            ) : (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="flex items-center gap-3"
+                                >
+                                    <Zap className="w-5 h-5 group-hover:animate-bounce" />
+                                    {t("commit_architecture")}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </Button>
                 </div>
             </header>
@@ -374,13 +398,13 @@ export default function SettingsPage() {
                                             <Sparkles className="w-10 h-10 text-accent-primary" />
                                         </div>
                                         <div className="space-y-4 max-w-md">
-                                            <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">Optimization Ready</h3>
+                                            <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{t("optimization_ready")}</h3>
                                             <p className="text-text-muted font-semibold text-[14px] leading-relaxed">
-                                                Your business identity is the foundation of the neural model. Ensure these details are accurate for optimal AI personalization.
+                                                {t("optimization_desc")}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-1.5 px-6 py-3 bg-foreground/[0.02] border border-glass-border rounded-full text-[10px] font-black text-text-dim uppercase tracking-widest italic">
-                                            Cluster: Frankfurt-EU-01
+                                            {t("cluster_node")}
                                         </div>
                                     </motion.section>
                                 </div>
@@ -404,13 +428,13 @@ export default function SettingsPage() {
                                                 <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{bt("title")}</h2>
                                                 <div className="text-[10px] font-black text-accent-secondary uppercase tracking-[0.4em] mt-2 flex items-center gap-2">
                                                     <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                                                    Neural_Fabric Status: Optimal
+                                                    {bt("status_optimal")}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-6 px-10 py-5 bg-foreground/[0.02] border border-glass-border rounded-[2rem]">
                                             <span className={cn("text-[11px] font-black uppercase tracking-widest italic", botConfig?.is_enabled ? "text-accent-secondary" : "text-text-dim")}>
-                                                {botConfig?.is_enabled ? "Operational" : "Locked"}
+                                                {botConfig?.is_enabled ? bt("operational") : bt("locked")}
                                             </span>
                                             <button 
                                                 onClick={() => setBotConfig(prev => prev ? { ...prev, is_enabled: !prev.is_enabled } : null)}
@@ -443,9 +467,9 @@ export default function SettingsPage() {
                                                         onChange={(e) => setBotConfig(prev => prev ? { ...prev, ai_model: e.target.value } : null)}
                                                         className="w-full bg-foreground/[0.03] border border-glass-border rounded-3xl px-8 py-5 text-[15px] font-black italic tracking-tight text-foreground appearance-none outline-none focus:ring-2 focus:ring-accent-secondary/30 transition-all cursor-pointer hover:bg-foreground/[0.05]"
                                                     >
-                                                        <option value="gpt-4o-mini" className="bg-background text-foreground tracking-widest uppercase italic">Mini_V1 (Fast)</option>
-                                                        <option value="gpt-4o" className="bg-background text-foreground tracking-widest uppercase italic">Neural_Prime (Elite)</option>
-                                                        <option value="claude-3-5-sonnet" className="bg-background text-foreground tracking-widest uppercase italic">Logic_Sonnet (Refined)</option>
+                                                        <option value="gpt-4o-mini" className="bg-background text-foreground tracking-widest uppercase italic">Mini V1 (Fast)</option>
+                                                        <option value="gpt-4o" className="bg-background text-foreground tracking-widest uppercase italic">Neural Prime (Elite)</option>
+                                                        <option value="claude-3-5-sonnet" className="bg-background text-foreground tracking-widest uppercase italic">Logic Sonnet (Refined)</option>
                                                     </select>
                                                     <ChevronRight className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 text-accent-secondary rotate-90 pointer-events-none" />
                                                 </div>
@@ -464,7 +488,7 @@ export default function SettingsPage() {
                                             <div className="flex items-center gap-4 p-6 bg-accent-secondary/[0.02] border border-accent-secondary/10 rounded-3xl italic">
                                                 <Fingerprint className="w-6 h-6 text-accent-secondary shrink-0 opacity-60" />
                                                 <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest leading-loose drop-shadow-sm">
-                                                    Quantum behavioral weights and linguistic tokens are derived strictly from this kernel instruction.
+                                                    {bt("weights_info")}
                                                 </span>
                                             </div>
                                         </div>
@@ -480,7 +504,7 @@ export default function SettingsPage() {
                                         <div className="w-16 h-16 bg-accent-secondary/10 rounded-[2rem] flex items-center justify-center border border-accent-secondary/20">
                                             <Sliders className="w-8 h-8 text-accent-secondary" />
                                         </div>
-                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">Fine_Tuning</h3>
+                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{bt("fine_tuning")}</h3>
                                     </div>
 
                                     <div className="space-y-12">
@@ -499,8 +523,8 @@ export default function SettingsPage() {
                                                 className="w-full h-1.5 bg-foreground/[0.05] rounded-full appearance-none cursor-pointer accent-amber-500" 
                                             />
                                             <div className="flex justify-between text-[8px] font-black text-text-dim uppercase tracking-widest">
-                                                <span>Precise_Kernel</span>
-                                                <span>Emergent_Identity</span>
+                                                <span>{bt("creativity_low")}</span>
+                                                <span>{bt("creativity_high")}</span>
                                             </div>
                                         </div>
 
@@ -527,7 +551,7 @@ export default function SettingsPage() {
                                                 <ShieldCheck className="w-5 h-5 text-accent-primary opacity-60" />
                                             </div>
                                             <div className="text-[10px] font-bold text-text-dim uppercase tracking-widest italic">
-                                                Immutable Core: Updates apply instantly across all active conversational shards.
+                                                {bt("immutable_core")}
                                             </div>
                                         </div>
                                     </div>
@@ -544,12 +568,12 @@ export default function SettingsPage() {
                                         <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-accent-tertiary/10 border border-accent-tertiary/20 rounded-full mb-2">
                                             <div className={cn("w-2.5 h-2.5 rounded-full animate-pulse shadow-lg", wsStatus === "connected" ? "bg-emerald-500 shadow-emerald-500/50" : "bg-red-500 shadow-red-500/50")} />
                                             <span className="text-[11px] font-black text-accent-tertiary uppercase tracking-[0.2em] italic">
-                                                {wsStatus === "connected" ? "Neural Ingress Active" : "Bridge Connection Locked"}
+                                                {wsStatus === "connected" ? wt("status_active") : wt("status_locked")}
                                             </span>
                                         </div>
                                         <h2 className="text-5xl font-black text-foreground uppercase italic tracking-tighter leading-none">{wt("title")}</h2>
                                         <p className="text-text-muted font-semibold text-[16px] leading-relaxed max-w-2xl opacity-80 italic">
-                                            Establish a direct neural link between your WhatsApp Business endpoint and the SilkBot cloud infrastructure. This bridge enables real-time message orchestration and AI response deflection.
+                                            {wt("description")}
                                         </p>
                                         
                                         <div className="flex flex-wrap items-center gap-6">
@@ -570,9 +594,27 @@ export default function SettingsPage() {
                                                     {wt("btn_connect")}
                                                 </button>
                                             )}
-                                            <div className="px-8 py-5 bg-foreground/[0.03] border border-glass-border rounded-[1.8rem] text-text-dim text-[11px] font-black tracking-widest uppercase italic flex items-center gap-4">
-                                                <Cpu className="w-5 h-5 text-accent-tertiary opacity-50" />
-                                                Tunnel_ID: <span className="text-foreground">{tenant?.wa_session || "null"}</span>
+                                            <div className="flex flex-col gap-4">
+                                                <div className="px-8 py-5 bg-foreground/[0.03] border border-glass-border rounded-[1.8rem] text-text-dim text-[11px] font-black tracking-widest uppercase italic flex items-center gap-4">
+                                                    <Cpu className="w-5 h-5 text-accent-tertiary opacity-50" />
+                                                    {wt("tunnel_id")}: <span className={cn("font-mono", (!tenant?.wa_session || tenant.wa_session === "null") && "text-red-500 animate-pulse bg-red-500/10 px-2 rounded")}>
+                                                        {(!tenant?.wa_session || tenant.wa_session === "null") ? wt("missing_id") : tenant.wa_session}
+                                                    </span>
+                                                </div>
+                                                
+                                                {(!tenant?.wa_session || tenant.wa_session === "null") && (
+                                                    <div className="max-w-xs animate-in slide-in-from-left-4 duration-500">
+                                                        <InputField 
+                                                            label={wt("tunnel_id")}
+                                                            placeholder="e.g. business-01"
+                                                            value={tenant?.wa_session === "null" ? "" : tenant?.wa_session || ""}
+                                                            onChange={(val) => setTenant(prev => prev ? { ...prev, wa_session: val || "null" } : null)}
+                                                        />
+                                                        <p className="text-[9px] text-accent-tertiary font-black uppercase tracking-widest mt-2 ml-4">
+                                                            {wt("initialize_pairing")}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -594,23 +636,26 @@ export default function SettingsPage() {
                                                         <ShieldCheck className="w-12 h-12 text-emerald-500" />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <h4 className="text-foreground font-black uppercase tracking-tighter text-2xl italic">Bridge_Secure</h4>
+                                                        <h4 className="text-foreground font-black uppercase tracking-tighter text-2xl italic">{wt("bridge_secure")}</h4>
                                                         <p className="text-text-dim font-bold text-[10px] uppercase tracking-widest italic">{wt("device_linked")}</p>
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="text-center space-y-6 p-4">
-                                                    <div className="w-24 h-24 bg-foreground/[0.05] rounded-full flex items-center justify-center border border-glass-border mx-auto">
-                                                        <Smartphone className="w-12 h-12 text-text-muted" />
+                                                <div 
+                                                    onClick={handleConnectWs}
+                                                    className="text-center space-y-6 p-4 cursor-pointer hover:bg-foreground/[0.02] transition-all active:scale-95 group/btn"
+                                                >
+                                                    <div className="w-24 h-24 bg-foreground/[0.05] rounded-full flex items-center justify-center border border-glass-border mx-auto group-hover/btn:border-accent-tertiary/30 group-hover/btn:scale-110 transition-all">
+                                                        <Smartphone className="w-12 h-12 text-text-muted group-hover:text-accent-tertiary transition-colors" />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <h4 className="text-foreground font-black uppercase tracking-tight text-xl italic">{wt("no_session")}</h4>
+                                                        <h4 className="text-foreground font-black uppercase tracking-tight text-xl italic group-hover:text-accent-tertiary transition-colors">{wt("no_session")}</h4>
                                                         <p className="text-text-muted font-medium text-[12px] max-w-[180px] mx-auto leading-relaxed">{wt("initialize_pairing")}</p>
                                                     </div>
-                                                    {wsStatus === "connecting" && (
+                                                    {(wsStatus === "connecting" || wsStatus === "loading") && (
                                                         <div className="flex flex-col items-center gap-3 mt-4">
                                                             <Loader2 className="w-8 h-8 text-accent-tertiary animate-spin" />
-                                                            <span className="text-accent-tertiary font-black text-[9px] uppercase tracking-[0.3em] italic">Building_Tunnel...</span>
+                                                            <span className="text-accent-tertiary font-black text-[9px] uppercase tracking-[0.3em] italic">{wt("building_tunnel")}</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -634,8 +679,8 @@ export default function SettingsPage() {
                                             <Columns className="w-8 h-8 text-amber-500" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{kt("title")} States</h2>
-                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] mt-2">Neural Acquisition Flow</p>
+                                            <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{kt("title")} {t("pipeline_states")}</h2>
+                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] mt-2">{t("neural_flow")}</p>
                                         </div>
                                     </div>
                                     
@@ -651,7 +696,7 @@ export default function SettingsPage() {
                                                 <div className="flex-1 flex items-center justify-between">
                                                     <div className="space-y-1">
                                                         <span className="text-[14px] font-black text-foreground uppercase italic tracking-tighter">{kt(stage.id)}</span>
-                                                        <p className="text-[9px] text-text-dim uppercase tracking-widest font-black">Stage_Identifier: {stage.id.toUpperCase()}</p>
+                                                        <p className="text-[9px] text-text-dim uppercase tracking-widest font-black">{kt("stage_id")}: {stage.id.toUpperCase()}</p>
                                                     </div>
                                                     <div className="flex items-center gap-2 opacity-0 group-hover/stage:opacity-100 transition-opacity">
                                                         <button className="p-2 text-text-dim hover:text-amber-500 transition-colors"><ChevronRight className="w-5 h-5" /></button>
@@ -662,7 +707,7 @@ export default function SettingsPage() {
                                         ))}
                                         <button className="w-full py-6 border-2 border-dashed border-glass-border rounded-3xl text-[11px] font-black text-text-dim uppercase tracking-[0.3em] hover:bg-amber-500/5 hover:border-amber-500/30 hover:text-amber-500 transition-all flex items-center justify-center gap-3 group">
                                             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                                            Inject_New_Stage
+                                            {kt("inject_stage")}
                                         </button>
                                     </div>
                                 </motion.section>
@@ -674,12 +719,12 @@ export default function SettingsPage() {
                                         <div className="w-16 h-16 bg-amber-500/10 rounded-[2rem] flex items-center justify-center border border-amber-500/20">
                                             <Network className="w-8 h-8 text-amber-500" />
                                         </div>
-                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter italic">Integrations</h3>
+                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{t("integrations")}</h3>
                                     </div>
 
                                     <div className="space-y-10">
                                         <div className="space-y-5">
-                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">External_Webhook_Node</label>
+                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">{t("webhook_node")}</label>
                                             <div className="relative group">
                                                 <input 
                                                     type="text" 
@@ -694,7 +739,7 @@ export default function SettingsPage() {
 
                                         <div className="p-8 rounded-[2.5rem] bg-foreground/[0.02] border border-glass-border space-y-4">
                                             <p className="text-[10px] font-black text-text-muted uppercase tracking-widest italic leading-relaxed">
-                                                Pipeline data will be synchronized across all cluster nodes. External nodes will receive vectorized payloads on state transition.
+                                                {t("sync_info")}
                                             </p>
                                         </div>
                                     </div>
@@ -714,12 +759,12 @@ export default function SettingsPage() {
                                             </div>
                                             <div className="space-y-2">
                                                 <h2 className="text-4xl font-black text-foreground uppercase italic tracking-tighter leading-none">{t("account_management")}</h2>
-                                                <p className="text-[11px] font-black text-text-dim uppercase tracking-[0.5em] italic">Access_Control_Nexus v1.0</p>
+                                                <p className="text-[11px] font-black text-text-dim uppercase tracking-[0.5em] italic">{t("nexus_version_sec")}</p>
                                             </div>
                                         </div>
                                         <div className="bg-red-500/10 px-8 py-4 rounded-[1.8rem] border border-red-500/20 flex items-center gap-4">
                                             <Shield className="w-5 h-5 text-red-500" />
-                                            <span className="text-[12px] font-black text-red-500 uppercase tracking-widest italic">Critical Security Sector</span>
+                                            <span className="text-[12px] font-black text-red-500 uppercase tracking-widest italic">{t("security_sector")}</span>
                                         </div>
                                     </div>
 

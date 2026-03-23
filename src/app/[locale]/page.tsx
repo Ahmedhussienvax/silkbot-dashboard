@@ -6,6 +6,9 @@ import { Play, Sparkles, Shield, Rocket, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/atoms/Logo";
 import Footer from "@/components/organisms/Footer";
+import { createClient } from "@/lib/supabase-browser";
+import { useEffect } from "react";
+import { useRouter } from "@/i18n/routing";
 
 /**
  * Landing Page Refactoring (Revision 2 - Deep Re-evaluation)
@@ -18,6 +21,18 @@ import Footer from "@/components/organisms/Footer";
 export default function Home() {
     const t = useTranslations("Landing");
     const [showDemo, setShowDemo] = useState(false);
+    const router = useRouter();
+    const supabase = createClient();
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.replace("/dashboard");
+            }
+        };
+        checkSession();
+    }, [router, supabase]);
 
     return (
         <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center relative overflow-hidden selection:bg-accent-primary/30 transition-colors duration-700">

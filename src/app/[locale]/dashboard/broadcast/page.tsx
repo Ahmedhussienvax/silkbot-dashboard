@@ -299,7 +299,9 @@ export default function CampaignsPage() {
                                     >
                                         <option value="" disabled className="bg-background text-foreground">{t("select_hub_placeholder")}</option>
                                         {instances.map(inst => (
-                                            <option key={inst.instanceName} value={inst.instanceName} className="bg-background text-foreground">{inst.instanceName}</option>
+                                            <option key={inst.instanceName} value={inst.instanceName} className="bg-background text-foreground">
+                                                {inst.instanceName.replace(/_/g, ' ')}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
@@ -320,7 +322,7 @@ export default function CampaignsPage() {
                                                         : "bg-foreground/5 border-glass-border text-text-muted hover:text-foreground hover:bg-foreground/10"
                                                 )}
                                             >
-                                                {tag}
+                                                {tag.replace(/_/g, ' ')}
                                             </button>
                                         )) : (
                                             <p className="text-[10px] text-text-dim font-bold uppercase tracking-widest italic pt-2">{t("no_segments")}</p>
