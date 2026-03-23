@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@/lib/supabase-browser";
+import { z } from "zod";
+import { supabase } from "@/lib/supabase-browser";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/atoms/Button";
@@ -56,9 +57,17 @@ export default function SettingsPage() {
     const [qrCode, setQrCode] = useState<string | null>(null);
     const [traceSteps, setTraceSteps] = useState<any[]>([]);
     
-    const supabase = createClient();
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    
     const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL;
     const MASTER_KEY = process.env.NEXT_PUBLIC_GATEWAY_API_KEY;
+
+    // Validation Schema
+    const settingsSchema = z.object({
+        name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name too long").regex(/^[a-zA-Z0-9\s-]+$/, "Invalid characters in name"),
+        industry: z.string().min(2, "Industry must be at least 2 characters").max(30, "Industry too long"),
+        bot_name: z.string().min(2, "Bot name must be at least 2 characters").max(30, "Bot name too long"),
+    });
 
     // Data Fetching
     const loadSystemData = useCallback(async () => {
@@ -86,7 +95,7 @@ export default function SettingsPage() {
                     .limit(5);
                 
                 if (traceData) {
-                    setTraceSteps(traceData.map(tr => ({
+                    setTraceSteps(traceData.map((tr: any) => ({
                         id: tr.id,
                         type: tr.trace_type,
                         content: tr.content,
@@ -128,19 +137,19 @@ export default function SettingsPage() {
                 headers: { "apikey": key }
             });
             const data = await res.json();
-            if (data.code || data.base64) {
-                setQrCode(data.base64 || data.code);
-                setWsStatus("qr");
-                toast.success(wt("qr_generated"));
-            } else {
-                // If instance doesn't exist, create it
-                await fetch(`${GATEWAY_URL}/instance/create`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "apikey": key },
-                    body: JSON.stringify({ instanceName: tenant.wa_session })
-                });
-                setTimeout(handleConnectWs, 2000);
-            }
+                if (data.code || data.base64) {
+                    setQrCode(data.base64 || data.code);
+                    setWsStatus("qr");
+                    toast.success(wt("qr_generated"));
+                } else {
+                    // If instance doesn't exist, create it
+                    await fetch(`${GATEWAY_URL}/instance/create`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "apikey": key },
+                        body: JSON.stringify({ instanceName: tenant.wa_session })
+                    });
+                    setTimeout(() => handleConnectWs(), 2000);
+                }
         } catch (err) {
             setWsStatus("disconnected");
             toast.error(wt("session_init_failed"));
@@ -167,6 +176,26 @@ export default function SettingsPage() {
     // Save All Logic
     const handleGlobalSave = async () => {
         if (!tenant || !botConfig) return;
+        setErrors({});
+        
+        // Validate
+        const validation = settingsSchema.safeParse({
+            name: tenant.name,
+            industry: tenant.industry,
+            bot_name: botConfig.bot_name
+        });
+
+        if (!validation.success) {
+            const newErrors: Record<string, string> = {};
+            validation.error.issues.forEach(issue => {
+                const path = issue.path[0] as string;
+                newErrors[path] = issue.message;
+            });
+            setErrors(newErrors);
+            toast.error("Validation failed", { description: Object.values(newErrors)[0] });
+            return;
+        }
+
         setSaving(true);
         try {
             // Update Tenant
@@ -309,11 +338,13 @@ export default function SettingsPage() {
                                             <InputField 
                                                 label={t("business_name")} 
                                                 value={tenant?.name || ""} 
+                                                error={errors.name}
                                                 onChange={(val) => setTenant(prev => prev ? { ...prev, name: val } : null)}
                                             />
                                             <InputField 
                                                 label={t("industry")} 
                                                 value={tenant?.industry || ""} 
+                                                error={errors.industry}
                                                 onChange={(val) => setTenant(prev => prev ? { ...prev, industry: val } : null)}
                                             />
                                             <div className="md:col-span-2 space-y-4">
@@ -401,6 +432,7 @@ export default function SettingsPage() {
                                             <InputField 
                                                 label={bt("name")} 
                                                 value={botConfig?.bot_name || ""} 
+                                                error={errors.bot_name}
                                                 onChange={(val) => setBotConfig(prev => prev ? { ...prev, bot_name: val } : null)}
                                             />
                                             <div className="space-y-4">
@@ -749,20 +781,27 @@ export default function SettingsPage() {
     );
 }
 
-function InputField({ label, value, onChange, placeholder }: { label: string, value: string, onChange: (val: string) => void, placeholder?: string }) {
+function InputField({ label, value, onChange, placeholder, error }: { label: string, value: string, onChange: (val: string) => void, placeholder?: string, error?: string }) {
     return (
         <div className="space-y-4 group">
-            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 transition-colors group-focus-within:text-accent-primary italic">
-                {label}
-            </label>
+            <div className="flex items-center justify-between ml-2">
+                <label className={cn(
+                    "text-[11px] font-black uppercase tracking-[0.3em] transition-colors italic",
+                    error ? "text-red-500" : "text-text-dim group-focus-within:text-accent-primary"
+                )}>
+                    {label}
+                </label>
+                {error && <span className="text-[9px] font-black text-red-500 uppercase tracking-widest animate-pulse">{error}</span>}
+            </div>
             <input
                 type="text"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 className={cn(
-                    "w-full bg-foreground/[0.03] border border-glass-border rounded-3xl px-8 py-5 text-[15px] text-foreground",
-                    "focus:ring-2 focus:ring-accent-primary/30 outline-none transition-all font-semibold",
+                    "w-full bg-foreground/[0.03] border rounded-3xl px-8 py-5 text-[15px] text-foreground",
+                    "focus:ring-2 outline-none transition-all font-semibold",
+                    error ? "border-red-500/50 focus:ring-red-500/30" : "border-glass-border focus:ring-accent-primary/30",
                     "placeholder:text-text-dim/40 placeholder:font-medium backdrop-blur-md group-hover:bg-foreground/[0.05] shadow-inner"
                 )}
             />

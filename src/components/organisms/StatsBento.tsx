@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { TrendingUp, MessageSquare, Send, Users, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase-browser";
 
 import { useTranslations } from "next-intl";
 import { premiumEntrance, hoverLift } from "@/lib/motion";

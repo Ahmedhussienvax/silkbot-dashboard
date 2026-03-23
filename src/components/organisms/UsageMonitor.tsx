@@ -21,6 +21,7 @@ export default function UsageMonitor() {
         const fetchQuota = async () => {
             try {
                 const { data, error } = await supabase
+                    .schema("silkbot")
                     .from("tenant_quotas")
                     .select("*")
                     .limit(1)

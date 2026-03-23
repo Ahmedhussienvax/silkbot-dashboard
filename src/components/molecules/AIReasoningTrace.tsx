@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Brain, Sparkles, MessageSquare, Zap, Target, History, Clock, ShieldCheck, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase-browser";
 import { motion, AnimatePresence } from "framer-motion";
 import { premiumEntrance, staggerContainer, staggerItem, glowPulse, shake, bounce } from "@/lib/motion";
 
@@ -56,9 +56,9 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                     schema: 'public',
                     table: 'ai_traces',
                 },
-                (payload) => {
+                (payload: { new: any }) => {
                     setIsThinking(true);
-                    const newTrace = payload.new as any;
+                    const newTrace = payload.new;
                     const newStep: TraceStep = {
                         id: newTrace.id || Math.random().toString(),
                         type: (newTrace.trace_type || 'reasoning') as any,

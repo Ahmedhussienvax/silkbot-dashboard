@@ -35,7 +35,7 @@ export default async function LocaleLayout({
                             {children}
                         </Providers>
                     </ErrorBoundary>
-                    <Toaster richColors position="top-center" expand={true} />
+                    <Toaster richColors position="top-center" expand={false} visibleToasts={1} closeButton />
                 </NextIntlClientProvider>
             </body>
         </html>

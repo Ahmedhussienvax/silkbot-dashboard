@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase-browser";
 import { useTranslations } from "next-intl";
 import { MessageSquare, UserPlus, Server, ShieldCheck, Clock, Activity, Brain, Sparkles } from "lucide-react";
 
@@ -37,8 +37,8 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                     schema: 'public',
                     table: 'silkbot_audit_logs',
                 },
-                (payload) => {
-                    const log = payload.new as any;
+                (payload: { new: any }) => {
+                    const log = payload.new;
                     const newActivity: ActivityItem = {
                         id: log.id,
                         type: log.type === "message" ? "message" : (log.type === "ai" ? "ai" : "system"),
