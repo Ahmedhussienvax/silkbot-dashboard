@@ -38,7 +38,7 @@ export default function DashboardHeader({ searchPlaceholder }: { searchPlacehold
                     className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl hover:border-accent-primary/30 hover:bg-accent-primary/5 transition-all group"
                 >
                     <Globe className="w-4 h-4 text-slate-500 group-hover:text-accent-primary transition-colors" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{locale === 'en' ? 'AR' : 'EN'}</span>
+                    <span className="text-[10px] font-black text-foreground uppercase tracking-widest">{locale === 'en' ? 'AR' : 'EN'}</span>
                 </button>
 
                 {/* Logout Action (UX-01 / UI-09) */}
@@ -47,7 +47,7 @@ export default function DashboardHeader({ searchPlaceholder }: { searchPlacehold
                     className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all group"
                 >
                     <LogOut className="w-4 h-4 text-red-500 group-hover:text-white transition-colors" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{t("logout") || "Logout"}</span>
+                    <span className="text-[10px] font-black text-red-500 group-hover:text-white uppercase tracking-widest transition-colors">{t("logout") || "Logout"}</span>
                 </button>
             </div>
         </header>

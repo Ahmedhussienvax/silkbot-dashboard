@@ -3,8 +3,24 @@ import React from "react";
 import { Link } from "@/i18n/routing";
 import { ChevronLeft, Zap, Target, Shield, Check } from "lucide-react";
 import Footer from "@/components/organisms/Footer";
+import { createClient } from "@/lib/supabase-browser";
+import { useEffect, useState } from "react";
 
 export default function PricingPage() {
+    const [user, setUser] = useState<any>(null);
+    const supabase = createClient();
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        checkUser();
+    }, []);
+
+    const targetHref = user ? "/dashboard" : "/register";
+    const buttonText = user ? "Activate Upgrade" : "Initialize Node";
+
     return (
         <main className="min-h-screen bg-background flex flex-col">
             <div className="w-full max-w-6xl px-8 py-20 mx-auto flex-1">
@@ -50,10 +66,10 @@ export default function PricingPage() {
                                 </div>
 
                                 <Link 
-                                    href="/register"
+                                    href={targetHref as any}
                                     className={`block w-full text-center py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${plan.popular ? 'bg-accent-primary text-white hover:scale-105 shadow-lg' : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'}`}
                                 >
-                                    Initialize Node
+                                    {buttonText}
                                 </Link>
                             </div>
                         ))}

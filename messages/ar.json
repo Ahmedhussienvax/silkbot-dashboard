@@ -381,8 +381,8 @@
     "btn_checking": "جاري التحقق...",
     "error_credentials": "خطأ في البريد الإلكتروني أو كلمة المرور",
     "error_unexpected": "حدث خطأ غير متوقع",
-    "error_server": "تعذر الاتصال بالسيرفر، تأكد من إعدادات Supabase",
-    "footer": "SilkBot &copy; 2026. Powered by Supabase + Next.js"
+    "footer": "SilkBot &copy; 2026. Powered by Supabase + Next.js",
+    "no_account": "ليس لديك حساب؟ سجل الآن ✨"
   },
   "Register": {
     "title": "SilkBot",

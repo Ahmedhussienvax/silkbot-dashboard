@@ -377,7 +377,8 @@
     "error_credentials": "Invalid email or password",
     "error_unexpected": "An unexpected error occurred",
     "error_server": "Could not connect to server. Check Supabase settings.",
-    "footer": "SilkBot & copy; 2026. Powered by Supabase + Next.js"
+    "footer": "SilkBot & copy; 2026. Powered by Supabase + Next.js",
+    "no_account": "Don't have an account? Create one ✨"
   },
   "Register": {
     "title": "SilkBot",

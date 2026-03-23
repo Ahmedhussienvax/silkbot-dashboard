@@ -199,13 +199,16 @@ export default function RegisterPage() {
                     </form>
                 </motion.div>
 
-                <div className="text-center mt-10">
+                <div className="text-center mt-10 space-y-4">
                     <Link 
                         href="/login"
-                        className="text-text-dim text-[10px] font-black uppercase tracking-[0.3em] hover:text-accent-primary transition-colors italic decoration-accent-primary underline-offset-4 hover:underline"
+                        className="block text-accent-primary text-[10px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all italic decoration-accent-primary underline-offset-8 hover:underline"
                     >
                         {t("footer")}
                     </Link>
+                    <p className="text-text-dim text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
+                        SilkBot & copy; 2026. Powered by Supabase + Next.js
+                    </p>
                 </div>
             </div>
         </main>
