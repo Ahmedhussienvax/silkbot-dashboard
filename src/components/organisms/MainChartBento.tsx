@@ -25,9 +25,9 @@ const GlassTooltip = ({ active, payload, label }: any) => {
                         <div key={idx} className="flex items-center justify-between gap-8">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.stroke }} />
-                                <span className="text-[11px] font-black text-white/70 uppercase tracking-widest">{item.name}</span>
+                                <span className="text-[11px] font-black text-foreground/70 uppercase tracking-widest">{item.name}</span>
                             </div>
-                            <span className="text-sm font-black text-white tabular-nums drop-shadow-sm">{item.value.toLocaleString()}</span>
+                            <span className="text-sm font-black text-foreground tabular-nums drop-shadow-sm">{item.value.toLocaleString()}</span>
                         </div>
                     ))}
                 </div>
@@ -153,8 +153,8 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                         <ArrowUpRight className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
-                        <p className="text-xl font-black text-white tracking-tighter drop-shadow-md">{t("peak_volume_value")}</p>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
+                        <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("peak_volume_value")}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-5 group/stat-mini">
@@ -162,8 +162,8 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                         <CheckCircle2 className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
-                        <p className="text-xl font-black text-white tracking-tighter drop-shadow-md">{t("success_rate_value")}</p>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
+                        <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("success_rate_value")}</p>
                     </div>
                 </div>
             </div>

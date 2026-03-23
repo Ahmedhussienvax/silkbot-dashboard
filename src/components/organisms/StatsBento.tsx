@@ -142,7 +142,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                             {stat.label}
                         </h3>
                         <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-black text-white tracking-tighter drop-shadow-2xl">
+                            <span className="text-3xl font-black text-foreground tracking-tighter drop-shadow-2xl">
                                 {stat.value}
                             </span>
                         </div>

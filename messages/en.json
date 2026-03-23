@@ -114,6 +114,24 @@
     "ai_trace_detected": "New AI Trace detected",
     "cluster_label": "Cluster {id}"
   },
+  "Footer": {
+    "mission_desc": "The next-generation neural platform for WhatsApp automation and intelligence.",
+    "platform": "Platform",
+    "company": "Company",
+    "legal": "Legal",
+    "link_dashboard": "Dashboard",
+    "link_campaigns": "Campaigns",
+    "link_api_docs": "API Docs",
+    "link_pricing": "Pricing",
+    "link_about": "About Us",
+    "link_contact": "Contact Support",
+    "link_careers": "Careers",
+    "link_blog": "Neural Blog",
+    "link_privacy": "Privacy Policy",
+    "link_terms": "Terms of Service",
+    "link_security": "Security",
+    "link_cookies": "Cookies"
+  },
   "Sidebar": {
     "dashboard": "Dashboard",
     "kanban": "Kanban",

@@ -11,6 +11,9 @@ import AIReasoningTrace from "@/components/molecules/AIReasoningTrace";
 import SearchInput from "@/components/molecules/SearchInput";
 import DashboardClient from "./DashboardClient";
 
+import UsageMonitor from "@/components/organisms/UsageMonitor";
+import DashboardHeader from "@/components/molecules/DashboardHeader";
+
 export default async function DashboardPage(props: { 
     params: Promise<{ locale: string }>;
     searchParams: Promise<{ search?: string }>;
@@ -53,7 +56,7 @@ export default async function DashboardPage(props: {
         status: "success" as const
     })) || [];
 
-    // Mock chart data (In production, this could also be server-side or fetched via Server Action)
+    // Mock chart data
     const chartData = [
         { name: "00:00", received: 400, sent: 240 },
         { name: "04:00", received: 300, sent: 139 },
@@ -80,19 +83,8 @@ export default async function DashboardPage(props: {
 
     return (
         <DashboardClient>
-
             <main className="flex-1 flex flex-col relative overflow-hidden">
-                <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-mesh-1 blur-[100px] opacity-30 font-black" />
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-mesh-2 blur-[100px] opacity-30 font-black" />
-                </div>
-
-                {/* Dashboard Top Bar (Simplified for RSC) */}
-                <header className="h-24 sticky top-0 z-40 bg-zinc-900/5 dark:bg-black/10 backdrop-blur-3xl border-b border-zinc-200/50 dark:border-white/5 px-10 flex items-center justify-between">
-                    <div className="flex items-center gap-12 flex-1">
-                        <SearchInput placeholder={t("search_placeholder")} />
-                    </div>
-                </header>
+                <DashboardHeader searchPlaceholder={t("search_placeholder")} />
 
                 <div className="p-10 space-y-12 relative z-10 overflow-y-auto max-h-[calc(100vh-6rem)]">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -100,7 +92,7 @@ export default async function DashboardPage(props: {
                             <h1 className="text-4xl font-black tracking-tight text-foreground leading-none">
                                 {t("title")} <span className="text-accent-primary italic">.</span>
                             </h1>
-                            <p className="text-slate-500 font-bold text-sm opacity-80">{t("welcome")}</p>
+                            <p className="text-[var(--text-muted)] font-bold text-sm opacity-80">{t("welcome")}</p>
                         </div>
                     </div>
 
@@ -108,6 +100,7 @@ export default async function DashboardPage(props: {
                         <div className="bento-item-xl">
                             <StatsBento stats={stats} />
                         </div>
+                        <UsageMonitor />
                         <MainChartBento data={chartData} />
                         <MetricsBento />
                         <ActivityStream activities={activities} />

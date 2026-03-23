@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Brain, Sparkles, MessageSquare, Zap, Target, History, Clock, ShieldCheck, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase-client";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { premiumEntrance, staggerContainer, staggerItem, glowPulse, shake, bounce } from "@/lib/motion";
 
 interface TraceStep {
@@ -20,12 +20,30 @@ interface TraceStep {
     };
 }
 
+interface TraceGroup {
+    trace_id: string;
+    steps: TraceStep[];
+    last_updated: string;
+}
+
 export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?: TraceStep[] }) {
-    const [steps, setSteps] = useState<TraceStep[]>(initialSteps);
+    const [groups, setGroups] = useState<TraceGroup[]>([]);
     const [isThinking, setIsThinking] = useState(false);
 
     useEffect(() => {
-        setSteps(initialSteps);
+        if (initialSteps.length > 0) {
+            const grouped = initialSteps.reduce((acc, step) => {
+                const traceId = (step as any).trace_id || 'manual_sync';
+                const existing = acc.find(g => g.trace_id === traceId);
+                if (existing) {
+                    existing.steps.push(step);
+                } else {
+                    acc.push({ trace_id: traceId, steps: [step], last_updated: step.timestamp });
+                }
+                return acc;
+            }, [] as TraceGroup[]);
+            setGroups(grouped.slice(0, 5));
+        }
     }, [initialSteps]);
 
     useEffect(() => {
@@ -44,11 +62,28 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                     const newStep: TraceStep = {
                         id: newTrace.id || Math.random().toString(),
                         type: (newTrace.trace_type || 'reasoning') as any,
+                        severity: newTrace.severity as any,
                         content: newTrace.content || "Processing...",
                         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                         metadata: newTrace.metadata,
                     };
-                    setSteps(prev => [newStep, ...prev].slice(0, 10));
+                    
+                    const traceId = newTrace.trace_id || 'system_bg';
+                    
+                    setGroups(prev => {
+                        const existingIdx = prev.findIndex(g => g.trace_id === traceId);
+                        if (existingIdx > -1) {
+                            const updated = [...prev];
+                            updated[existingIdx] = {
+                                ...updated[existingIdx],
+                                steps: [newStep, ...updated[existingIdx].steps].slice(0, 5),
+                                last_updated: newStep.timestamp
+                            };
+                            return updated;
+                        } else {
+                            return [{ trace_id: traceId, steps: [newStep], last_updated: newStep.timestamp }, ...prev].slice(0, 5);
+                        }
+                    });
                     setTimeout(() => setIsThinking(false), 2000);
                 }
             )
@@ -58,8 +93,6 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
             supabase.removeChannel(channel);
         };
     }, []);
-
-    const t = useTranslations("Bot");
 
     const getIcon = (step: TraceStep) => {
         if (step.type === 'action' && step.metadata?.tool_name) {
@@ -83,7 +116,7 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
     };
 
     const getColor = (step: TraceStep) => {
-        if (step.severity === 'error' || step.severity === 'critical') return "text-red-400 bg-red-400/10 border-red-400/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+        if (step.severity === 'error' || step.severity === 'critical') return "text-red-400 bg-red-400/10 border-red-400/20";
         if (step.severity === 'warning') return "text-amber-400 bg-amber-400/10 border-amber-400/20";
         
         switch (step.type) {
@@ -93,115 +126,94 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
             case 'thought': return "text-purple-300 bg-purple-500/10 border-purple-500/20 animate-pulse";
             case 'action': return "text-cyan-400 bg-cyan-400/10 border-cyan-400/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]";
             case 'observation': return "text-indigo-400 bg-indigo-400/10 border-indigo-400/20";
-            case 'generation': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/20 glow-secondary";
+            case 'generation': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/20";
             case 'error': return "text-red-400 bg-red-400/10 border-red-400/20";
             default: return "text-slate-400 bg-slate-400/10 border-slate-400/20";
         }
     };
 
     return (
-        <div className="bg-zinc-100/50 dark:bg-slate-900/60 backdrop-blur-2xl border border-zinc-200 dark:border-white/5 rounded-[2.5rem] p-8 mt-4 overflow-hidden relative group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/5 blur-[100px] -z-10 group-hover:bg-purple-600/10 transition-all duration-1000" />
+        <div className="glass-card p-8 overflow-hidden relative group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary/5 blur-[100px] -z-10 group-hover:bg-accent-primary/10 transition-all duration-1000" />
             
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                     <motion.div 
                         variants={glowPulse}
                         animate={isThinking ? "animate" : "initial"}
-                        className="p-3 bg-zinc-100 dark:bg-white/5 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-inner relative"
+                        className="p-3 bg-white/5 rounded-2xl border border-white/10 shadow-inner relative"
                     >
                         {isThinking ? (
-                            <Loader2 className="w-5 h-5 text-purple-400 animate-spin" />
+                            <Loader2 className="w-5 h-5 text-accent-primary animate-spin" />
                         ) : (
-                            <Brain className="w-5 h-5 text-purple-400" />
-                        )}
-                        {isThinking && (
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-purple-500 rounded-full animate-ping" />
+                            <Brain className="w-5 h-5 text-accent-primary" />
                         )}
                     </motion.div>
                     <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-xl font-black text-white tracking-tight">AI Reasoning Protocol</h3>
-                            {isThinking && (
-                                <motion.span 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="text-[9px] font-black text-purple-400 uppercase tracking-widest bg-purple-500/10 px-2 py-0.5 rounded-md"
-                                >
-                                    Thinking...
-                                </motion.span>
-                            )}
-                        </div>
-                        <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">Neural Hub Transparency v3.0</p>
+                        <h3 className="text-xl font-black text-white tracking-tight italic">Neural Trace Console</h3>
+                        <p className="text-[11px] text-slate-500 font-black uppercase tracking-widest mt-0.5">Observability Layer v5.7.0</p>
                     </div>
-                </div>
-                <div className="flex gap-1.5">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
-                    ))}
                 </div>
             </div>
 
-            <div className="space-y-6 relative">
-                {steps.length === 0 ? (
+            <div className="space-y-10 relative">
+                {groups.length === 0 ? (
                     <motion.div 
                         variants={premiumEntrance}
                         initial="initial"
                         animate="animate"
-                        className="py-12 text-center space-y-4 opacity-40"
+                        className="py-12 text-center opacity-40"
                     >
-                        <div className="w-12 h-12 rounded-full border-2 border-dashed border-zinc-200 dark:border-white/10 mx-auto flex items-center justify-center animate-spin-slow text-purple-400/50">
-                            <Brain className="w-6 h-6 animate-pulse" />
-                        </div>
-                        <p className="text-sm font-black text-muted-foreground italic uppercase tracking-widest">Waiting for incoming thoughts...</p>
+                        <p className="text-sm font-black text-slate-500 italic uppercase tracking-widest">Waiting for incoming thoughts...</p>
                     </motion.div>
                 ) : (
-                    <motion.div 
-                        variants={staggerContainer}
-                        initial="initial"
-                        animate="animate"
-                        className="space-y-4"
-                    >
-                        {steps.map((step, idx) => (
-                            <motion.div 
-                                key={step.id} 
-                                variants={staggerItem}
-                                className="relative flex gap-4"
-                            >
-                                {idx !== steps.length - 1 && (
-                                    <div className="absolute left-6 top-12 bottom-0 w-px bg-gradient-to-b from-purple-500/20 to-transparent" />
-                                )}
-                                
-                                <motion.div 
-                                    variants={step.type === 'error' ? shake : step.type === 'observation' ? bounce : staggerItem}
-                                    animate="animate"
-                                    className={cn(
-                                        "flex-shrink-0 w-12 h-12 rounded-2xl border flex items-center justify-center shadow-lg transition-transform hover:scale-110",
-                                        getColor(step)
-                                    )}
-                                >
-                                    {getIcon(step)}
-                                </motion.div>
-                                
-                                <div className="flex-1 pt-1">
-                                    <div className="flex items-center gap-2 mb-1.5">
-                                        <span className={cn("text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md", getColor(step))}>
-                                            {step.type}
-                                        </span>
-                                        {step.metadata?.tool_name && (
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white/40 italic">
-                                                via {step.metadata.tool_name}
-                                            </span>
-                                        )}
-                                        <span className="text-[9px] text-muted-foreground font-mono ml-auto">{step.timestamp}</span>
-                                    </div>
-                                    <p className="text-sm text-foreground/80 leading-relaxed font-medium bg-zinc-100/5 dark:bg-black/40 p-5 rounded-3xl border border-zinc-200/10 dark:border-white/5 hover:border-zinc-300 dark:hover:border-white/10 transition-all">
-                                        {step.content}
-                                    </p>
+                    <div className="space-y-12">
+                        {groups.map((group) => (
+                            <div key={group.trace_id} className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-px flex-1 bg-white/5" />
+                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic">
+                                        Thought_Chain: {group.trace_id.slice(0, 8)}
+                                    </span>
+                                    <div className="h-px flex-1 bg-white/5" />
                                 </div>
-                            </motion.div>
+
+                                <motion.div 
+                                    variants={staggerContainer}
+                                    initial="initial"
+                                    animate="animate"
+                                    className="space-y-4"
+                                >
+                                    {group.steps.map((step, idx) => (
+                                        <motion.div 
+                                            key={step.id} 
+                                            variants={staggerItem}
+                                            className="relative flex gap-4"
+                                        >
+                                            <div className={cn(
+                                                "flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center shadow-lg transition-transform",
+                                                getColor(step)
+                                            )}>
+                                                {getIcon(step)}
+                                            </div>
+                                            
+                                            <div className="flex-1 pt-0.5">
+                                                <div className="flex items-center gap-2 mb-1.5">
+                                                    <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md", getColor(step))}>
+                                                        {step.type}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-500 font-mono ml-auto">{step.timestamp}</span>
+                                                </div>
+                                                <p className="text-sm text-slate-300 leading-relaxed font-medium bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                                                    {step.content}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </div>
                         ))}
-                    </motion.div>
+                    </div>
                 )}
             </div>
         </div>

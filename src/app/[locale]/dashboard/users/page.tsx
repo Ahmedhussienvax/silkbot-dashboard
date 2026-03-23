@@ -50,16 +50,30 @@ export default function ContactsPage() {
 
     const fetchContacts = async () => {
         try {
+            // Updated to source from the 'silkbot' secure view (v5.7.0 specification)
             const { data, error } = await supabase
                 .schema("silkbot")
-                .from("silkbot_contacts")
-                .select("*")
-                .order("last_message_at", { ascending: false });
+                .from("contacts")
+                .select("*");
 
             if (error) throw error;
-            setContacts(data || []);
+            
+            // Map the view fields to the internal Contact interface
+            const mappedData: Contact[] = (data || []).map((c: any) => ({
+                id: c.id,
+                jid: c.jid || c.remoteJid || `${c.phone}@s.whatsapp.net`,
+                push_name: c.name || c.pushName || "UNIDENTIFIED",
+                last_message_at: c.last_message_at ? new Date(c.last_message_at).getTime() / 1000 : 0,
+                instance_name: c.instance_name || "main-hub",
+                lead_value: Number(c.lead_value || 0),
+                lead_source: c.lead_source || "Organic",
+                tags: c.tags || [],
+                notes: c.notes || c.lead_notes
+            }));
+
+            setContacts(mappedData);
         } catch (error: any) {
-            console.error("🔴 [INFRA-01] Node Sync Failure:", error);
+            console.error("🔴 [FAIL-03] Node Sync Failure:", error);
             toast.error("Signal Disruption", { description: "Failed to synchronize with neural network. Please retry." });
         } finally {
             setLoading(false);

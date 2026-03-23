@@ -114,6 +114,24 @@
     "ai_trace_detected": "تم اكتشاف تتبع AI جديد",
     "cluster_label": "كلاستر {id}"
   },
+  "Footer": {
+    "mission_desc": "الجيل القادم من المنصات العصبية لأتمتة وذكاء واتساب.",
+    "platform": "المنصة",
+    "company": "الشركة",
+    "legal": "قانوني",
+    "link_dashboard": "لوحة التحكم",
+    "link_campaigns": "الحملات",
+    "link_api_docs": "وثائق API",
+    "link_pricing": "الأسعار",
+    "link_about": "من نحن",
+    "link_contact": "تواصل معنا",
+    "link_careers": "الوظائف",
+    "link_blog": "المدونة العصبية",
+    "link_privacy": "سياسة الخصوصية",
+    "link_terms": "شروط الخدمة",
+    "link_security": "الأمان",
+    "link_cookies": "ملفات تعريف الارتباط"
+  },
   "Sidebar": {
     "dashboard": "لوحة التحكم",
     "kanban": "لوحة كانبان",

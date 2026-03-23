@@ -121,13 +121,19 @@ export default function Home() {
                             >
                                 <X className="w-6 h-6" />
                             </button>
-                            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20">
-                                <div className="text-center">
-                                    <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-6 mx-auto animate-pulse border border-white/20">
-                                        <Play className="w-10 h-10 fill-white" />
-                                    </div>
-                                    <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">System Demonstration Mode</h2>
-                                    <p className="text-slate-400 mt-2">Initializing Neural Interface v4.5...</p>
+                            <div className="absolute inset-0 bg-slate-900 overflow-hidden">
+                                <iframe 
+                                    className="w-full h-full border-none opacity-80"
+                                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&controls=0&loop=1" 
+                                    title="System Demonstration"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-slate-950 to-transparent" />
+                                <div className="absolute bottom-12 left-12 z-20 space-y-2">
+                                    <div className="text-[10px] font-black text-accent-primary uppercase tracking-[0.4em] italic outline-none">Neural Hub Demonstration</div>
+                                    <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">Automated Intelligence <span className="text-accent-primary">v4.5</span></h2>
+                                    <p className="text-slate-400 font-bold max-w-lg">Watching a secure neural link between our orchestrator and the WhatsApp gateway.</p>
                                 </div>
                             </div>
                         </motion.div>
