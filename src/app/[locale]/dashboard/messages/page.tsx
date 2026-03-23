@@ -95,9 +95,10 @@ export default function InboxPage() {
         queryFn: async () => {
             if (!activeConv) return [];
             const { data, error } = await supabase
-                .from("silkbot_inbox")
+                .schema("silkbot")
+                .from("inbox")
                 .select("*")
-                .eq("composite_chat_id", activeConv)
+                .eq("contact_jid", activeConvData?.contact_jid || "")
                 .order("sent_at", { ascending: false })
                 .limit(50);
             if (error) throw error;
@@ -120,26 +121,24 @@ export default function InboxPage() {
 
     const activeConvData = conversations.find(c => c.composite_chat_id === activeConv);
 
-    // Real-time listener for new messages
+    // Real-time listener for new messages (v5.7.1 Schema)
     useEffect(() => {
         const channel = supabase
             .channel("realtime-inbox")
             .on(
                 "postgres_changes",
-                { event: "INSERT", schema: "public", table: "silkbot_inbox" },
+                { event: "INSERT", schema: "silkbot", table: "inbox" },
                 (payload) => {
-                    const newMessage = payload.new as Message;
-                    queryClient.setQueryData(["messages", newMessage.composite_chat_id], (old: Message[] = []) => {
-                        if (old.some(m => m.message_id === newMessage.message_id)) return old;
-                        return [...old, newMessage];
-                    });
+                    const newMessage = payload.new as any;
+                    // We invalidate queries here because we need consistent data from the synchronized view
+                    queryClient.invalidateQueries({ queryKey: ["messages", activeConv] });
                     queryClient.invalidateQueries({ queryKey: ["conversations"] });
                 }
             )
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-    }, [supabase, queryClient]);
+    }, [supabase, queryClient, activeConv]);
 
     // Clear live traces when a new bot message arrives or when switching conversations
     useEffect(() => {

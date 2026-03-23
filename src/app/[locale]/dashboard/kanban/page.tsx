@@ -27,20 +27,20 @@ export default function PipelinesPage() {
       try {
         const { data, error } = await supabase
           .schema('silkbot')
-          .from('silkbot_contacts')
+          .from('contacts')
           .select('*')
-          .limit(50);
+          .limit(100);
 
         if (error) throw error;
 
-        // Map existing contacts to Lead interface
+        // Map existing contacts to Lead interface (v5.7.1 Schema)
         const mappedLeads: Lead[] = (data || []).map((c: any) => ({
-          id: c.jid || c.contact_jid || c.remoteJid,
-          name: c.push_name || c.name || "UNIDENTIFIED",
+          id: c.phone ? `${c.phone}@s.whatsapp.net` : (c.jid || c.contact_jid),
+          name: c.name || "UNIDENTIFIED",
           phone: c.phone || 'Unknown',
           value: Number(c.lead_value || 0),
           status: c.lead_status || 'new',
-          instance_name: c.instance_name || c.instanceId,
+          instance_name: c.tenant_id || "hub-alpha",
         }));
 
         setLeads(mappedLeads);

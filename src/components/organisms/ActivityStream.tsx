@@ -34,43 +34,20 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                 'postgres_changes',
                 {
                     event: 'INSERT',
-                    schema: 'silkbot',
-                    table: 'silkbot_messages',
+                    schema: 'public',
+                    table: 'silkbot_audit_logs',
                 },
                 (payload) => {
-                    const newMsg = payload.new as any;
+                    const log = payload.new as any;
                     const newActivity: ActivityItem = {
-                        id: newMsg.message_id,
-                        type: "message",
-                        user: newMsg.contact_push_name || "Unknown",
-                        action: newMsg.content?.body || "Sent a message",
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                        status: "success"
+                        id: log.id,
+                        type: log.type === "message" ? "message" : (log.type === "ai" ? "ai" : "system"),
+                        user: log.user_name || "System",
+                        action: log.message || "Activity recorded",
+                        time: new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        status: log.severity === "error" ? "warning" : (log.type === "ai" ? "ai" : "success")
                     };
                     setActivities(prev => [newActivity, ...prev].slice(0, 10));
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'ai_traces',
-                },
-                (payload) => {
-                    const newTrace = payload.new as any;
-                    // Only show important trace types in the global stream (e.g., action, error, generation)
-                    if (["action", "error", "generation"].includes(newTrace.trace_type)) {
-                        const newActivity: ActivityItem = {
-                            id: newTrace.id,
-                            type: "ai",
-                            user: `AI Agent (${newTrace.agent_name})`,
-                            action: newTrace.content,
-                            time: new Date(newTrace.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                            status: newTrace.trace_type === "error" ? "warning" : "ai"
-                        };
-                        setActivities(prev => [newActivity, ...prev].slice(0, 10));
-                    }
                 }
             )
             .subscribe();

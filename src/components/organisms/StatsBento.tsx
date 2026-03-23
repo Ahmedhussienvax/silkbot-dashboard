@@ -33,7 +33,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                 {
                     event: 'INSERT',
                     schema: 'silkbot',
-                    table: 'silkbot_messages',
+                    table: 'inbox',
                 },
                 () => {
                     setPulse("messages");

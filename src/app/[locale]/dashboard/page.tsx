@@ -33,27 +33,27 @@ export default async function DashboardPage(props: {
         botEnabled: statsData?.bot_active || false
     };
 
+    // Data Fetching for Activity Stream (v5.7.1 Audit Logs Specification)
     let activityQuery = supabase
-        .schema("silkbot")
-        .from("silkbot_messages")
+        .from("silkbot_audit_logs")
         .select("*")
-        .order("sent_at", { ascending: false })
-        .limit(5);
+        .order("created_at", { ascending: false })
+        .limit(10);
 
-    // Apply search filter if present
+    // Apply search filter if present (searching message content in logs)
     if (searchQuery) {
-        activityQuery = activityQuery.ilike("contact_push_name", `%${searchQuery}%`);
+        activityQuery = activityQuery.ilike("message", `%${searchQuery}%`);
     }
 
     const { data: activityData } = await activityQuery;
 
-    const activities = activityData?.map((m: any) => ({
-        id: m.message_id,
-        type: "message" as const,
-        user: m.contact_push_name || "Unknown",
-        action: m.content?.body || "Sent a message",
-        time: m.sent_at ? new Date(m.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Recently",
-        status: "success" as const
+    const activities = activityData?.map((log: any) => ({
+        id: log.id,
+        type: (log.type === "message" ? "message" : (log.type === "ai" ? "ai" : "system")) as any,
+        user: log.user_name || "System",
+        action: log.message || "Activity recorded",
+        time: log.created_at ? new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Recently",
+        status: (log.severity === "error" ? "warning" : (log.type === "ai" ? "ai" : "success")) as any
     })) || [];
 
     // Mock chart data
@@ -67,18 +67,19 @@ export default async function DashboardPage(props: {
         { name: "23:59", received: 349, sent: 430 },
     ];
 
+    // Data Fetching for AI Traces (v5.7.1 Public Specification)
     const { data: traceData } = await supabase
-        .schema("silkbot")
         .from("ai_traces")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(5);
 
     const initialTraces = traceData?.map((t: any) => ({
-        id: t.trace_id,
-        type: t.step_type as any,
+        id: t.id,
+        type: (t.trace_type || "thought") as any,
         content: t.content,
         timestamp: t.created_at ? new Date(t.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Recently",
+        agent_name: t.agent_name
     })) || [];
 
     return (
