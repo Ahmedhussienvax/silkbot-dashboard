@@ -44,7 +44,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-80 h-screen sticky top-0 bg-background/50 backdrop-blur-3xl border-r border-border p-8 flex flex-col justify-between z-50 hidden lg:flex overflow-hidden"
+            className="w-80 h-screen sticky top-0 bg-background/50 backdrop-blur-3xl border-r border-border p-8 flex flex-col justify-between z-50 hidden lg:flex overflow-y-auto overflow-x-hidden custom-scrollbar"
         >
             {/* Glossy Overlay */}
             <div className="absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-accent-primary/5 to-transparent pointer-events-none" />
