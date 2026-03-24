@@ -21,12 +21,25 @@ const ratelimit = redis
   : null;
 
 
+import { updateSession } from './lib/supabase-middleware';
+
+
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Apply Rate Limiting to API routes (only if initialized correctly)
+  // 1. Apply Supabase Session & RBAC (Skill 14 & 17)
+  // This handles the user.global_role and user.tenant_role route-guarding
+  const response = await updateSession(request);
+  
+  // If the Supabase middleware decided to redirect (e.g. unauthorized agent),
+  // we must return that redirect response immediately.
+  if (response.status === 307 || response.status === 308) {
+      return response;
+  }
+
+  // 2. Apply Rate Limiting to API routes
   if (pathname.startsWith('/api') && ratelimit) {
     const ip = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "127.0.0.1";
     const { success, limit, reset, remaining } = await ratelimit.limit(ip);
@@ -43,7 +56,17 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  return intlMiddleware(request);
+  // 3. Final: Apply Internationalization
+  // Ensure we wrap the Supabase response if possible, or carry over its cookies.
+  const intlResponse = intlMiddleware(request);
+  
+  // Move Supabase response cookies (if any, like from refresh) to the intl response
+  response.cookies.getAll().forEach((cookie) => {
+    const { name, value, ...options } = cookie;
+    intlResponse.cookies.set(name, value, options);
+  });
+
+  return intlResponse;
 }
 
 export const config = {

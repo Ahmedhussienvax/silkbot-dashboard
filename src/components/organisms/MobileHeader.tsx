@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, LayoutDashboard, MessageSquare, Send, Users, Settings, LogOut } from "lucide-react";
+import { Menu, X, Zap, LayoutDashboard, MessageSquare, Send, Users, Settings, LogOut, Shield } from "lucide-react";
 import { Link, usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,7 @@ export default function MobileHeader() {
         { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
         { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
         { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
+        { id: "team", icon: Shield, label: "Team Matrix", href: "/dashboard/team" },
         { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
     ];
 

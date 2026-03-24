@@ -23,6 +23,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/atoms/Button";
 import { cn } from "@/lib/utils";
+import { RoleGuard } from "@/components/atoms/RoleGuard";
 
 interface KnowledgeDoc {
     id: string;
@@ -168,7 +169,9 @@ export default function KnowledgePage() {
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
                 {/* Upload Section */}
-                <div className="xl:col-span-4 space-y-8">
+                <div className="xl:col-span-4">
+                    <RoleGuard allowedTenantRoles={['owner', 'manager']}>
+                        <div className="space-y-8">
                     <section className="bg-surface backdrop-blur-xl border border-border rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 blur-[100px] -z-10 group-hover:bg-purple-500/10 transition-all duration-1000" />
                         
@@ -222,6 +225,8 @@ export default function KnowledgePage() {
                             All uploaded documents are automatically vectorized and indexed for ultra-fast semantic retrieval by the AI engine.
                         </p>
                     </div>
+                    </div>
+                    </RoleGuard>
                 </div>
 
                 {/* Docs Inventory Section */}
@@ -298,12 +303,14 @@ export default function KnowledgePage() {
                                                 </div>
                                             </div>
                                             
-                                            <button 
-                                                onClick={() => deleteDoc(doc.filename)}
-                                                className="absolute top-6 right-6 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-foreground rounded-xl border border-red-500/20 transition-all opacity-0 group-hover:opacity-100 scale-90 hover:scale-110"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            <RoleGuard allowedTenantRoles={['owner', 'manager']}>
+                                                <button 
+                                                    onClick={() => deleteDoc(doc.filename)}
+                                                    className="absolute top-6 right-6 p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-foreground rounded-xl border border-red-500/20 transition-all opacity-0 group-hover:opacity-100 scale-90 hover:scale-110"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </RoleGuard>
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>
@@ -314,7 +321,8 @@ export default function KnowledgePage() {
             </div>
 
             {/* RAG Test Interface */}
-            <section className="mt-8 bg-surface backdrop-blur-xl border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <RoleGuard allowedTenantRoles={['owner', 'manager']}>
+                <section className="mt-8 bg-surface backdrop-blur-xl border border-border rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-purple-500/3 blur-[150px] -z-10 pointer-events-none" />
                 
                 <div className="flex items-center gap-4 mb-8">
@@ -440,6 +448,7 @@ export default function KnowledgePage() {
                     </div>
                 )}
             </section>
+            </RoleGuard>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }

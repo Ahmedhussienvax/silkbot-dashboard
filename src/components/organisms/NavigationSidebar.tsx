@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
     LayoutDashboard, MessageSquare, Send, Settings,
-    ChevronRight, LogOut, Sun, Moon, Zap, Users,
+    ChevronRight, LogOut, Sun, Moon, Zap, Users, Shield,
     Columns, Brain, BookOpen, Activity, CreditCard
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -14,6 +14,8 @@ import Logo from "@/components/atoms/Logo";
 import { toast } from "sonner";
 
 import { useTranslations } from "next-intl";
+import { createClient } from "@/lib/supabase-browser";
+import { useEffect, useState } from "react";
 
 interface NavigationSidebarProps {}
 
@@ -23,6 +25,21 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
     const pathname = usePathname();
     const router = useRouter();
     const locale = useLocale();
+    const supabase = createClient();
+    const [userRoles, setUserRoles] = useState<{ global: string; tenant: string }>({ global: 'user', tenant: 'agent' });
+
+    useEffect(() => {
+        const getRoles = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserRoles({
+                    global: user.app_metadata?.global_role || 'user',
+                    tenant: user.app_metadata?.tenant_role || 'agent'
+                });
+            }
+        };
+        getRoles();
+    }, []);
 
     const navItems = [
         { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
@@ -34,10 +51,19 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
         { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
         { id: "health", icon: Activity, label: t("health"), href: "/dashboard/health" },
         { id: "billing", icon: CreditCard, label: t("billing"), href: "/dashboard/billing" },
+        { id: "team", icon: Shield, label: "Team Matrix", href: "/dashboard/team" },
         { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
     ];
 
-    const activeItem = navItems.find(item => pathname === item.href)?.id || "dashboard";
+    // Filter items based on RBAC (Skill 17)
+    const filteredNavItems = navItems.filter(item => {
+        if (item.id === 'team' || item.id === 'billing') {
+            return userRoles.tenant === 'owner' || userRoles.tenant === 'manager';
+        }
+        return true;
+    });
+
+    const activeItem = filteredNavItems.find(item => pathname === item.href)?.id || "dashboard";
 
     return (
         <motion.aside 
@@ -59,7 +85,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                 </Link>
 
                 <nav className="space-y-4">
-                    {navItems.map((item) => {
+                    {filteredNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeItem === item.id;
                         return (
