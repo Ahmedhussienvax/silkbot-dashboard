@@ -35,16 +35,16 @@ export default function PricingPage() {
                             Operational <span className="text-accent-primary">Plans</span>
                         </h1>
                         <p className="text-muted-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
-                            Neural Capacity & Automation Limits
+                            AI Capacity & Automation Limits
                         </p>
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
                         {[
-                            { icon: Target, name: "Node", price: "$49", desc: "Core Automation Hub", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", features: ["1,000 Messages/mo", "Basic Agent", "1 Neural Ingress", "7 Days Free Trial"] },
-                            { icon: Zap, name: "Hub", price: "$149", desc: "Scale Your Intelligence", color: "text-accent-primary", bg: "bg-accent-primary/10", border: "border-accent-primary/20", features: ["10,000 Messages/mo", "Advanced Reasoning", "3 Neural Ingresses", "Custom Prompting", "7 Days Free Trial"], popular: true },
+                            { icon: Target, name: "Node", price: "$49", desc: "Core Automation Hub", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20", features: ["1,000 Messages/mo", "Basic Agent", "1 AI Instance", "7 Days Free Trial"] },
+                            { icon: Zap, name: "Hub", price: "$149", desc: "Scale Your Intelligence", color: "text-accent-primary", bg: "bg-accent-primary/10", border: "border-accent-primary/20", features: ["10,000 Messages/mo", "Advanced Reasoning", "3 AI Instances", "Custom Prompting", "7 Days Free Trial"], popular: true },
                             { icon: Shield, name: "Matrix", price: "Custom", desc: "Enterprise Infrastructure", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20", features: ["Unlimited Throughput", "Dedicated Instance", "SLA & Hardware Vault", "Direct API Support", "Custom Trial Period"] },
-                            { icon: Sparkles, name: "Trial", price: "Free", desc: "System Evaluation", color: "text-muted-foreground", bg: "bg-slate-400/10", border: "border-slate-400/20", features: ["100 Test Messages", "Basic Agent", "1 Neural Ingress", "Full Dashboard Access", "7 Days Expiry"] }
+                            { icon: Sparkles, name: "Trial", price: "Free", desc: "System Evaluation", color: "text-muted-foreground", bg: "bg-slate-400/10", border: "border-slate-400/20", features: ["100 Test Messages", "Basic Agent", "1 AI Instance", "Full Dashboard Access", "7 Days Expiry"] }
                         ].map((plan, i) => (
                             <div key={i} className={`p-10 glass-card border ${plan.border} relative group ${plan.popular ? 'scale-110 z-10 shadow-[0_0_80px_rgba(168,85,247,0.1)]' : ''}`}>
                                 {plan.popular && (

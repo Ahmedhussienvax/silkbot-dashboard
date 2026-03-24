@@ -27,7 +27,7 @@ export default function CheckoutPage() {
 
     const handlePayment = async () => {
         setStatus('processing');
-        // Simulated Neural Payment Gateway Integration
+        // Simulated Payment Gateway Integration
         await new Promise(resolve => setTimeout(resolve, 3000));
         setStatus('success');
         toast.success("Transaction Synced", { description: "Your account has been upgraded to the selected node level." });
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
                             <h2 className="text-4xl font-black text-foreground italic uppercase tracking-tighter">Secure <span className="text-accent-primary">Checkout</span></h2>
                             <ShieldCheck className="w-8 h-8 text-accent-primary opacity-50" />
                         </div>
-                        <p className="text-dim-foreground text-xs font-black uppercase tracking-widest italic opacity-60">Authorize Neural Upgrade Path</p>
+                        <p className="text-dim-foreground text-xs font-black uppercase tracking-widest italic opacity-60">Authorize Upgrade Path</p>
                     </header>
 
                     <div className="space-y-6">

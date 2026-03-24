@@ -89,7 +89,7 @@ const KanbanCard = ({ lead }: { lead: Lead }) => {
         </div>
       </div>
 
-      {/* Neural Glow Detail */}
+      {/* Background Glow Detail */}
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
     </div>
   );

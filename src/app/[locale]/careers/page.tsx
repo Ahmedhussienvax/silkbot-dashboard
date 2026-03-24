@@ -22,7 +22,7 @@ export default function CareersPage() {
                             Join the <span className="text-blue-500">Collective</span>
                         </h1>
                         <p className="text-muted-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
-                            Build the future of Neural Automation
+                            Build the future of Intelligent Automation
                         </p>
                     </header>
 
@@ -31,7 +31,7 @@ export default function CareersPage() {
                             <h2 className="text-2xl font-black text-foreground italic uppercase tracking-tight">Open Vectors</h2>
                             <div className="grid grid-cols-1 gap-4">
                                 {[
-                                    { title: "Neural Engineer", type: "R&D", location: "Global / Remote" },
+                                    { title: "AI Engineer", type: "R&D", location: "Global / Remote" },
                                     { title: "Protocol Architect", type: "Security", location: "Hybrid" },
                                     { title: "UX Sentinel", type: "Design", location: "Global" }
                                 ].map((job, i) => (

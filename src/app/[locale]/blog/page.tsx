@@ -19,7 +19,7 @@ export default function BlogPage() {
                             <Rss className="w-8 h-8" />
                         </div>
                         <h1 className="text-7xl font-black text-foreground italic tracking-tighter uppercase leading-none">
-                            Neural <span className="text-pink-500">Transmissions</span>
+                            System Updates <span className="text-pink-500">Transmissions</span>
                         </h1>
                         <p className="text-muted-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
                             Updates, Insights & Future Architectures
@@ -28,7 +28,7 @@ export default function BlogPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12">
                         {[
-                            { title: "Evolution of Neural Hub", date: "Mar 22, 2026", min: "5m", desc: "Understanding the move to v5.7.0 and autonomous agents." },
+                            { title: "Evolution of SilkBot Hub", date: "Mar 22, 2026", min: "5m", desc: "Understanding the move to v5.7.0 and autonomous agents." },
                             { title: "Zero-Leakage RLS Policies", date: "Mar 18, 2026", min: "8m", desc: "How we secured tenant-level PostgreSQL isolation." },
                             { title: "WhatsApp Gateway 2.0", date: "Mar 12, 2026", min: "12m", desc: "Deep dive into our high-throughput secure node-gateway link." }
                         ].map((post, i) => (

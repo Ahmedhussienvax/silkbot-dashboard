@@ -55,7 +55,7 @@ const SERVICE_META = [
   { key: "gateway" as const, label: "API Gateway", icon: Server, desc: "Handles all API routing and load balancing" },
   { key: "redis" as const, label: "Redis Cache", icon: HardDrive, desc: "Session store, bot config cache (5min TTL)" },
   { key: "supabase" as const, label: "Supabase DB", icon: Database, desc: "PostgreSQL + RLS tenant isolation" },
-  { key: "worker" as const, label: "AI Worker", icon: Cpu, desc: "Neural Hub message processing engine" },
+  { key: "worker" as const, label: "AI Worker", icon: Cpu, desc: "AI Hub message processing engine" },
 ];
 
 export default function HealthPage() {

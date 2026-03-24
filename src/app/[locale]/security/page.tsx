@@ -20,7 +20,7 @@ export default function SecurityPage() {
                             <ShieldCheck className="w-8 h-8" />
                         </div>
                         <h1 className="text-6xl font-black text-foreground italic tracking-tighter uppercase leading-none">
-                            Neural <span className="text-emerald-500">Security</span>
+                            Enterprise <span className="text-emerald-500">Security</span>
                         </h1>
                         <p className="text-muted-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
                             AES-256 Encryption & Zero-Leakage Architecture

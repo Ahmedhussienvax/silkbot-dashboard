@@ -28,7 +28,7 @@ export default function APIDocsPage() {
                             <Code className="w-10 h-10" />
                         </div>
                         <h1 className="text-7xl font-black text-foreground italic tracking-tighter uppercase leading-none drop-shadow-2xl">
-                            Neural <span className="text-accent-primary">Gatekeeper</span> API
+                            Automation <span className="text-accent-primary">Gateway</span> API
                         </h1>
                         <p className="text-dim-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
                             Secure Integration Protocols v5.7.1
@@ -45,7 +45,7 @@ export default function APIDocsPage() {
                                     1. Vector Authorization
                                 </h2>
                                 <p className="text-dim-foreground font-bold italic leading-relaxed text-lg opacity-80">
-                                    All requests to the SilkBot Hub must be signed with a Neural JWT bearer token. This ensures end-to-end trace isolation for your AI agent.
+                                    All requests to the SilkBot Hub must be signed with a JWT bearer token. This ensures end-to-end trace isolation for your AI agent.
                                 </p>
                                 <div className="p-10 bg-surface dark:bg-background/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-accent-primary shadow-inner relative group/code overflow-x-auto">
                                     <div className="flex items-center gap-2 mb-4 opacity-40">
@@ -69,7 +69,7 @@ export default function APIDocsPage() {
                                     2. Message Ingress
                                 </h2>
                                 <p className="text-dim-foreground font-bold italic leading-relaxed text-lg opacity-80">
-                                    Trigger the AI reasoning loop manually or subscribe to real-time events via the Neural Webhook gateway.
+                                    Trigger the AI reasoning loop manually or subscribe to real-time events via the Webhook gateway.
                                 </p>
                                 <div className="p-10 bg-surface dark:bg-background/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-emerald-500 shadow-inner relative group/code overflow-x-auto">
                                     <div className="flex items-center gap-2 mb-4 opacity-40">
@@ -96,7 +96,7 @@ export default function APIDocsPage() {
                                 <div className="space-y-6">
                                     {[
                                         { icon: Globe, label: "REST Endpoints", desc: "Standard HTTPS JSON API", color: "text-accent-primary" },
-                                        { icon: Zap, label: "Neural Hooks", desc: "Real-time AI Triggers", color: "text-accent-secondary" },
+                                        { icon: Zap, label: "Webhooks", desc: "Real-time AI Triggers", color: "text-accent-secondary" },
                                         { icon: Shield, label: "Secure Views", desc: "Supabase PG Integration", color: "text-emerald-500" }
                                     ].map((ref, k) => (
                                         <div key={k} className="flex items-center gap-5 p-6 rounded-3xl bg-foreground/[0.02] border border-glass-border hover:border-accent-primary/30 hover:bg-foreground/[0.04] transition-all cursor-pointer group/nav">

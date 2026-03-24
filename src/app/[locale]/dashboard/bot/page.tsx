@@ -70,7 +70,7 @@ export default function BotConfigPage() {
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
             <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Syncing_Neural_State</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Syncing_AI_Config</span>
         </div>
     );
 
@@ -84,7 +84,7 @@ export default function BotConfigPage() {
                             <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-black animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" title="Elite Squad Online" />
                         </div>
                         <span className="text-[10px] font-black text-purple-400 uppercase tracking-[0.3em] flex items-center gap-2">
-                            Neural Logic Controller
+                            AI Logic Controller
                         </span>
                     </div>
                     <h1 className="text-5xl font-black text-foreground tracking-tighter italic">

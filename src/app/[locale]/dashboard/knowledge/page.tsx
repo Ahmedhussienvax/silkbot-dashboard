@@ -247,7 +247,7 @@ export default function KnowledgePage() {
                         {loading ? (
                             <div className="flex-1 flex flex-col items-center justify-center h-96 gap-6">
                                 <div className="w-16 h-16 border-4 border-border border-t-purple-500 rounded-full animate-spin shadow-[0_0_20px_rgba(168,85,247,0.3)]" />
-                                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest animate-pulse">Synchronizing Neural Links...</p>
+                                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest animate-pulse">Synchronizing Documents...</p>
                             </div>
                         ) : filteredDocs.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center py-40 text-center space-y-6 opacity-30">

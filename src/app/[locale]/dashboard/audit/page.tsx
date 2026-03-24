@@ -127,7 +127,7 @@ export default function AuditPage() {
                     <BrainCircuit className="w-12 h-12 text-accent-primary absolute inset-0 m-auto animate-pulse" />
                 </div>
                 <div className="text-center space-y-2">
-                    <h2 className="text-foreground font-black text-xl tracking-tighter uppercase italic">Accessing Neural Archive</h2>
+                    <h2 className="text-foreground font-black text-xl tracking-tighter uppercase italic">Accessing Audit Archive</h2>
                     <p className="text-dim-foreground text-[10px] font-mono uppercase tracking-[0.3em] animate-pulse">Decrypting encrypted synapses...</p>
                 </div>
             </div>
@@ -147,7 +147,7 @@ export default function AuditPage() {
                         <span className="text-purple-400 font-black text-[10px] uppercase tracking-widest">Realtime_Synapse_Stream</span>
                     </div>
                     <h1 className="text-6xl md:text-8xl font-black text-foreground tracking-tighter italic leading-none">
-                        Neural Audit<span className="text-accent-primary">.</span>
+                        Business Audit<span className="text-accent-primary">.</span>
                     </h1>
                     <p className="text-muted-foreground text-xl font-medium max-w-3xl leading-relaxed">
                         Deep-level instrumentation of autonomous decision patterns, KG mapping accuracy, and synthetic cognition outputs.
@@ -267,7 +267,7 @@ export default function AuditPage() {
                 </div>
             </div>
 
-            {/* Neural Detail Drawer */}
+            {/* Audit Detail Drawer */}
             <AnimatePresence>
                 {selectedLog && (
                     <>
@@ -332,9 +332,9 @@ export default function AuditPage() {
                                         </div>
                                     </div>
 
-                                    {/* Neural Timeline (Traces) */}
+                                    {/* AI Timeline (Traces) */}
                                     <div className="space-y-6">
-                                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Thought_Chain (AI_Traces)</h4>
+                                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Processing_Sequence (AI_Traces)</h4>
                                         
                                         {loadingTraces ? (
                                             <div className="flex items-center gap-3 text-muted-foreground animate-pulse py-4 font-mono text-xs">

@@ -334,7 +334,7 @@ export default function InboxPage() {
                         <h2 className="text-2xl font-black text-foreground tracking-tighter">{t("title")}</h2>
                         <div className="flex gap-2">
                             <button 
-                                aria-label="Refresh Neural Streams"
+                                aria-label="Refresh Messages"
                                 className="p-2 bg-surface rounded-xl border border-border text-muted-foreground hover:text-foreground transition-all transform active:scale-90"
                             >
                                 <Zap className="w-4 h-4" />

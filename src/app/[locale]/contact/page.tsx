@@ -44,7 +44,7 @@ export default function ContactPage() {
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1 italic">Neural Support</div>
+                                        <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1 italic">Technical Support</div>
                                         <div className="text-foreground font-black text-lg tracking-tight">Live Chat via Dashboard</div>
                                     </div>
                                 </div>

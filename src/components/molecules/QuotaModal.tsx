@@ -49,7 +49,7 @@ export default function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                                     Subscription <span className="text-red-500">Locked</span>
                                 </h2>
                                 <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest italic pt-1">
-                                    Neural Throughput Limit Reached
+                                    AI Usage Limit Reached
                                 </p>
                             </div>
 

@@ -26,7 +26,7 @@ export default function LegalPage({ params }: { params: Promise<{ locale: string
                             System <span className="text-accent-primary">Protocols</span>
                         </h1>
                         <p className="text-muted-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
-                            Legal Governance & Neural Compliance
+                            Legal Governance & AI Compliance
                         </p>
                     </header>
 
@@ -34,7 +34,7 @@ export default function LegalPage({ params }: { params: Promise<{ locale: string
                         <section className="space-y-6">
                             <h2 className="text-2xl font-black text-foreground italic uppercase tracking-tight">1. Operational Mandate</h2>
                             <p className="leading-relaxed font-medium">
-                                By accessing the SilkBot Neural Hub, you agree to abide by the standard operational protocols. Our system is designed for high-integrity automation and ethical AI interaction.
+                                By accessing the SilkBot Dashboard, you agree to abide by the standard operational protocols. Our system is designed for high-integrity automation and ethical AI interaction.
                             </p>
                         </section>
 
@@ -55,7 +55,7 @@ export default function LegalPage({ params }: { params: Promise<{ locale: string
 
                     <div className="pt-20 border-t border-border grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
-                            { icon: Shield, label: "Secure Link", desc: "AES-256 Neural Encryption" },
+                            { icon: Shield, label: "Secure Link", desc: "AES-256 Account Encryption" },
                             { icon: FileText, label: "Transparent", desc: "Real-time Audit Logs" },
                             { icon: Lock, label: "Isolated", desc: "PostgreSQL Row Isolation" }
                         ].map((item, i) => (

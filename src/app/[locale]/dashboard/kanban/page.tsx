@@ -110,7 +110,7 @@ export default function PipelinesPage() {
         <KanbanBoard initialData={leads} />
       </main>
 
-      {/* Decorative Neural Grid Background */}
+      {/* Decorative Grid Background */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,var(--accent-secondary)_1px,transparent_1px)] bg-[length:40px_40px]" />
       </div>
