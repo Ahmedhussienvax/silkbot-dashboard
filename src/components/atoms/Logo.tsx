@@ -27,7 +27,7 @@ export default function Logo({ className, iconClassName, size = "md" }: { classN
     return (
         <div 
             className={cn(
-                "bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-white shadow-2xl shadow-accent-primary/20 ring-1 ring-white/10 shrink-0",
+                "bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center text-foreground shadow-2xl shadow-accent-primary/20 ring-1 ring-white/10 shrink-0",
                 sizeClasses[size],
                 className
             )}

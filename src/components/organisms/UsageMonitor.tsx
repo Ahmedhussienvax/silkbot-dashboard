@@ -10,13 +10,13 @@ export default function UsageMonitor() {
     const { quota, loading, usagePercent, isWarning, isCritical, daysUntilReset } = useQuota();
 
     if (loading) return (
-        <div className="h-32 bg-white/[0.02] border border-white/5 rounded-3xl animate-pulse" />
+        <div className="h-32 bg-surface border border-border rounded-3xl animate-pulse" />
     );
 
     if (!quota) return null;
 
     return (
-        <div className="glass-card p-8 border-white/5 bg-white/[0.02] relative overflow-hidden group">
+        <div className="glass-card p-8 border-border bg-surface relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent-primary/5 blur-[80px] -z-10" />
             
             <div className="flex items-center justify-between mb-8">
@@ -25,8 +25,8 @@ export default function UsageMonitor() {
                         <Zap className="w-5 h-5" />
                     </div>
                     <div>
-                        <h4 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Neural_Throughput</h4>
-                        <div className="text-white font-black italic uppercase tracking-tighter">Usage Monitor</div>
+                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">AI_Usage_Stats</h4>
+                        <div className="text-foreground font-black italic uppercase tracking-tighter">Usage Monitor</div>
                     </div>
                 </div>
                 {quota.is_active ? (
@@ -45,10 +45,10 @@ export default function UsageMonitor() {
             <div className="space-y-4">
                 <div className="flex justify-between items-end">
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-white tracking-tighter">
+                        <span className="text-3xl font-black text-foreground tracking-tighter">
                             {quota.total_tokens_used.toLocaleString()}
                         </span>
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">
                             / {quota.token_limit.toLocaleString()} Tokens
                         </span>
                     </div>
@@ -57,7 +57,7 @@ export default function UsageMonitor() {
                     </div>
                 </div>
 
-                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div className="h-2 w-full bg-surface rounded-full overflow-hidden border border-border">
                     <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${usagePercent}%` }}
@@ -73,7 +73,7 @@ export default function UsageMonitor() {
                 </div>
 
                 <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                    <div className="flex items-center gap-2 text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] italic">
                         <Clock className="w-3.5 h-3.5" />
                         Next Reset in {daysUntilReset} day{daysUntilReset !== 1 ? 's' : ''}
                     </div>

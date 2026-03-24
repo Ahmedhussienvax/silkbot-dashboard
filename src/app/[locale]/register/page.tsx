@@ -96,25 +96,25 @@ export default function RegisterPage() {
                             </h1>
                         </div>
                     </motion.div>
-                    <p className="text-text-dim text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
+                    <p className="text-dim-foreground text-sm font-black uppercase tracking-[0.2em]">{t("subtitle")}</p>
                 </div>
 
                 <motion.div 
                     initial={{ scale: 0.95, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", damping: 20, stiffness: 100 }}
-                    className="glass-card rounded-[2.5rem] p-10 border border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden"
+                    className="glass-card rounded-[2.5rem] p-10 border border-border shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden"
                 >
                     <div className="mb-10">
-                        <h2 className="text-2xl font-black text-white mb-2 italic">{t("card_title")}</h2>
-                        <p className="text-text-muted text-sm font-medium leading-relaxed">
+                        <h2 className="text-2xl font-black text-foreground mb-2 italic">{t("card_title")}</h2>
+                        <p className="text-muted-foreground text-sm font-medium leading-relaxed">
                             {t("card_desc")}
                         </p>
                     </div>
 
                     <form onSubmit={handleRegister} noValidate className="space-y-6">
                         <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                            <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest px-2">
                                 {t("name_label")}
                             </label>
                             <input
@@ -122,12 +122,12 @@ export default function RegisterPage() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder={t("name_placeholder")}
-                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-dim-foreground focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                            <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest px-2">
                                 {t("email_label")}
                             </label>
                             <input
@@ -136,12 +136,12 @@ export default function RegisterPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t("email_placeholder")}
                                 autoComplete="email"
-                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-dim-foreground focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">
+                            <label className="block text-[10px] font-black text-muted-foreground uppercase tracking-widest px-2">
                                 {t("password_label")}
                             </label>
                             <input
@@ -150,7 +150,7 @@ export default function RegisterPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder={t("password_placeholder")}
                                 autoComplete="new-password"
-                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-white placeholder:text-text-dim focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
+                                className="w-full px-6 py-4 rounded-2xl bg-surface border border-glass-border text-foreground placeholder:text-dim-foreground focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all font-medium text-sm"
                             />
                         </div>
 
@@ -185,7 +185,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             disabled={loading || success}
-                            className="w-full py-5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary text-white font-black uppercase tracking-[0.2em] italic hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_20px_40px_-10px_rgba(var(--accent-rgb),0.3)] mt-4"
+                            className="w-full py-5 rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary text-foreground font-black uppercase tracking-[0.2em] italic hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_20px_40px_-10px_rgba(var(--accent-rgb),0.3)] mt-4"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-3">
@@ -206,7 +206,7 @@ export default function RegisterPage() {
                     >
                         {t("footer")}
                     </Link>
-                    <p className="text-text-dim text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
+                    <p className="text-dim-foreground text-[9px] font-black uppercase tracking-[0.3em] opacity-40">
                         SilkBot & copy; 2026. Powered by Supabase + Next.js
                     </p>
                 </div>

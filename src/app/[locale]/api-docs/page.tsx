@@ -17,7 +17,7 @@ export default function APIDocsPage() {
             </div>
 
             <div className="w-full max-w-6xl px-8 py-20 mx-auto flex-1 relative z-10">
-                <Link href="/" className="inline-flex items-center gap-2 text-text-dim hover:text-foreground transition-colors mb-12 group">
+                <Link href="/" className="inline-flex items-center gap-2 text-dim-foreground hover:text-foreground transition-colors mb-12 group">
                     <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-[10px] font-black uppercase tracking-widest italic">{t("return_to_origin")}</span>
                 </Link>
@@ -30,7 +30,7 @@ export default function APIDocsPage() {
                         <h1 className="text-7xl font-black text-foreground italic tracking-tighter uppercase leading-none drop-shadow-2xl">
                             Neural <span className="text-accent-primary">Gatekeeper</span> API
                         </h1>
-                        <p className="text-text-dim text-lg font-bold uppercase tracking-widest italic opacity-60">
+                        <p className="text-dim-foreground text-lg font-bold uppercase tracking-widest italic opacity-60">
                             Secure Integration Protocols v5.7.1
                         </p>
                     </header>
@@ -44,10 +44,10 @@ export default function APIDocsPage() {
                                 <h2 className="text-4xl font-black text-foreground italic uppercase tracking-tighter leading-none">
                                     1. Vector Authorization
                                 </h2>
-                                <p className="text-text-dim font-bold italic leading-relaxed text-lg opacity-80">
+                                <p className="text-dim-foreground font-bold italic leading-relaxed text-lg opacity-80">
                                     All requests to the SilkBot Hub must be signed with a Neural JWT bearer token. This ensures end-to-end trace isolation for your AI agent.
                                 </p>
-                                <div className="p-10 bg-black/40 dark:bg-black/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-accent-primary shadow-inner relative group/code overflow-x-auto">
+                                <div className="p-10 bg-surface dark:bg-background/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-accent-primary shadow-inner relative group/code overflow-x-auto">
                                     <div className="flex items-center gap-2 mb-4 opacity-40">
                                         <div className="w-2 h-2 rounded-full bg-red-500" />
                                         <div className="w-2 h-2 rounded-full bg-yellow-500" />
@@ -68,10 +68,10 @@ export default function APIDocsPage() {
                                 <h2 className="text-4xl font-black text-foreground italic uppercase tracking-tighter leading-none">
                                     2. Message Ingress
                                 </h2>
-                                <p className="text-text-dim font-bold italic leading-relaxed text-lg opacity-80">
+                                <p className="text-dim-foreground font-bold italic leading-relaxed text-lg opacity-80">
                                     Trigger the AI reasoning loop manually or subscribe to real-time events via the Neural Webhook gateway.
                                 </p>
-                                <div className="p-10 bg-black/40 dark:bg-black/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-emerald-500 shadow-inner relative group/code overflow-x-auto">
+                                <div className="p-10 bg-surface dark:bg-background/60 rounded-[2.5rem] border border-glass-border font-mono text-sm text-emerald-500 shadow-inner relative group/code overflow-x-auto">
                                     <div className="flex items-center gap-2 mb-4 opacity-40">
                                         <div className="w-2 h-2 rounded-full bg-red-500" />
                                         <div className="w-2 h-2 rounded-full bg-yellow-500" />
@@ -100,12 +100,12 @@ export default function APIDocsPage() {
                                         { icon: Shield, label: "Secure Views", desc: "Supabase PG Integration", color: "text-emerald-500" }
                                     ].map((ref, k) => (
                                         <div key={k} className="flex items-center gap-5 p-6 rounded-3xl bg-foreground/[0.02] border border-glass-border hover:border-accent-primary/30 hover:bg-foreground/[0.04] transition-all cursor-pointer group/nav">
-                                            <div className={`p-3 rounded-2xl bg-foreground/[0.03] border border-glass-border group-hover/nav:scale-110 transition-transform ${ref.color}`}>
+                                            <div className={`p-3 rounded-2xl bg-surface border border-glass-border group-hover/nav:scale-110 transition-transform ${ref.color}`}>
                                                 <ref.icon className="w-6 h-6" />
                                             </div>
                                             <div>
                                                 <div className="text-[11px] font-black text-foreground uppercase tracking-widest">{ref.label}</div>
-                                                <div className="text-[10px] font-bold text-text-muted uppercase tracking-tight italic opacity-60 leading-tight">{ref.desc}</div>
+                                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight italic opacity-60 leading-tight">{ref.desc}</div>
                                             </div>
                                         </div>
                                     ))}

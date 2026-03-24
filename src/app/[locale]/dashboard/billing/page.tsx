@@ -38,7 +38,7 @@ export default function BillingPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-10 h-10 text-accent-primary animate-spin" />
-        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-text-dim">
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-dim-foreground">
           Loading_Billing_Data
         </span>
       </div>
@@ -51,10 +51,10 @@ export default function BillingPage() {
         <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
-        <p className="text-text-muted text-sm font-bold">Failed to load billing data</p>
+        <p className="text-muted-foreground text-sm font-bold">Failed to load billing data</p>
         <button
           onClick={reload}
-          className="flex items-center gap-2 px-6 py-3 bg-surface border border-glass-border rounded-2xl text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-foreground transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-surface border border-glass-border rounded-2xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           Retry
@@ -107,14 +107,14 @@ export default function BillingPage() {
           <h1 className="text-5xl md:text-6xl font-black text-foreground tracking-tighter italic leading-none">
             Usage Dashboard<span className="text-accent-primary">.</span>
           </h1>
-          <p className="text-text-muted text-lg font-medium max-w-2xl leading-relaxed">
+          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed">
             Monitor token consumption, billing cycles, and plan quotas in real-time.
           </p>
         </div>
 
         <button
           onClick={reload}
-          className="flex items-center gap-3 px-6 py-4 bg-surface border border-glass-border rounded-2xl text-[10px] font-black uppercase tracking-widest text-text-muted hover:text-foreground hover:border-accent-primary/30 transition-all group self-start lg:self-auto"
+          className="flex items-center gap-3 px-6 py-4 bg-surface border border-glass-border rounded-2xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:border-accent-primary/30 transition-all group self-start lg:self-auto"
         >
           <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
           Refresh Data
@@ -179,7 +179,7 @@ export default function BillingPage() {
               <div className="text-3xl font-black text-foreground tracking-tighter">
                 {stat.value}
               </div>
-              <div className="text-[10px] text-text-dim font-black uppercase tracking-[0.2em] mt-1">
+              <div className="text-[10px] text-dim-foreground font-black uppercase tracking-[0.2em] mt-1">
                 {stat.label}
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function BillingPage() {
                 Token Consumption
               </h2>
             </div>
-            <p className="text-text-dim text-[11px] font-bold uppercase tracking-widest pl-11">
+            <p className="text-dim-foreground text-[11px] font-bold uppercase tracking-widest pl-11">
               {tenant?.name || "Tenant"} // Billing Cycle
             </p>
           </div>
@@ -230,7 +230,7 @@ export default function BillingPage() {
               <span className="text-4xl font-black text-foreground tracking-tighter">
                 {usedFormatted}
               </span>
-              <span className="text-text-dim text-sm font-bold">
+              <span className="text-dim-foreground text-sm font-bold">
                 / {limitFormatted} tokens
               </span>
             </div>
@@ -239,7 +239,7 @@ export default function BillingPage() {
             </span>
           </div>
 
-          <div className="relative h-6 bg-foreground/5 rounded-full overflow-hidden border border-glass-border">
+          <div className="relative h-6 bg-surface rounded-full overflow-hidden border border-glass-border">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${usagePercent}%` }}
@@ -254,7 +254,7 @@ export default function BillingPage() {
             <div className="absolute top-0 bottom-0 left-[95%] w-px bg-red-500/40" title="Critical threshold (95%)" />
           </div>
 
-          <div className="flex justify-between text-[9px] font-black text-text-dim uppercase tracking-widest">
+          <div className="flex justify-between text-[9px] font-black text-dim-foreground uppercase tracking-widest">
             <span>0</span>
             <span className="text-amber-400/60">85% Warning</span>
             <span className="text-red-400/60">95% Critical</span>
@@ -279,7 +279,7 @@ export default function BillingPage() {
                   ? "Token quota critically low — AI responses may be throttled."
                   : "Approaching token limit. Consider upgrading your plan."}
               </p>
-              <p className="text-text-dim text-xs font-medium mt-1">
+              <p className="text-dim-foreground text-xs font-medium mt-1">
                 {remainingFormatted} tokens remaining. Resets in {daysUntilReset} days.
               </p>
             </div>
@@ -304,7 +304,7 @@ export default function BillingPage() {
               <h3 className="text-xl font-black text-foreground tracking-tight italic uppercase">
                 Billing Cycle
               </h3>
-              <p className="text-[10px] text-text-dim font-bold uppercase tracking-[0.2em]">
+              <p className="text-[10px] text-dim-foreground font-bold uppercase tracking-[0.2em]">
                 30-Day Rolling Period
               </p>
             </div>
@@ -356,7 +356,7 @@ export default function BillingPage() {
                 key={item.label}
                 className="flex justify-between items-center py-4 border-b border-glass-border last:border-0"
               >
-                <span className="text-[10px] font-black text-text-dim uppercase tracking-widest">
+                <span className="text-[10px] font-black text-dim-foreground uppercase tracking-widest">
                   {item.label}
                 </span>
                 <span className="text-sm font-black text-foreground">
@@ -377,14 +377,14 @@ export default function BillingPage() {
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-primary/10 blur-[100px] -z-10 pointer-events-none group-hover:bg-accent-primary/20 transition-colors duration-1000" />
 
           <div className="space-y-6">
-            <div className="p-4 bg-white/5 rounded-3xl inline-block shadow-inner border border-white/10">
+            <div className="p-4 bg-surface rounded-3xl inline-block shadow-inner border border-border">
               <Sparkles className="w-10 h-10 text-accent-primary" />
             </div>
             <div>
               <h3 className="text-3xl font-black text-foreground tracking-tight italic">
                 Need More Power<span className="text-accent-primary">?</span>
               </h3>
-              <p className="text-text-muted text-sm font-medium leading-relaxed mt-3 max-w-sm">
+              <p className="text-muted-foreground text-sm font-medium leading-relaxed mt-3 max-w-sm">
                 Upgrade your plan for higher token limits, priority AI processing, and advanced
                 analytics. Scale your automation without limits.
               </p>
@@ -394,12 +394,12 @@ export default function BillingPage() {
           <div className="space-y-4 mt-10">
             <a
               href="/pricing"
-              className="w-full flex items-center justify-center gap-3 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-2xl hover:bg-accent-primary hover:text-white transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl"
+              className="w-full flex items-center justify-center gap-3 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-2xl hover:bg-accent-primary hover:text-foreground transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl"
             >
               <ArrowUpRight className="w-4 h-4" />
               View Plans
             </a>
-            <p className="text-[9px] text-text-dim text-center font-bold italic opacity-50">
+            <p className="text-[9px] text-dim-foreground text-center font-bold italic opacity-50">
               Changes apply instantly with zero downtime
             </p>
           </div>

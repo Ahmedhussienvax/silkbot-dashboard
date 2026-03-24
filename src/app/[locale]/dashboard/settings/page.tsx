@@ -193,7 +193,7 @@ export default function SettingsPage() {
             </div>
             <div className="flex flex-col items-center gap-2">
                 <div className="text-[12px] font-black text-foreground uppercase tracking-[0.6em] italic">{t("calibrating_nexus")}</div>
-                <div className="text-[8px] font-bold text-text-dim uppercase tracking-[0.4em]">{t("syncing_cluster")}</div>
+                <div className="text-[8px] font-bold text-dim-foreground uppercase tracking-[0.4em]">{t("syncing_cluster")}</div>
             </div>
         </div>
     );
@@ -202,7 +202,7 @@ export default function SettingsPage() {
         { id: "general", label: t("title"), icon: LayoutDashboard, color: "text-accent-primary" },
         { id: "whatsapp", label: wt("title"), icon: MessageSquare, color: "text-accent-tertiary" },
         { id: "billing", label: t("account_management"), icon: Lock, color: "text-amber-500" },
-        { id: "security", label: t("security_sector"), icon: Shield, color: "text-text-muted" },
+        { id: "security", label: t("security_sector"), icon: Shield, color: "text-muted-foreground" },
     ];
 
     return (
@@ -226,7 +226,7 @@ export default function SettingsPage() {
                         {t("system_title")}<br />
                         <span className="text-accent-primary">{t("system_architecture")}</span>
                     </h1>
-                    <p className="text-text-dim flex items-center gap-4 font-bold uppercase tracking-[0.2em] text-[12px] max-w-2xl leading-relaxed">
+                    <p className="text-dim-foreground flex items-center gap-4 font-bold uppercase tracking-[0.2em] text-[12px] max-w-2xl leading-relaxed">
                         <Shield className="w-6 h-6 text-accent-primary opacity-40 shrink-0" />
                         {t("system_paths_desc")}
                     </p>
@@ -266,7 +266,7 @@ export default function SettingsPage() {
             </header>
 
             {/* Tabs Navigation */}
-            <nav className="flex flex-wrap items-center gap-4 p-2 bg-foreground/[0.03] border border-glass-border rounded-[2.5rem] backdrop-blur-3xl w-fit">
+            <nav className="flex flex-wrap items-center gap-4 p-2 bg-surface border border-glass-border rounded-[2.5rem] backdrop-blur-3xl w-fit">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
@@ -275,7 +275,7 @@ export default function SettingsPage() {
                             "flex items-center gap-3 px-8 py-5 rounded-[1.8rem] text-[12px] font-black uppercase tracking-widest transition-all italic",
                             activeTab === tab.id 
                                 ? "bg-surface border border-glass-border shadow-2xl scale-105 z-10" 
-                                : "text-text-dim hover:text-foreground hover:bg-foreground/[0.02]"
+                                : "text-dim-foreground hover:text-foreground hover:bg-foreground/[0.02]"
                         )}
                     >
                         <tab.icon className={cn("w-5 h-5", activeTab === tab.id ? tab.color : "opacity-40")} />
@@ -323,7 +323,7 @@ export default function SettingsPage() {
                                                 onChange={(val) => setTenant(prev => prev ? { ...prev, industry: val } : null)}
                                             />
                                             <div className="md:col-span-2 space-y-4">
-                                                <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
+                                                <label className="text-[11px] font-black text-dim-foreground uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
                                                     <Clock className="w-4 h-4 text-accent-primary/50" />
                                                     {t("timezone")}
                                                 </label>
@@ -331,14 +331,14 @@ export default function SettingsPage() {
                                                     <select
                                                         value={tenant?.timezone || "UTC"}
                                                         onChange={(e) => setTenant(prev => prev ? { ...prev, timezone: e.target.value } : null)}
-                                                        className="w-full bg-foreground/[0.03] border border-glass-border rounded-3xl px-8 py-5 text-[15px] text-foreground focus:ring-2 focus:ring-accent-primary/30 outline-none transition-all appearance-none cursor-pointer font-bold hover:bg-foreground/[0.05]"
+                                                        className="w-full bg-surface border border-glass-border rounded-3xl px-8 py-5 text-[15px] text-foreground focus:ring-2 focus:ring-accent-primary/30 outline-none transition-all appearance-none cursor-pointer font-bold hover:bg-foreground/[0.05]"
                                                     >
                                                         <option value="UTC" className="bg-background text-foreground">{t("tz_utc")}</option>
                                                         <option value="Africa/Cairo" className="bg-background text-foreground">{t("tz_cairo")}</option>
                                                         <option value="Asia/Riyadh" className="bg-background text-foreground">{t("tz_riyadh")}</option>
                                                         <option value="Asia/Dubai" className="bg-background text-foreground">{t("tz_dubai")}</option>
                                                     </select>
-                                                    <Globe className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim pointer-events-none group-focus-within/select:text-accent-primary transition-colors" />
+                                                    <Globe className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 text-dim-foreground pointer-events-none group-focus-within/select:text-accent-primary transition-colors" />
                                                 </div>
                                             </div>
                                         </div>
@@ -350,11 +350,11 @@ export default function SettingsPage() {
                                         </div>
                                         <div className="space-y-4 max-w-md">
                                             <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{t("optimization_ready")}</h3>
-                                            <p className="text-text-muted font-semibold text-[14px] leading-relaxed">
+                                            <p className="text-muted-foreground font-semibold text-[14px] leading-relaxed">
                                                 {t("optimization_desc")}
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-1.5 px-6 py-3 bg-foreground/[0.02] border border-glass-border rounded-full text-[10px] font-black text-text-dim uppercase tracking-widest italic">
+                                        <div className="flex items-center gap-1.5 px-6 py-3 bg-foreground/[0.02] border border-glass-border rounded-full text-[10px] font-black text-dim-foreground uppercase tracking-widest italic">
                                             {t("cluster_node")}
                                         </div>
                                     </motion.section>
@@ -377,7 +377,7 @@ export default function SettingsPage() {
                                             </span>
                                         </div>
                                         <h2 className="text-5xl font-black text-foreground uppercase italic tracking-tighter leading-none">{wt("title")}</h2>
-                                        <p className="text-text-muted font-semibold text-[16px] leading-relaxed max-w-2xl opacity-80 italic">
+                                        <p className="text-muted-foreground font-semibold text-[16px] leading-relaxed max-w-2xl opacity-80 italic">
                                             {wt("description")}
                                         </p>
                                         
@@ -385,7 +385,7 @@ export default function SettingsPage() {
                                             {wsStatus === "connected" ? (
                                                 <button
                                                     onClick={handleLogoutWs}
-                                                    className="px-12 py-6 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.2em] hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-500/10 italic flex items-center gap-4"
+                                                    className="px-12 py-6 bg-red-500/10 border border-red-500/20 text-red-500 rounded-[2rem] text-[12px] font-black uppercase tracking-[0.2em] hover:bg-red-500 hover:text-foreground transition-all shadow-xl shadow-red-500/10 italic flex items-center gap-4"
                                                 >
                                                     <LogOut className="w-5 h-5" />
                                                     {wt("btn_logout")}
@@ -393,14 +393,14 @@ export default function SettingsPage() {
                                             ) : (
                                                 <button
                                                     onClick={handleConnectWs}
-                                                    className="px-14 py-6 bg-accent-tertiary text-white rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] hover:bg-accent-tertiary/90 hover:scale-[1.03] active:scale-95 transition-all shadow-[0_20px_40px_rgba(var(--accent-tertiary-rgb),0.3)] italic flex items-center gap-4"
+                                                    className="px-14 py-6 bg-accent-tertiary text-foreground rounded-[2rem] text-[12px] font-black uppercase tracking-[0.4em] hover:bg-accent-tertiary/90 hover:scale-[1.03] active:scale-95 transition-all shadow-[0_20px_40px_rgba(var(--accent-tertiary-rgb),0.3)] italic flex items-center gap-4"
                                                 >
                                                     <RefreshCcw className="w-5 h-5" />
                                                     {wt("btn_connect")}
                                                 </button>
                                             )}
                                             <div className="flex flex-col gap-4">
-                                                <div className="px-8 py-5 bg-foreground/[0.03] border border-glass-border rounded-[1.8rem] text-text-dim text-[11px] font-black tracking-widest uppercase italic flex items-center gap-4">
+                                                <div className="px-8 py-5 bg-surface border border-glass-border rounded-[1.8rem] text-dim-foreground text-[11px] font-black tracking-widest uppercase italic flex items-center gap-4">
                                                     <Activity className="w-5 h-5 text-accent-tertiary opacity-50" />
                                                     {wt("tunnel_id")}: <span className={cn("font-mono", (!tenant?.wa_session || tenant.wa_session === "null") && "text-red-500 animate-pulse bg-red-500/10 px-2 rounded")}>
                                                         {(!tenant?.wa_session || tenant.wa_session === "null") ? wt("missing_id") : tenant.wa_session}
@@ -442,7 +442,7 @@ export default function SettingsPage() {
                                                     </div>
                                                     <div className="space-y-2">
                                                         <h4 className="text-foreground font-black uppercase tracking-tighter text-2xl italic">{wt("bridge_secure")}</h4>
-                                                        <p className="text-text-dim font-bold text-[10px] uppercase tracking-widest italic">{wt("device_linked")}</p>
+                                                        <p className="text-dim-foreground font-bold text-[10px] uppercase tracking-widest italic">{wt("device_linked")}</p>
                                                     </div>
                                                 </div>
                                             ) : (
@@ -451,11 +451,11 @@ export default function SettingsPage() {
                                                     className="text-center space-y-6 p-4 cursor-pointer hover:bg-foreground/[0.02] transition-all active:scale-95 group/btn"
                                                 >
                                                     <div className="w-24 h-24 bg-foreground/[0.05] rounded-full flex items-center justify-center border border-glass-border mx-auto group-hover/btn:border-accent-tertiary/30 group-hover/btn:scale-110 transition-all">
-                                                        <Smartphone className="w-12 h-12 text-text-muted group-hover:text-accent-tertiary transition-colors" />
+                                                        <Smartphone className="w-12 h-12 text-muted-foreground group-hover:text-accent-tertiary transition-colors" />
                                                     </div>
                                                     <div className="space-y-1">
                                                         <h4 className="text-foreground font-black uppercase tracking-tight text-xl italic group-hover:text-accent-tertiary transition-colors">{wt("no_session")}</h4>
-                                                        <p className="text-text-muted font-medium text-[12px] max-w-[180px] mx-auto leading-relaxed">{wt("initialize_pairing")}</p>
+                                                        <p className="text-muted-foreground font-medium text-[12px] max-w-[180px] mx-auto leading-relaxed">{wt("initialize_pairing")}</p>
                                                     </div>
                                                     {(wsStatus === "connecting" || wsStatus === "loading") && (
                                                         <div className="flex flex-col items-center gap-3 mt-4">
@@ -492,11 +492,11 @@ export default function SettingsPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
                                         {/* Webhook Config */}
                                         <div className="space-y-5">
-                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">Webhook Endpoint</label>
+                                            <label className="text-[11px] font-black text-dim-foreground uppercase tracking-[0.3em] ml-2 italic">Webhook Endpoint</label>
                                             <div className="relative group">
                                                 <input 
                                                     type="text" 
-                                                    className="w-full bg-foreground/[0.03] border border-glass-border rounded-[1.8rem] px-8 py-6 text-[13px] font-mono text-amber-500 focus:ring-2 focus:ring-amber-500/30 outline-none transition-all shadow-inner"
+                                                    className="w-full bg-surface border border-glass-border rounded-[1.8rem] px-8 py-6 text-[13px] font-mono text-amber-500 focus:ring-2 focus:ring-amber-500/30 outline-none transition-all shadow-inner"
                                                     placeholder="https://api.yourdomain.com/webhook"
                                                     value={tenant?.settings?.webhook_url || ""}
                                                     onChange={(e) => setTenant(prev => prev ? { ...prev, settings: { ...prev.settings, webhook_url: e.target.value } } : null)}
@@ -513,9 +513,9 @@ export default function SettingsPage() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <span className="text-[12px] font-black text-foreground uppercase tracking-tight">{bt("title")}</span>
-                                                    <p className="text-[9px] text-text-dim uppercase tracking-widest font-bold">Configure AI models & prompts</p>
+                                                    <p className="text-[9px] text-dim-foreground uppercase tracking-widest font-bold">Configure AI models & prompts</p>
                                                 </div>
-                                                <ChevronRight className="w-5 h-5 text-text-dim group-hover:text-accent-secondary group-hover:translate-x-1 transition-all" />
+                                                <ChevronRight className="w-5 h-5 text-dim-foreground group-hover:text-accent-secondary group-hover:translate-x-1 transition-all" />
                                             </a>
                                             <a href="/dashboard/knowledge" className="p-6 bg-foreground/[0.02] border border-glass-border rounded-3xl hover:border-accent-primary/30 transition-all flex items-center gap-4 group">
                                                 <div className="w-12 h-12 bg-accent-primary/10 rounded-2xl flex items-center justify-center border border-accent-primary/20">
@@ -523,9 +523,9 @@ export default function SettingsPage() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <span className="text-[12px] font-black text-foreground uppercase tracking-tight">Knowledge Base</span>
-                                                    <p className="text-[9px] text-text-dim uppercase tracking-widest font-bold">Upload docs & manage RAG</p>
+                                                    <p className="text-[9px] text-dim-foreground uppercase tracking-widest font-bold">Upload docs & manage RAG</p>
                                                 </div>
-                                                <ChevronRight className="w-5 h-5 text-text-dim group-hover:text-accent-primary group-hover:translate-x-1 transition-all" />
+                                                <ChevronRight className="w-5 h-5 text-dim-foreground group-hover:text-accent-primary group-hover:translate-x-1 transition-all" />
                                             </a>
                                         </div>
 
@@ -539,7 +539,7 @@ export default function SettingsPage() {
                                                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                                                 <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Active Plan</span>
                                             </div>
-                                            <p className="text-[10px] font-black text-text-muted uppercase tracking-widest italic leading-relaxed">
+                                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic leading-relaxed">
                                                 Your subscription is active. Quota usage is tracked on the dashboard overview.
                                             </p>
                                         </div>
@@ -556,11 +556,11 @@ export default function SettingsPage() {
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
                                         <div className="flex items-center gap-8">
                                             <div className="w-20 h-20 bg-foreground/[0.04] rounded-[2.5rem] flex items-center justify-center border border-glass-border shadow-inner">
-                                                <Lock className="w-10 h-10 text-text-dim" />
+                                                <Lock className="w-10 h-10 text-dim-foreground" />
                                             </div>
                                             <div className="space-y-2">
                                                 <h2 className="text-4xl font-black text-foreground uppercase italic tracking-tighter leading-none">{t("account_management")}</h2>
-                                                <p className="text-[11px] font-black text-text-dim uppercase tracking-[0.5em] italic">{t("nexus_version_sec")}</p>
+                                                <p className="text-[11px] font-black text-dim-foreground uppercase tracking-[0.5em] italic">{t("nexus_version_sec")}</p>
                                             </div>
                                         </div>
                                         <div className="bg-red-500/10 px-8 py-4 rounded-[1.8rem] border border-red-500/20 flex items-center gap-4">
@@ -572,15 +572,15 @@ export default function SettingsPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-end">
                                         <div className="md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-12">
                                             <div className="space-y-5">
-                                                <label className="text-[12px] font-black text-text-dim uppercase tracking-[0.4em] ml-2 italic">{t("user_email")}</label>
+                                                <label className="text-[12px] font-black text-dim-foreground uppercase tracking-[0.4em] ml-2 italic">{t("user_email")}</label>
                                                 <div className="relative group">
                                                     <input
                                                         disabled
                                                         type="email"
                                                         value="admin@silkbot.neural"
-                                                        className="w-full bg-foreground/[0.02] border border-glass-border rounded-[1.8rem] px-10 py-6 text-[16px] text-text-dim outline-none cursor-not-allowed font-semibold opacity-60 backdrop-blur-md"
+                                                        className="w-full bg-foreground/[0.02] border border-glass-border rounded-[1.8rem] px-10 py-6 text-[16px] text-dim-foreground outline-none cursor-not-allowed font-semibold opacity-60 backdrop-blur-md"
                                                     />
-                                                    <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-text-dim opacity-30" />
+                                                    <Lock className="absolute right-10 top-1/2 -translate-y-1/2 w-5 h-5 text-dim-foreground opacity-30" />
                                                 </div>
                                             </div>
                                             <div className="flex items-end">
@@ -593,7 +593,7 @@ export default function SettingsPage() {
                                         </div>
                                         
                                         <div className="md:col-span-4 flex justify-end">
-                                            <button className="flex items-center gap-6 px-16 py-7 rounded-[2rem] bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all font-black text-[14px] uppercase tracking-[0.4em] shadow-2xl shadow-red-500/10 border border-red-500/20 italic group relative overflow-hidden active:scale-95">
+                                            <button className="flex items-center gap-6 px-16 py-7 rounded-[2rem] bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-foreground transition-all font-black text-[14px] uppercase tracking-[0.4em] shadow-2xl shadow-red-500/10 border border-red-500/20 italic group relative overflow-hidden active:scale-95">
                                                 <div className="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                                                 <div className="relative z-10 flex items-center gap-4">
                                                     <LogOut className="w-6 h-6" />
@@ -633,7 +633,7 @@ function InputField({ label, value, onChange, placeholder, error }: { label: str
             <div className="flex items-center justify-between ml-2">
                 <label className={cn(
                     "text-[11px] font-black uppercase tracking-[0.3em] transition-colors italic",
-                    error ? "text-red-500" : "text-text-dim group-focus-within:text-accent-primary"
+                    error ? "text-red-500" : "text-dim-foreground group-focus-within:text-accent-primary"
                 )}>
                     {label}
                 </label>
@@ -645,10 +645,10 @@ function InputField({ label, value, onChange, placeholder, error }: { label: str
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 className={cn(
-                    "w-full bg-foreground/[0.03] border rounded-3xl px-8 py-5 text-[15px] text-foreground",
+                    "w-full bg-surface border rounded-3xl px-8 py-5 text-[15px] text-foreground",
                     "focus:ring-2 outline-none transition-all font-semibold",
                     error ? "border-red-500/50 focus:ring-red-500/30" : "border-glass-border focus:ring-accent-primary/30",
-                    "placeholder:text-text-dim/40 placeholder:font-medium backdrop-blur-md group-hover:bg-foreground/[0.05] shadow-inner"
+                    "placeholder:text-dim-foreground/40 placeholder:font-medium backdrop-blur-md group-hover:bg-foreground/[0.05] shadow-inner"
                 )}
             />
         </div>

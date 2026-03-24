@@ -39,12 +39,12 @@ export default function MetricsBento({}: MetricsBentoProps) {
                     <h3 className="text-foreground font-black text-xl tracking-tight leading-none mb-2">
                         {t("neural_load")}
                     </h3>
-                    <p className="text-text-dim text-[9px] font-black uppercase tracking-widest italic opacity-80">
+                    <p className="text-dim-foreground text-[9px] font-black uppercase tracking-widest italic opacity-80">
                         {t("resource_utilization")}
                     </p>
                 </div>
                 <motion.div 
-                    className="p-3 rounded-2xl bg-foreground/5 border border-glass-border group-hover/metrics:border-accent-primary/30 transition-colors shadow-inner"
+                    className="p-3 rounded-2xl bg-surface border border-glass-border group-hover/metrics:border-accent-primary/30 transition-colors shadow-inner"
                     whileHover={{ scale: 1.1, rotate: -8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
@@ -88,7 +88,7 @@ export default function MetricsBento({}: MetricsBentoProps) {
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                     <span className="text-2xl font-black text-foreground leading-none tracking-tighter drop-shadow-sm">84%</span>
-                    <span className="text-[8px] text-text-dim font-black uppercase tracking-widest mt-1 italic">{t("efficiency")}</span>
+                    <span className="text-[8px] text-dim-foreground font-black uppercase tracking-widest mt-1 italic">{t("efficiency")}</span>
                 </div>
             </div>
 
@@ -106,7 +106,7 @@ export default function MetricsBento({}: MetricsBentoProps) {
                     <p className="text-lg font-black text-foreground tabular-nums tracking-tighter">12,482</p>
                 </motion.div>
                 <motion.div className="space-y-1" variants={staggerItem}>
-                    <div className="flex items-center gap-2 text-text-muted">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                         <Activity className="w-3 h-3" />
                         <span className="text-[10px] font-black uppercase tracking-widest leading-none italic">{t("latency")}</span>
                     </div>
@@ -117,10 +117,10 @@ export default function MetricsBento({}: MetricsBentoProps) {
             {/* Premium Progress Bar */}
             <div className="mt-8">
                 <div className="flex justify-between items-end mb-2">
-                    <span className="text-[9px] font-black text-text-dim uppercase tracking-widest italic">{t("system_health")}</span>
+                    <span className="text-[9px] font-black text-dim-foreground uppercase tracking-widest italic">{t("system_health")}</span>
                     <span className="text-[10px] font-black text-accent-secondary uppercase italic">{t("premium")}</span>
                 </div>
-                <div className="h-1.5 w-full bg-foreground/5 rounded-full overflow-hidden border border-glass-border">
+                <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden border border-glass-border">
                     <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: "94%" }}

@@ -43,9 +43,9 @@ const STATUS_CONFIG: Record<
     label: "Down",
   },
   unknown: {
-    color: "text-slate-400",
+    color: "text-muted-foreground",
     bg: "bg-slate-500/10",
-    border: "border-white/5",
+    border: "border-border",
     icon: HelpCircle,
     label: "Unknown",
   },
@@ -79,7 +79,7 @@ export default function HealthPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
-        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">
           Probing System Nodes...
         </span>
       </div>
@@ -89,7 +89,7 @@ export default function HealthPage() {
   return (
     <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-500">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-10">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className={cn(
@@ -109,26 +109,26 @@ export default function HealthPage() {
               {STATUS_CONFIG[overallStatus].label}
             </span>
           </div>
-          <h1 className="text-5xl font-black text-white tracking-tighter italic">
+          <h1 className="text-5xl font-black text-foreground tracking-tighter italic">
             {t("title")}<span className="text-purple-500">.</span>
           </h1>
-          <p className="text-slate-500 text-lg font-medium max-w-2xl leading-relaxed italic">
+          <p className="text-muted-foreground text-lg font-medium max-w-2xl leading-relaxed italic">
             {t("description")}
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           {health.lastChecked && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/[0.02] border border-white/5 rounded-xl">
-              <Clock className="w-3.5 h-3.5 text-slate-600" />
-              <span className="text-[10px] font-mono text-slate-400">
+            <div className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-xl">
+              <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-[10px] font-mono text-muted-foreground">
                 {health.lastChecked.toLocaleTimeString()}
               </span>
             </div>
           )}
           <button
             onClick={refresh}
-            className="p-3 bg-white/5 text-slate-400 rounded-2xl hover:bg-white/10 hover:text-white transition-all border border-white/10 active:rotate-180 duration-500"
+            className="p-3 bg-surface text-muted-foreground rounded-2xl hover:bg-foreground/10 hover:text-foreground transition-all border border-border active:rotate-180 duration-500"
             title="Refresh"
           >
             <RefreshCw className="w-5 h-5" />
@@ -166,8 +166,8 @@ export default function HealthPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-black text-white tracking-tight">{service.label}</h3>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.1em] mt-1">{service.desc}</p>
+                  <h3 className="text-xl font-black text-foreground tracking-tight">{service.label}</h3>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.1em] mt-1">{service.desc}</p>
                 </div>
 
                 <div className={cn(
@@ -194,7 +194,7 @@ export default function HealthPage() {
               <AlertTriangle className="w-6 h-6 text-red-400" />
             </div>
             <div>
-              <h3 className="text-xl font-black text-white">Dead Letter Queue</h3>
+              <h3 className="text-xl font-black text-foreground">Dead Letter Queue</h3>
               <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest">
                 {dlq.totalFailed} Failed Messages
               </p>
@@ -202,8 +202,8 @@ export default function HealthPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {dlq.queues.map((q, i) => (
-              <div key={i} className="bg-black/40 border border-red-500/10 rounded-xl p-4 space-y-2">
-                <p className="text-sm font-bold text-white truncate">{q.name}</p>
+              <div key={i} className="bg-surface border border-red-500/10 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-bold text-foreground truncate">{q.name}</p>
                 <div className="flex items-center gap-4">
                   <span className="text-[10px] text-red-400 font-mono">
                     Depth: {q.depth}

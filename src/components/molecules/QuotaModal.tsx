@@ -21,20 +21,20 @@ export default function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-2xl"
+                        className="absolute inset-0 bg-background/80 backdrop-blur-2xl"
                     />
                     <motion.div 
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="relative w-full max-w-lg glass-card p-10 bg-slate-900 overflow-hidden"
+                        className="relative w-full max-w-lg glass-card p-10 bg-background overflow-hidden"
                     >
                         {/* Decorative background */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 blur-[60px] -z-10" />
                         
                         <button 
                             onClick={onClose}
-                            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 text-slate-500 flex items-center justify-center hover:bg-white/10 transition-all"
+                            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-surface text-muted-foreground flex items-center justify-center hover:bg-foreground/10 transition-all"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -45,15 +45,15 @@ export default function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                             </div>
                             
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
+                                <h2 className="text-3xl font-black text-foreground italic tracking-tighter uppercase leading-none">
                                     Subscription <span className="text-red-500">Locked</span>
                                 </h2>
-                                <p className="text-slate-500 text-sm font-bold uppercase tracking-widest italic pt-1">
+                                <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest italic pt-1">
                                     Neural Throughput Limit Reached
                                 </p>
                             </div>
 
-                            <p className="text-slate-400 text-sm leading-relaxed px-4">
+                            <p className="text-muted-foreground text-sm leading-relaxed px-4">
                                 Your current operational sector has exhausted its allocated tokens. Upgrading your neural node will restore real-time automation and intelligence.
                             </p>
 
@@ -63,14 +63,14 @@ export default function QuotaModal({ isOpen, onClose }: QuotaModalProps) {
                                         router.push("/dashboard/settings");
                                         onClose();
                                     }}
-                                    className="w-full flex items-center justify-center gap-3 py-4 bg-accent-primary text-white rounded-2xl font-black uppercase tracking-widest italic shadow-xl shadow-accent-primary/20 hover:scale-[1.02] transition-all"
+                                    className="w-full flex items-center justify-center gap-3 py-4 bg-accent-primary text-foreground rounded-2xl font-black uppercase tracking-widest italic shadow-xl shadow-accent-primary/20 hover:scale-[1.02] transition-all"
                                 >
                                     <Zap className="w-5 h-5 fill-white" />
                                     Expand Architecture
                                 </button>
                                 <button 
                                     onClick={onClose}
-                                    className="w-full py-4 bg-white/5 text-slate-400 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all border border-white/5"
+                                    className="w-full py-4 bg-surface text-muted-foreground rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-foreground/10 transition-all border border-border"
                                 >
                                     Dismiss Protocol
                                 </button>

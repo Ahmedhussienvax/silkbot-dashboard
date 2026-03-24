@@ -325,17 +325,17 @@ export default function InboxPage() {
     });
 
     return (
-        <div className="flex bg-slate-950/40 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] overflow-hidden h-[calc(100vh-6rem)] shadow-2xl relative">
+        <div className="flex bg-background/40 backdrop-blur-3xl border border-border rounded-[2.5rem] overflow-hidden h-[calc(100vh-6rem)] shadow-2xl relative">
             
             {/* Sidebar: Chat List */}
-            <div className="w-80 md:w-[400px] border-r border-white/5 flex flex-col bg-slate-900/20">
+            <div className="w-80 md:w-[400px] border-r border-border flex flex-col bg-background/20">
                 <div className="p-8 pb-4 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-black text-white tracking-tighter">{t("title")}</h2>
+                        <h2 className="text-2xl font-black text-foreground tracking-tighter">{t("title")}</h2>
                         <div className="flex gap-2">
                             <button 
                                 aria-label="Refresh Neural Streams"
-                                className="p-2 bg-white/5 rounded-xl border border-white/10 text-slate-400 hover:text-white transition-all transform active:scale-90"
+                                className="p-2 bg-surface rounded-xl border border-border text-muted-foreground hover:text-foreground transition-all transform active:scale-90"
                             >
                                 <Zap className="w-4 h-4" />
                             </button>
@@ -343,30 +343,30 @@ export default function InboxPage() {
                     </div>
 
                     <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-purple-500 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-purple-500 transition-colors" />
                         <input 
                             type="text" 
                             placeholder={t("search_contacts")} 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-6 py-3.5 text-sm text-white focus:ring-2 focus:ring-purple-500/30 outline-none transition-all"
+                            className="w-full bg-surface border border-border rounded-2xl pl-12 pr-6 py-3.5 text-sm text-foreground focus:ring-2 focus:ring-purple-500/30 outline-none transition-all"
                         />
                     </div>
 
-                    <div className="flex items-center gap-1.5 bg-black/40 p-1.5 rounded-2xl border border-white/5">
-                        <button onClick={() => setFilter("all")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all", filter === "all" ? "bg-white/10 text-white shadow-lg" : "text-slate-500 hover:text-white")}>{t("filter_all")}</button>
-                        <button onClick={() => setFilter("bot")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "bot" ? "bg-purple-500 text-white shadow-lg shadow-purple-500/20" : "text-slate-500 hover:text-white")}>
+                    <div className="flex items-center gap-1.5 bg-surface p-1.5 rounded-2xl border border-border">
+                        <button onClick={() => setFilter("all")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all", filter === "all" ? "bg-foreground/10 text-foreground shadow-lg" : "text-muted-foreground hover:text-foreground")}>{t("filter_all")}</button>
+                        <button onClick={() => setFilter("bot")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "bot" ? "bg-purple-500 text-foreground shadow-lg shadow-purple-500/20" : "text-muted-foreground hover:text-foreground")}>
                             <Bot className="w-3 h-3" /> {t("filter_ai")}
                         </button>
-                        <button onClick={() => setFilter("human")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "human" ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/20" : "text-slate-500 hover:text-white")}>
+                        <button onClick={() => setFilter("human")} className={cn("flex-1 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5", filter === "human" ? "bg-cyan-500 text-foreground shadow-lg shadow-cyan-500/20" : "text-muted-foreground hover:text-foreground")}>
                             <User className="w-3 h-3" /> {t("filter_human")}
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5 mt-2">
-                        <button onClick={() => setFilter("open")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "open" ? "bg-blue-500 text-white" : "text-slate-500")}>{t("status_new")}</button>
-                        <button onClick={() => setFilter("pending")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "pending" ? "bg-amber-500 text-white" : "text-slate-500")}>{t("status_pending")}</button>
-                        <button onClick={() => setFilter("resolved")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "resolved" ? "bg-emerald-500 text-white" : "text-slate-500")}>{t("status_resolved")}</button>
+                    <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border mt-2">
+                        <button onClick={() => setFilter("open")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "open" ? "bg-blue-500 text-foreground" : "text-muted-foreground")}>{t("status_new")}</button>
+                        <button onClick={() => setFilter("pending")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "pending" ? "bg-amber-500 text-foreground" : "text-muted-foreground")}>{t("status_pending")}</button>
+                        <button onClick={() => setFilter("resolved")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "resolved" ? "bg-emerald-500 text-foreground" : "text-muted-foreground")}>{t("status_resolved")}</button>
                     </div>
                 </div>
 
@@ -374,8 +374,8 @@ export default function InboxPage() {
                     <AnimatePresence mode="popLayout">
                         {loadingConvs ? (
                             <div className="py-20 text-center animate-pulse">
-                                <MessageSquare className="w-10 h-10 text-slate-700 mx-auto mb-4" />
-                                <p className="text-slate-600 font-bold text-xs uppercase tracking-widest">{t("stream_encrypting")}</p>
+                                <MessageSquare className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
+                                <p className="text-muted-foreground font-bold text-xs uppercase tracking-widest">{t("stream_encrypting")}</p>
                             </div>
                         ) : filteredConversations.map((conv) => (
                             <motion.button 
@@ -387,13 +387,13 @@ export default function InboxPage() {
                                 className={cn(
                                     "w-full text-left p-5 rounded-[1.75rem] mb-2 transition-all group relative border border-transparent",
                                     activeConv === conv.composite_chat_id 
-                                        ? "bg-white/10 border-white/5 shadow-xl scale-[1.02]" 
-                                        : "hover:bg-white/5"
+                                        ? "bg-foreground/10 border-border shadow-xl scale-[1.02]" 
+                                        : "hover:bg-surface"
                                 )}
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
-                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/5 flex items-center justify-center text-white font-black text-xl overflow-hidden shadow-inner">
+                                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-border flex items-center justify-center text-foreground font-black text-xl overflow-hidden shadow-inner">
                                             {conv.contact_avatar ? (
                                                 <img src={conv.contact_avatar} alt={`${conv.contact_push_name || "Contact"}'s avatar`} className="w-full h-full object-cover opacity-80" />
                                             ) : (
@@ -407,12 +407,12 @@ export default function InboxPage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between mb-1">
-                                            <h4 className="text-sm font-black text-white truncate">{conv.contact_push_name || "Nexus Guest"}</h4>
-                                            <span className="text-[10px] text-slate-500 font-mono">
+                                            <h4 className="text-sm font-black text-foreground truncate">{conv.contact_push_name || "Nexus Guest"}</h4>
+                                            <span className="text-[10px] text-muted-foreground font-mono">
                                                 {conv.last_message_at ? new Date(conv.last_message_at * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ""}
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-500 truncate font-medium flex items-center gap-1">
+                                        <p className="text-xs text-muted-foreground truncate font-medium flex items-center gap-1">
                                             {conv.bot_active !== false ? (
                                                 <span className="flex items-center gap-1 text-purple-400 font-bold uppercase text-[8px] bg-purple-500/10 px-1.5 py-0.5 rounded-md border border-purple-500/20">
                                                     <Brain className="w-2 h-2" /> AI
@@ -441,7 +441,7 @@ export default function InboxPage() {
                                                     e.stopPropagation();
                                                     botToggleMutation.mutate({ conv, newStatus: conv.bot_active === false });
                                                 }}
-                                                className="opacity-0 group-hover:opacity-100 p-1.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all"
+                                                className="opacity-0 group-hover:opacity-100 p-1.5 bg-surface hover:bg-foreground/10 rounded-lg border border-border transition-all"
                                                 title={conv.bot_active !== false ? "Switch to Manual" : "Switch to AI"}
                                             >
                                                 {conv.bot_active !== false ? <User className="w-3 h-3 text-cyan-400" /> : <Bot className="w-3 h-3 text-purple-400" />}
@@ -456,20 +456,20 @@ export default function InboxPage() {
             </div>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col bg-black/20">
+            <div className="flex-1 flex flex-col bg-background/20">
                 {activeConv ? (
                     <>
                         {/* Chat Header */}
-                        <header className="px-8 py-5 border-b border-white/5 flex items-center justify-between bg-slate-900/40 backdrop-blur-xl">
+                        <header className="px-8 py-5 border-b border-border flex items-center justify-between bg-surface backdrop-blur-xl">
                             <div className="flex items-center gap-4">
                                 <div className="p-0.5 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400">
-                                    <div className="w-12 h-12 rounded-[0.9rem] bg-slate-900 flex items-center justify-center text-white font-black text-lg">
+                                    <div className="w-12 h-12 rounded-[0.9rem] bg-background flex items-center justify-center text-foreground font-black text-lg">
                                         {(activeConvData?.contact_push_name || "?").charAt(0).toUpperCase()}
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <h3 className="text-lg font-black text-white tracking-tight leading-none mb-1">{activeConvData?.contact_push_name || activeConvData?.contact_jid}</h3>
-                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest flex items-center gap-2">
+                                    <h3 className="text-lg font-black text-foreground tracking-tight leading-none mb-1">{activeConvData?.contact_push_name || activeConvData?.contact_jid}</h3>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest flex items-center gap-2">
                                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                         {t("encryption_active")} • {activeConvData?.instance_name}
                                     </p>
@@ -477,20 +477,20 @@ export default function InboxPage() {
                             </div>
                             
                             <div className="flex items-center gap-4">
-                                <div className="hidden md:flex gap-2 mr-4 border-r border-white/10 pr-6">
-                                    <button aria-label="Audio Call" className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Phone className="w-4 h-4" /></button>
-                                    <button aria-label="Video Call" className="p-3 bg-white/5 rounded-2xl text-slate-400 hover:text-white border border-white/5 transition-all"><Video className="w-4 h-4" /></button>
+                                <div className="hidden md:flex gap-2 mr-4 border-r border-border pr-6">
+                                    <button aria-label="Audio Call" className="p-3 bg-surface rounded-2xl text-muted-foreground hover:text-foreground border border-border transition-all"><Phone className="w-4 h-4" /></button>
+                                    <button aria-label="Video Call" className="p-3 bg-surface rounded-2xl text-muted-foreground hover:text-foreground border border-border transition-all"><Video className="w-4 h-4" /></button>
                                 </div>
                                 
-                                <div className="flex items-center gap-2 mr-4 border-r border-white/10 pr-6">
+                                <div className="flex items-center gap-2 mr-4 border-r border-border pr-6">
                                     <select 
                                         value={activeConvData?.status || 'new'}
                                         onChange={(e) => statusMutation.mutate({ conv: activeConvData!, status: e.target.value })}
-                                        className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 outline-none focus:ring-1 focus:ring-purple-500/50 transition-all cursor-pointer"
+                                        className="bg-surface border border-border rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 outline-none focus:ring-1 focus:ring-purple-500/50 transition-all cursor-pointer"
                                     >
-                                        <option value="new" className="bg-slate-900">{t("status_new")}</option>
-                                        <option value="pending" className="bg-slate-900">{t("status_pending")}</option>
-                                        <option value="resolved" className="bg-slate-900">{t("status_resolved")}</option>
+                                        <option value="new" className="bg-background">{t("status_new")}</option>
+                                        <option value="pending" className="bg-background">{t("status_pending")}</option>
+                                        <option value="resolved" className="bg-background">{t("status_resolved")}</option>
                                     </select>
                                 </div>
 
@@ -506,7 +506,7 @@ export default function InboxPage() {
                                         {activeConvData?.bot_active !== false ? t("mode_ai") : t("mode_manual")}
                                     </span>
                                 </Button>
-                                <button aria-label="Conversation Options" className="p-3 bg-slate-800/40 rounded-2xl text-slate-400 border border-white/5 hover:bg-white/10 transition-colors"><MoreVertical className="w-4 h-4" /></button>
+                                <button aria-label="Conversation Options" className="p-3 bg-surface rounded-2xl text-muted-foreground border border-border hover:bg-foreground/10 transition-colors"><MoreVertical className="w-4 h-4" /></button>
                             </div>
                         </header>
 
@@ -533,8 +533,8 @@ export default function InboxPage() {
                                                     <div className={cn(
                                                         "px-6 py-4 shadow-2xl transition-all duration-300 relative overflow-hidden group/msg",
                                                         fromMe 
-                                                            ? "bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-[2rem] rounded-tr-none border border-white/10" 
-                                                            : "bg-slate-900 border border-white/5 text-slate-200 rounded-[2rem] rounded-tl-none",
+                                                            ? "bg-gradient-to-br from-purple-600 to-indigo-700 text-foreground rounded-[2rem] rounded-tr-none border border-border" 
+                                                            : "bg-background border border-border text-slate-200 rounded-[2rem] rounded-tl-none",
                                                         msg.isOptimistic && "opacity-50 blur-[1px]"
                                                     )}>
                                                         {hasTrace && (
@@ -607,10 +607,10 @@ export default function InboxPage() {
                         </div>
 
                         {/* Input Area */}
-                        <footer className="p-8 bg-slate-900/60 backdrop-blur-3xl border-t border-white/5">
-                            <form onSubmit={handleSendMessage} className="max-w-5xl mx-auto flex items-center gap-4 bg-black/60 p-2.5 rounded-[2rem] border border-white/10 shadow-2xl ring-1 ring-white/5 focus-within:ring-purple-500/30 transition-all group">
+                        <footer className="p-8 bg-background/60 backdrop-blur-3xl border-t border-border">
+                            <form onSubmit={handleSendMessage} className="max-w-5xl mx-auto flex items-center gap-4 bg-background/60 p-2.5 rounded-[2rem] border border-border shadow-2xl ring-1 ring-white/5 focus-within:ring-purple-500/30 transition-all group">
                                 <div className="flex gap-1 pl-2">
-                                    <button type="button" title="Attach Payload" className="p-3 text-slate-500 hover:text-white transition-colors"><Paperclip className="w-5 h-5" /></button>
+                                    <button type="button" title="Attach Payload" className="p-3 text-muted-foreground hover:text-foreground transition-colors"><Paperclip className="w-5 h-5" /></button>
                                 </div>
                                 
                                 <input 
@@ -618,25 +618,25 @@ export default function InboxPage() {
                                     value={newMsg} 
                                     onChange={(e) => setNewMsg(e.target.value)} 
                                     placeholder={t("input_placeholder")}
-                                    className="flex-1 bg-transparent border-none px-2 py-4 text-white placeholder:text-slate-600 text-lg focus:ring-0 outline-none" 
+                                    className="flex-1 bg-transparent border-none px-2 py-4 text-foreground placeholder:text-muted-foreground text-lg focus:ring-0 outline-none" 
                                 />
                                 
                                 <div className="flex items-center gap-2 pr-1">
-                                    <button aria-label="Voice Message" type="button" className="p-3 text-slate-500 hover:text-white transition-colors"><Mic className="w-5 h-5" /></button>
+                                    <button aria-label="Voice Message" type="button" className="p-3 text-muted-foreground hover:text-foreground transition-colors"><Mic className="w-5 h-5" /></button>
                                     <button 
                                         aria-label="Send Transmission"
                                         type="submit" 
                                         disabled={!newMsg.trim() || sendMutation.isPending} 
                                         className={cn(
                                             "w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl active:scale-95",
-                                            newMsg.trim() ? "bg-purple-500 text-white hover:bg-purple-600" : "bg-slate-800 text-slate-600"
+                                            newMsg.trim() ? "bg-purple-500 text-foreground hover:bg-purple-600" : "bg-surface text-muted-foreground"
                                         )}
                                     >
                                         <Send className={cn("w-6 h-6 transition-all", newMsg.trim() && "group-hover:translate-x-1 group-hover:-translate-y-1")} />
                                     </button>
                                 </div>
                             </form>
-                            <p className="text-center text-[9px] text-slate-600 font-bold uppercase tracking-[0.3em] mt-4">
+                            <p className="text-center text-[9px] text-muted-foreground font-bold uppercase tracking-[0.3em] mt-4">
                                 {t("quantum_link")}
                             </p>
                         </footer>
@@ -647,15 +647,15 @@ export default function InboxPage() {
                             <div className="w-32 h-32 bg-purple-500/10 rounded-[3rem] border-2 border-dashed border-purple-500/20 flex items-center justify-center animate-spin-slow">
                                 <MessageSquare className="w-12 h-12 text-purple-400 rotate-12" />
                             </div>
-                            <div className="absolute -top-2 -right-2 w-12 h-12 bg-black rounded-full border border-white/10 flex items-center justify-center shadow-2xl">
+                            <div className="absolute -top-2 -right-2 w-12 h-12 bg-background rounded-full border border-border flex items-center justify-center shadow-2xl">
                                 <Cpu className="w-6 h-6 text-purple-500" />
                             </div>
                         </div>
                         <div>
-                            <h3 className="text-3xl font-black text-white tracking-tighter mb-2">{t("select_chat")}</h3>
-                            <p className="text-slate-500 font-medium max-w-xs mx-auto">{t("select_chat_desc")}</p>
+                            <h3 className="text-3xl font-black text-foreground tracking-tighter mb-2">{t("select_chat")}</h3>
+                            <p className="text-muted-foreground font-medium max-w-xs mx-auto">{t("select_chat_desc")}</p>
                         </div>
-                        <Button variant="outline" className="rounded-2xl border-white/10">{t("btn_docs")}</Button>
+                        <Button variant="outline" className="rounded-2xl border-border">{t("btn_docs")}</Button>
                     </div>
                 )}
             </div>

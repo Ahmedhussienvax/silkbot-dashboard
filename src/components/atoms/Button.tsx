@@ -10,10 +10,10 @@ const Button = React.forwardRef<
   }
 >(({ className, variant = "default", size = "md", loading, children, ...props }, ref) => {
   const variants = {
-    default: "bg-white/10 text-white hover:bg-white/20 border border-white/10",
-    outline: "bg-transparent border border-white/20 text-white hover:border-white/40",
-    ghost: "bg-transparent text-slate-400 hover:text-white hover:bg-white/5",
-    gradient: "bg-gradient-to-r from-purple-600 to-cyan-500 text-white shadow-lg hover:scale-[1.02]",
+    default: "bg-white/10 text-foreground hover:bg-white/20 border border-border",
+    outline: "bg-transparent border border-white/20 text-foreground hover:border-white/40",
+    ghost: "bg-transparent text-muted-foreground hover:text-foreground hover:bg-surface",
+    gradient: "bg-gradient-to-r from-purple-600 to-cyan-500 text-foreground shadow-lg hover:scale-[1.02]",
     danger: "bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20",
   }
 

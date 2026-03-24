@@ -84,14 +84,14 @@ export default function TagInput({
   return (
     <div className={cn("space-y-3", className)}>
       {label && (
-        <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
+        <label className="text-[11px] font-black text-dim-foreground uppercase tracking-[0.3em] ml-2 flex items-center gap-2">
           {icon}
           {label}
         </label>
       )}
       <div
         className={cn(
-          "flex flex-wrap items-center gap-2 min-h-[60px] bg-foreground/[0.03] border border-glass-border rounded-2xl px-4 py-3 transition-all focus-within:ring-2 focus-within:ring-accent-primary/30 cursor-text",
+          "flex flex-wrap items-center gap-2 min-h-[60px] bg-surface border border-glass-border rounded-2xl px-4 py-3 transition-all focus-within:ring-2 focus-within:ring-accent-primary/30 cursor-text",
           disabled && "opacity-50 cursor-not-allowed"
         )}
         onClick={() => inputRef.current?.focus()}
@@ -127,12 +127,12 @@ export default function TagInput({
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : ""}
           disabled={disabled || value.length >= maxTags}
-          className="flex-1 min-w-[120px] bg-transparent outline-none text-[14px] text-foreground placeholder:text-text-dim/50 font-medium py-1"
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-[14px] text-foreground placeholder:text-dim-foreground/50 font-medium py-1"
           aria-label="Add tag"
         />
       </div>
       {maxTags && (
-        <div className="text-[9px] font-bold text-text-dim uppercase tracking-widest ml-2">
+        <div className="text-[9px] font-bold text-dim-foreground uppercase tracking-widest ml-2">
           {value.length}/{maxTags} tags
         </div>
       )}

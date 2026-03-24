@@ -128,7 +128,7 @@ export default function AuditPage() {
                 </div>
                 <div className="text-center space-y-2">
                     <h2 className="text-foreground font-black text-xl tracking-tighter uppercase italic">Accessing Neural Archive</h2>
-                    <p className="text-text-dim text-[10px] font-mono uppercase tracking-[0.3em] animate-pulse">Decrypting encrypted synapses...</p>
+                    <p className="text-dim-foreground text-[10px] font-mono uppercase tracking-[0.3em] animate-pulse">Decrypting encrypted synapses...</p>
                 </div>
             </div>
         );
@@ -149,18 +149,18 @@ export default function AuditPage() {
                     <h1 className="text-6xl md:text-8xl font-black text-foreground tracking-tighter italic leading-none">
                         Neural Audit<span className="text-accent-primary">.</span>
                     </h1>
-                    <p className="text-text-muted text-xl font-medium max-w-3xl leading-relaxed">
+                    <p className="text-muted-foreground text-xl font-medium max-w-3xl leading-relaxed">
                         Deep-level instrumentation of autonomous decision patterns, KG mapping accuracy, and synthetic cognition outputs.
                     </p>
                 </div>
                 
                 <div className="relative w-full xl:w-[600px] group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl blur opacity-0 group-focus-within:opacity-20 transition-opacity" />
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 h-5 w-5 group-focus-within:text-purple-400 transition-colors" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5 group-focus-within:text-purple-400 transition-colors" />
                     <input 
                         type="text" 
                         placeholder="Scan neural logs (Msg, JID, Instance)..." 
-                        className="w-full pl-16 pr-8 py-6 bg-surface border border-glass-border rounded-3xl text-foreground text-sm focus:outline-none focus:ring-0 focus:border-accent-primary/50 transition-all placeholder:text-text-dim backdrop-blur-3xl font-bold font-mono shadow-2xl"
+                        className="w-full pl-16 pr-8 py-6 bg-surface border border-glass-border rounded-3xl text-foreground text-sm focus:outline-none focus:ring-0 focus:border-accent-primary/50 transition-all placeholder:text-dim-foreground backdrop-blur-3xl font-bold font-mono shadow-2xl"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -182,12 +182,12 @@ export default function AuditPage() {
                         key={stat.label}
                         className="p-8 bg-surface border border-glass-border rounded-[2.5rem] backdrop-blur-3xl space-y-4 group hover:bg-surface-hover transition-all shadow-xl"
                     >
-                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-foreground/5 border border-glass-border group-hover:scale-110 transition-transform", stat.color)}>
+                        <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center bg-surface border border-glass-border group-hover:scale-110 transition-transform", stat.color)}>
                             {stat.icon}
                         </div>
                         <div>
                             <div className="text-4xl font-black text-foreground tracking-tighter">{stat.value}</div>
-                            <div className="text-[10px] text-text-dim font-black uppercase tracking-[0.2em] mt-1">{stat.label}</div>
+                            <div className="text-[10px] text-dim-foreground font-black uppercase tracking-[0.2em] mt-1">{stat.label}</div>
                         </div>
                     </motion.div>
                 ))}
@@ -198,12 +198,12 @@ export default function AuditPage() {
                 <div className="overflow-x-auto relative">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-foreground/[0.03] border-b border-glass-border">
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Temporal_Marker</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Subject_Cluster</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Inbound_Signal</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Synthetic_Synthesis</th>
-                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-text-dim">Logic_Health</th>
+                            <tr className="bg-surface border-b border-glass-border">
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Temporal_Marker</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Subject_Cluster</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Inbound_Signal</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Synthetic_Synthesis</th>
+                                <th className="px-10 py-10 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Logic_Health</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-glass-border">
@@ -218,30 +218,30 @@ export default function AuditPage() {
                                             <span className="text-foreground font-mono text-sm font-black group-hover/row:text-accent-primary transition-colors">
                                                 {format(new Date(log.created_at), "HH:mm:ss")}
                                             </span>
-                                            <span className="text-text-dim font-black text-[9px] uppercase tracking-tighter mt-1">
+                                            <span className="text-dim-foreground font-black text-[9px] uppercase tracking-tighter mt-1">
                                                 {format(new Date(log.created_at), "MMM dd, yyyy")}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-10 py-10 whitespace-nowrap">
                                         <div className="space-y-1.5">
-                                            <div className="font-mono text-sm text-text-muted group-hover/row:text-foreground transition-colors">{log.contact_jid}</div>
+                                            <div className="font-mono text-sm text-muted-foreground group-hover/row:text-foreground transition-colors">{log.contact_jid}</div>
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                <span className="text-[9px] text-text-dim font-black uppercase tracking-[0.2em] group-hover/row:text-text-muted transition-colors">
+                                                <span className="text-[9px] text-dim-foreground font-black uppercase tracking-[0.2em] group-hover/row:text-muted-foreground transition-colors">
                                                     {log.instance_name || "MASTER_CORE"}
                                                 </span>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-10 min-w-[300px] max-w-[400px]">
-                                        <div className="text-text-muted text-sm leading-relaxed p-5 bg-foreground/[0.02] border border-glass-border rounded-[1.5rem] group-hover/row:border-foreground/10 transition-colors line-clamp-2">
+                                        <div className="text-muted-foreground text-sm leading-relaxed p-5 bg-foreground/[0.02] border border-glass-border rounded-[1.5rem] group-hover/row:border-foreground/10 transition-colors line-clamp-2">
                                             {log.user_msg || <span className="opacity-40 italic font-medium text-xs">[Signal_Null]</span>}
                                         </div>
                                     </td>
                                     <td className="px-10 py-10 min-w-[300px] max-w-[400px]">
                                         <div className="text-indigo-300 font-medium text-sm leading-relaxed p-5 bg-indigo-500/[0.03] border border-indigo-500/10 rounded-[1.5rem] group-hover/row:bg-indigo-500/[0.05] transition-all line-clamp-2">
-                                            {log.ai_response || <span className="text-slate-600 opacity-40 italic text-xs">[Passthrough]</span>}
+                                            {log.ai_response || <span className="text-muted-foreground opacity-40 italic text-xs">[Passthrough]</span>}
                                         </div>
                                     </td>
                                     <td className="px-10 py-10">
@@ -251,10 +251,10 @@ export default function AuditPage() {
                                                     <ShieldCheck className="w-3 h-3" />
                                                     Validated
                                                 </span>
-                                                <p className="text-[9px] text-slate-600 font-mono italic truncate max-w-[150px] opacity-60">Source: Vectors_PRD_01</p>
+                                                <p className="text-[9px] text-muted-foreground font-mono italic truncate max-w-[150px] opacity-60">Source: Vectors_PRD_01</p>
                                             </div>
                                         ) : (
-                                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] bg-white/5 text-slate-600 border border-white/5 w-fit">
+                                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] bg-surface text-muted-foreground border border-border w-fit">
                                                 <History className="w-3 h-3" />
                                                 Heuristic
                                             </span>
@@ -276,7 +276,7 @@ export default function AuditPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedLog(null)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 cursor-zoom-out"
+                            className="fixed inset-0 bg-background/60 backdrop-blur-sm z-50 cursor-zoom-out"
                         />
                         <motion.aside 
                             initial={{ x: "100%" }}
@@ -295,13 +295,13 @@ export default function AuditPage() {
                                             </div>
                                             <h2 className="text-2xl font-black text-foreground tracking-tight uppercase italic">Trace_Inspector</h2>
                                         </div>
-                                        <p className="text-[10px] text-text-dim font-black uppercase tracking-widest pl-9">Synapse ID: {selectedLog.id.split('-')[0]}...</p>
+                                        <p className="text-[10px] text-dim-foreground font-black uppercase tracking-widest pl-9">Synapse ID: {selectedLog.id.split('-')[0]}...</p>
                                     </div>
                                     <button 
                                         onClick={() => setSelectedLog(null)}
-                                        className="p-3 bg-foreground/5 rounded-2xl hover:bg-foreground/10 transition-colors border border-glass-border group"
+                                        className="p-3 bg-surface rounded-2xl hover:bg-foreground/10 transition-colors border border-glass-border group"
                                     >
-                                        <X className="w-6 h-6 text-text-muted group-hover:text-foreground transition-colors" />
+                                        <X className="w-6 h-6 text-muted-foreground group-hover:text-foreground transition-colors" />
                                     </button>
                                 </header>
 
@@ -310,7 +310,7 @@ export default function AuditPage() {
                                     {/* Inbound Signal Box */}
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Inbound_Signal</h4>
+                                            <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Inbound_Signal</h4>
                                             <button 
                                                 onClick={() => copyToClipboard(selectedLog.user_msg)}
                                                 className="text-[10px] text-purple-400 hover:text-purple-300 transition-colors flex items-center gap-2"
@@ -319,7 +319,7 @@ export default function AuditPage() {
                                                 Copy Raw
                                             </button>
                                         </div>
-                                        <div className="p-6 bg-slate-900/60 border border-white/10 rounded-3xl text-slate-300 text-sm leading-relaxed font-medium shadow-inner">
+                                        <div className="p-6 bg-background/60 border border-border rounded-3xl text-slate-300 text-sm leading-relaxed font-medium shadow-inner">
                                             {selectedLog.user_msg}
                                         </div>
                                     </div>
@@ -334,28 +334,28 @@ export default function AuditPage() {
 
                                     {/* Neural Timeline (Traces) */}
                                     <div className="space-y-6">
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thought_Chain (AI_Traces)</h4>
+                                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Thought_Chain (AI_Traces)</h4>
                                         
                                         {loadingTraces ? (
-                                            <div className="flex items-center gap-3 text-slate-600 animate-pulse py-4 font-mono text-xs">
+                                            <div className="flex items-center gap-3 text-muted-foreground animate-pulse py-4 font-mono text-xs">
                                                 <Loader2 className="w-4 h-4 animate-spin" /> Fetching temporal shards...
                                             </div>
                                         ) : relatedTraces.length > 0 ? (
                                             <div className="space-y-4">
                                                 {relatedTraces.map((trace, i) => (
                                                     <div key={trace.id} className="relative flex gap-4 pl-4">
-                                                        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-slate-400 font-black">
+                                                        <div className="flex-shrink-0 w-8 h-8 rounded-xl bg-surface border border-border flex items-center justify-center text-[10px] text-muted-foreground font-black">
                                                             {i + 1}
                                                         </div>
                                                         {i !== relatedTraces.length - 1 && (
-                                                            <div className="absolute left-[29px] top-8 bottom-0 w-px bg-white/5" />
+                                                            <div className="absolute left-[29px] top-8 bottom-0 w-px bg-surface" />
                                                         )}
                                                         <div className="pb-4 pt-1 flex-1">
                                                             <div className="flex items-center justify-between mb-1.5">
                                                                 <span className="text-[10px] font-black uppercase text-purple-400">@{trace.trace_type}</span>
-                                                                <span className="text-[8px] text-slate-700 font-mono">{format(new Date(trace.created_at), "HH:mm:ss:SS")}</span>
+                                                                <span className="text-[8px] text-muted-foreground font-mono">{format(new Date(trace.created_at), "HH:mm:ss:SS")}</span>
                                                             </div>
-                                                            <p className="text-xs text-slate-500 leading-relaxed font-bold italic">
+                                                            <p className="text-xs text-muted-foreground leading-relaxed font-bold italic">
                                                                 "{trace.content}"
                                                             </p>
                                                         </div>
@@ -363,34 +363,34 @@ export default function AuditPage() {
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="p-8 border-2 border-dashed border-white/5 rounded-3xl text-center">
-                                                <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">Zero_Related_Traces_Found</p>
-                                                <p className="text-[9px] text-slate-700 mt-2">Temporal alignment window: ±10s</p>
+                                            <div className="p-8 border-2 border-dashed border-border rounded-3xl text-center">
+                                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Zero_Related_Traces_Found</p>
+                                                <p className="text-[9px] text-muted-foreground mt-2">Temporal alignment window: ±10s</p>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Subject Cluster Info */}
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-2">
-                                            <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">Subject_JID</p>
+                                        <div className="p-6 bg-surface border border-border rounded-3xl space-y-2">
+                                            <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">Subject_JID</p>
                                             <p className="text-xs text-slate-300 font-mono font-black truncate">{selectedLog.contact_jid}</p>
                                         </div>
-                                        <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-2">
-                                            <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">Active_Cluster</p>
-                                            <p className="text-xs text-white font-black truncate">{selectedLog.instance_name || "MASTER_CORE"}</p>
+                                        <div className="p-6 bg-surface border border-border rounded-3xl space-y-2">
+                                            <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">Active_Cluster</p>
+                                            <p className="text-xs text-foreground font-black truncate">{selectedLog.instance_name || "MASTER_CORE"}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-12 border-t border-white/5 flex flex-col gap-6">
+                                <div className="pt-12 border-t border-border flex flex-col gap-6">
                                     <button 
-                                        className="w-full py-5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] text-white shadow-2xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3"
+                                        className="w-full py-5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] text-foreground shadow-2xl hover:scale-[1.02] transition-transform flex items-center justify-center gap-3"
                                         onClick={() => copyToClipboard(JSON.stringify(selectedLog, null, 2))}
                                     >
                                         <ExternalLink className="w-4 h-4" /> Export_Binary_Synapse
                                     </button>
-                                    <p className="text-[9px] text-slate-700 text-center font-bold italic">SilkBot_Observability_Module v4.5 // System_Ready</p>
+                                    <p className="text-[9px] text-muted-foreground text-center font-bold italic">SilkBot_Observability_Module v4.5 // System_Ready</p>
                                 </div>
                             </div>
                         </motion.aside>

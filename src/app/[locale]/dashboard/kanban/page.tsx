@@ -60,7 +60,7 @@ export default function PipelinesPage() {
           <div className="w-20 h-20 border-2 border-accent-secondary/20 rounded-[2rem] animate-spin" />
           <Loader2 className="w-8 h-8 text-accent-secondary absolute inset-0 m-auto animate-pulse" />
         </div>
-        <p className="text-text-muted font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">
+        <p className="text-muted-foreground font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">
           {t('syncing_pathways')}
         </p>
       </div>
@@ -84,7 +84,7 @@ export default function PipelinesPage() {
               {t('title')}
               <Sparkles className="w-8 h-8 text-accent-secondary animate-pulse" />
             </h1>
-            <p className="text-text-muted text-sm max-w-xl mt-4 leading-relaxed font-medium tracking-tight">
+            <p className="text-muted-foreground text-sm max-w-xl mt-4 leading-relaxed font-medium tracking-tight">
               {t('description')}
             </p>
           </div>
@@ -94,13 +94,13 @@ export default function PipelinesPage() {
           <div className="glass-card p-4 rounded-2xl">
             <div className="flex items-center gap-3 mb-1">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
-              <span className="text-[10px] uppercase font-bold text-text-dim tracking-widest italic">{t('pipeline_value')}</span>
+              <span className="text-[10px] uppercase font-bold text-dim-foreground tracking-widest italic">{t('pipeline_value')}</span>
             </div>
             <div className="text-2xl font-black text-foreground">
               ${totalValue.toLocaleString()}
             </div>
           </div>
-          <button className="h-full px-8 bg-accent-secondary hover:bg-accent-secondary/80 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all active:scale-95 shadow-[0_20px_40px_-10px_rgba(var(--accent-secondary-rgb),0.3)]">
+          <button className="h-full px-8 bg-accent-secondary hover:bg-accent-secondary/80 text-foreground font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all active:scale-95 shadow-[0_20px_40px_-10px_rgba(var(--accent-secondary-rgb),0.3)]">
             {t('add_lead')}
           </button>
         </div>

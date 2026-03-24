@@ -103,12 +103,12 @@ export default function WhatsAppPage() {
                         </div>
                         <span className="text-xs font-bold uppercase tracking-widest text-emerald-500/80">{t("gateway_connectivity")}</span>
                     </div>
-                    <h1 className="text-4xl font-black text-white tracking-tight">{t("title")}</h1>
-                    <p className="text-slate-400 mt-2 max-w-lg">{t("description")}</p>
+                    <h1 className="text-4xl font-black text-foreground tracking-tight">{t("title")}</h1>
+                    <p className="text-muted-foreground mt-2 max-w-lg">{t("description")}</p>
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-surface border border-border rounded-2xl backdrop-blur-md">
                         <div className={`w-2 h-2 rounded-full animate-pulse ${status === "connected" ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-red-500"}`} />
                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">
                             {status === "connected" ? t("system_online") : (status === "loading" ? "SCANNING..." : "BRIDGE CONNECTION LOCKED")}
@@ -125,7 +125,7 @@ export default function WhatsAppPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Status Card */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-slate-900/80 to-slate-950/80 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-2xl relative overflow-hidden shadow-2xl">
+                <div className="lg:col-span-2 bg-gradient-to-br from-slate-900/80 to-slate-950/80 border border-border rounded-[2.5rem] p-10 backdrop-blur-2xl relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 blur-[100px] rounded-full -mr-20 -mt-20 pointer-events-none" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/5 blur-[100px] rounded-full -ml-20 -mb-20 pointer-events-none" />
                     
@@ -135,13 +135,13 @@ export default function WhatsAppPage() {
                                 <div className={`w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl border transition-all duration-500 ${
                                     status === "connected" 
                                         ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 scale-110" 
-                                        : "bg-slate-800/50 border-white/10 text-slate-500"
+                                        : "bg-surface/50 border-border text-muted-foreground"
                                 }`}>
                                     {status === "connected" ? <Zap size={40} strokeWidth={1.5} /> : <Smartphone size={40} strokeWidth={1.5} />}
                                 </div>
                                 <div>
-                                    <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">{t("status")}</h3>
-                                    <p className={`text-3xl font-black tracking-tight ${status === "connected" ? "text-emerald-400" : "text-white"}`}>
+                                    <h3 className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-1">{t("status")}</h3>
+                                    <p className={`text-3xl font-black tracking-tight ${status === "connected" ? "text-emerald-400" : "text-foreground"}`}>
                                         {status === "connected" ? t("connected") : 
                                          status === "qr" ? t("qr_code") :
                                          status === "connecting" ? t("connecting") : t("disconnected")}
@@ -149,9 +149,9 @@ export default function WhatsAppPage() {
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 px-2 italic">NULL :TUNNEL ID</span>
+                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2 px-2 italic">NULL :TUNNEL ID</span>
                                 <div className={`px-6 py-3 rounded-2xl border font-mono text-sm tracking-widest shadow-inner transition-all duration-300 ${
-                                    instanceName ? "bg-black/40 border-white/5 text-cyan-400" : "bg-red-500/5 border-red-500/20 text-red-400 animate-pulse"
+                                    instanceName ? "bg-surface border-border text-cyan-400" : "bg-red-500/5 border-red-500/20 text-red-400 animate-pulse"
                                 }`}>
                                     {instanceName || "NO INSTANCE MOUNTED"}
                                 </div>
@@ -162,7 +162,7 @@ export default function WhatsAppPage() {
                             {status === "disconnected" && (
                                 <button
                                     onClick={handleConnect}
-                                    className="px-10 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl hover:shadow-[0_0_30px_rgba(147,51,234,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
+                                    className="px-10 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-foreground font-black rounded-2xl hover:shadow-[0_0_30px_rgba(147,51,234,0.3)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
                                 >
                                     <LinkIcon size={20} className="group-hover:rotate-12 transition-transform" />
                                     {t("btn_connect")}
@@ -171,7 +171,7 @@ export default function WhatsAppPage() {
                             {status === "connected" && (
                                 <button
                                     onClick={handleLogout}
-                                    className="px-10 py-4 bg-red-500/5 border border-red-500/20 text-red-400 font-bold rounded-2xl hover:bg-red-500 hover:text-white transition-all flex items-center gap-3 shadow-lg shadow-red-500/5"
+                                    className="px-10 py-4 bg-red-500/5 border border-red-500/20 text-red-400 font-bold rounded-2xl hover:bg-red-500 hover:text-foreground transition-all flex items-center gap-3 shadow-lg shadow-red-500/5"
                                 >
                                     <LogOut size={20} />
                                     {t("btn_logout")}
@@ -179,7 +179,7 @@ export default function WhatsAppPage() {
                             )}
                             <button 
                                 onClick={() => instanceName && checkStatus(instanceName)}
-                                className="p-4 bg-white/5 text-slate-400 rounded-2xl hover:bg-white/10 hover:text-white transition-all border border-white/10 active:rotate-180 duration-500"
+                                className="p-4 bg-surface text-muted-foreground rounded-2xl hover:bg-foreground/10 hover:text-foreground transition-all border border-border active:rotate-180 duration-500"
                                 title={t("btn_refresh")}
                             >
                                 <RefreshCw size={24} />
@@ -189,7 +189,7 @@ export default function WhatsAppPage() {
                 </div>
 
                 {/* QR Code Section */}
-                <div className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] p-8 flex flex-col items-center justify-center gap-6 min-h-[400px] backdrop-blur-xl group relative overflow-hidden">
+                <div className="bg-surface border border-border rounded-[2.5rem] p-8 flex flex-col items-center justify-center gap-6 min-h-[400px] backdrop-blur-xl group relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     
                     {status === "qr" && qrCode ? (
@@ -203,7 +203,7 @@ export default function WhatsAppPage() {
                                     <ShieldCheck className="w-3 h-3 text-emerald-400" />
                                     <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-tighter">{t("safe_connection")}</span>
                                 </div>
-                                <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest text-center">{t("scan_with_whatsapp")}</p>
+                                <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest text-center">{t("scan_with_whatsapp")}</p>
                             </div>
                         </>
                     ) : (
@@ -211,13 +211,13 @@ export default function WhatsAppPage() {
                             className="text-center cursor-pointer group/node"
                             onClick={handleConnect}
                         >
-                            <div className="w-24 h-24 bg-slate-800/50 rounded-full flex items-center justify-center border border-white/5 mx-auto mb-6 transform transition-all group-hover:scale-110 group-hover:border-purple-500/30 group-hover:bg-purple-500/5 duration-500">
-                                <Lock size={40} className="text-slate-600 group-hover/node:text-purple-400 transition-colors" />
+                            <div className="w-24 h-24 bg-surface/50 rounded-full flex items-center justify-center border border-border mx-auto mb-6 transform transition-all group-hover:scale-110 group-hover:border-purple-500/30 group-hover:bg-purple-500/5 duration-500">
+                                <Lock size={40} className="text-muted-foreground group-hover/node:text-purple-400 transition-colors" />
                             </div>
-                            <h4 className="text-white font-black uppercase tracking-tight mb-1 group-hover/node:text-purple-400 transition-colors">
+                            <h4 className="text-foreground font-black uppercase tracking-tight mb-1 group-hover/node:text-purple-400 transition-colors">
                                 {status === "connected" ? t("connection_active") : t("no_session")}
                             </h4>
-                            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest max-w-[180px] mx-auto opacity-60">
+                            <p className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest max-w-[180px] mx-auto opacity-60">
                                 {status === "connected" ? t("device_linked") : t("initialize_pairing")}
                             </p>
                         </div>
@@ -230,7 +230,7 @@ export default function WhatsAppPage() {
                     <Info className="w-6 h-6 text-indigo-400" />
                 </div>
                 <div className="leading-relaxed">
-                    <h5 className="text-white font-bold mb-1 tracking-wide">تعليمات الربط الآمن</h5>
+                    <h5 className="text-foreground font-bold mb-1 tracking-wide">تعليمات الربط الآمن</h5>
                     <p className="opacity-70">
                         تأكد من فتح تطبيق الواتساب على هاتفك، ثم اذهب إلى <b>الأجهزة المرتبطة</b> واضغط على <b>ربط جهاز</b> وقم بمسح الكود أعلاه. بمجرد المسح، سيقوم النظام تلقائياً بتحديث الحالة وتفعيل خوادم التجهيز.
                     </p>

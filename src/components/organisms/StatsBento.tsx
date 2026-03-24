@@ -78,7 +78,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
             id: "bot_status",
             label: t("bot_status"),
             value: stats.botEnabled ? t("active") : t("inactive"),
-            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-text-muted")} />,
+            icon: <Activity className={cn("w-6 h-6", stats.botEnabled ? "text-accent-secondary animate-pulse" : "text-muted-foreground")} />,
             color: stats.botEnabled ? "from-emerald-600/80 to-teal-500/80" : "from-foreground/[0.05] to-foreground/[0.1]",
             trend: stats.botEnabled ? "STABLE" : "OFF",
             desc: t("bot_status_desc")
@@ -116,7 +116,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                     <div className="flex items-start justify-between mb-6 relative z-10">
                         <motion.div 
                             className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-gradient-to-br",
+                                "w-12 h-12 rounded-2xl flex items-center justify-center text-foreground shadow-lg bg-gradient-to-br",
                                 stat.color
                             )}
                             whileHover={{ scale: 1.1, rotate: 8 }}
@@ -128,17 +128,17 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                         </motion.div>
                         <div className={cn(
                             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border self-start",
-                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-foreground/[0.03] border-glass-border"
+                            stat.trend.includes("+") ? "bg-accent-secondary/10 border-accent-secondary/20" : "bg-surface border-glass-border"
                         )}>
-                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-text-muted")} />
-                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-text-muted")}>
+                            <TrendingUp className={cn("w-3 h-3", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")} />
+                            <span className={cn("text-[9px] font-black tracking-tighter", stat.trend.includes("+") ? "text-accent-secondary" : "text-muted-foreground")}>
                                 {stat.trend}
                             </span>
                         </div>
                     </div>
 
                     <div className="space-y-1 relative z-10">
-                        <h3 className="text-text-dim text-[10px] font-black uppercase tracking-[0.25em]">
+                        <h3 className="text-dim-foreground text-[10px] font-black uppercase tracking-[0.25em]">
                             {stat.label}
                         </h3>
                         <div className="flex items-baseline gap-2">
@@ -148,7 +148,7 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
                         </div>
                     </div>
                     
-                    <p className="text-[9px] text-text-muted mt-4 font-black leading-relaxed tracking-[0.15em] group-hover:text-accent-primary transition-colors uppercase italic">
+                    <p className="text-[9px] text-muted-foreground mt-4 font-black leading-relaxed tracking-[0.15em] group-hover:text-accent-primary transition-colors uppercase italic">
                         {stat.desc}
                     </p>
 

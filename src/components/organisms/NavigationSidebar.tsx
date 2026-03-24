@@ -54,7 +54,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     <Logo size="md" className="group-hover:scale-110 transition-transform duration-500" />
                     <div className="flex flex-col">
                         <span className="text-2xl font-black text-foreground tracking-tighter leading-none italic uppercase">SILK<span className="text-accent-primary">BOT</span></span>
-                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1 opacity-60">Architect v2.0</span>
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1 opacity-60">Dashboard v2.0</span>
                     </div>
                 </Link>
 
@@ -69,8 +69,8 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                                 className={cn(
                                     "w-full group/nav flex items-center justify-between p-4 rounded-2xl transition-all duration-500 relative",
                                     isActive 
-                                        ? "bg-foreground/5 border border-foreground/10 shadow-lg" 
-                                        : "hover:bg-foreground/[0.03] border border-transparent shadow-none"
+                                        ? "bg-surface border border-foreground/10 shadow-lg" 
+                                        : "hover:bg-surface border border-transparent shadow-none"
                                 )}
                             >
                                 {isActive && (
@@ -89,7 +89,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                                         "text-[13px] font-black tracking-tight transition-colors duration-500 uppercase",
                                         isActive ? "text-foreground" : "text-muted-foreground group-hover/nav:text-foreground"
                                     )}>
-                                        {item.label}
+                                        {item.id === "bot" ? t("bot_settings") : item.label}
                                     </span>
                                 </div>
                                 
@@ -105,13 +105,13 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
             <div className="relative z-10 space-y-8">
                 {/* Theme Switcher Premium */}
-                <div className="bg-foreground/5 p-2 rounded-3xl border border-foreground/10 flex flex-col gap-2 shadow-2xl">
+                <div className="bg-surface p-2 rounded-3xl border border-foreground/10 flex flex-col gap-2 shadow-2xl">
                     <div className="flex items-center justify-between gap-1">
                         <button 
                             onClick={() => setTheme("light")}
                             className={cn(
                                 "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
-                                theme === "light" ? "bg-background text-foreground shadow-xl border border-border" : "text-muted-foreground hover:bg-foreground/5"
+                                theme === "light" ? "bg-background text-foreground shadow-xl border border-border" : "text-muted-foreground hover:bg-surface"
                             )}
                         >
                             <Sun className="w-4 h-4" />
@@ -121,7 +121,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                             onClick={() => setTheme("dark")}
                             className={cn(
                                 "flex-1 flex items-center justify-center gap-3 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
-                                theme === "dark" ? "bg-accent-primary text-white shadow-xl shadow-accent-primary/20" : "text-muted-foreground hover:bg-foreground/5"
+                                theme === "dark" ? "bg-accent-primary text-foreground shadow-xl shadow-accent-primary/20" : "text-muted-foreground hover:bg-surface"
                             )}
                         >
                             <Moon className="w-4 h-4" />
@@ -130,10 +130,10 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     </div>
                 </div>
 
-                <div className="p-6 rounded-3xl bg-foreground/[0.03] border border-foreground/10 relative overflow-hidden group/upgrade">
+                <div className="p-6 rounded-3xl bg-surface border border-foreground/10 relative overflow-hidden group/upgrade">
                     <div className="absolute top-0 right-0 w-20 h-20 bg-accent-secondary/10 blur-2xl rounded-full" />
                     <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 italic">Pro Version</p>
-                    <p className="text-foreground font-black text-sm mb-4 leading-snug">Empower your AI with Cloud Sync</p>
+                    <p className="text-foreground font-black text-sm mb-4 leading-snug">Sync your business data across devices</p>
                     <Link 
                         href="/pricing"
                         className="block w-full text-center py-3 bg-foreground text-background font-bold text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-transform active:scale-95 shadow-xl"
@@ -144,12 +144,12 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
                 <button 
                     onClick={() => {
-                        toast.info("Session Terminated", { description: "Neural link has been safely disconnected." });
+                        toast.info("Session Terminated", { description: "You have been safely logged out." });
                         router.push("/login"); // Mock logout for UI demo
                     }}
                     className="w-full group/logout flex items-center gap-4 p-4 rounded-2xl border border-transparent hover:border-red-500/20 hover:bg-red-500/5 transition-all"
                 >
-                    <div className="w-10 h-10 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center group-hover/logout:bg-red-500 text-muted-foreground group-hover/logout:text-white transition-all shadow-lg active:scale-95">
+                    <div className="w-10 h-10 rounded-xl bg-surface border border-foreground/10 flex items-center justify-center group-hover/logout:bg-red-500 text-muted-foreground group-hover/logout:text-foreground transition-all shadow-lg active:scale-95">
                         <LogOut className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground group-hover/logout:text-red-500 transition-colors">

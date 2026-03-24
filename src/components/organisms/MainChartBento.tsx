@@ -19,13 +19,13 @@ const GlassTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
             <div className="glass-card p-5 border border-glass-border shadow-2xl backdrop-blur-3xl animate-in fade-in zoom-in duration-300">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-text-dim mb-3 italic drop-shadow-sm">{label}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-dim-foreground mb-3 italic drop-shadow-sm">{label}</p>
                 <div className="space-y-3">
                     {payload.map((item: any, idx: number) => (
                         <div key={idx} className="flex items-center justify-between gap-8">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.stroke }} />
-                                <span className="text-[11px] font-black text-text-muted uppercase tracking-widest leading-none">{item.name}</span>
+                                <span className="text-[11px] font-black text-muted-foreground uppercase tracking-widest leading-none">{item.name}</span>
                             </div>
                             <span className="text-sm font-black text-foreground tabular-nums drop-shadow-sm">{item.value.toLocaleString()}</span>
                         </div>
@@ -64,10 +64,10 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                             <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent-secondary rounded-full animate-ping opacity-75" />
                         </div>
                     </div>
-                    <p className="text-text-dim text-xs font-bold uppercase tracking-[0.1em] opacity-80 italic">{t("network_throughput_overview")}</p>
+                    <p className="text-dim-foreground text-xs font-bold uppercase tracking-[0.1em] opacity-80 italic">{t("network_throughput_overview")}</p>
                 </div>
 
-                <div className="flex bg-foreground/[0.03] backdrop-blur-3xl p-1.5 rounded-3xl border border-glass-border shadow-2xl">
+                <div className="flex bg-surface backdrop-blur-3xl p-1.5 rounded-3xl border border-glass-border shadow-2xl">
                     {[t("tab_day"), t("tab_week"), t("tab_month")].map((tab) => (
                         <button 
                             key={tab}
@@ -76,7 +76,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                                 "px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
                                 activeTab === tab.toLowerCase() 
                                     ? "bg-foreground/[0.08] text-foreground shadow-[0_10px_20px_rgba(0,0,0,0.05)] border border-glass-border" 
-                                    : "text-text-dim hover:text-foreground hover:bg-foreground/[0.04]"
+                                    : "text-dim-foreground hover:text-foreground hover:bg-foreground/[0.04]"
                             )}
                         >
                             {tab}
@@ -155,7 +155,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                         <ArrowUpRight className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-text-muted font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("peak_volume")}</p>
                         <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("peak_volume_value")}</p>
                     </div>
                 </div>
@@ -164,7 +164,7 @@ export default function MainChartBento({ data }: { data: ChartData[] }) {
                         <CheckCircle2 className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-[10px] text-text-muted font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
+                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest leading-none mb-2 opacity-60 italic">{t("success_rate")}</p>
                         <p className="text-xl font-black text-foreground tracking-tighter drop-shadow-md">{t("success_rate_value")}</p>
                     </div>
                 </div>

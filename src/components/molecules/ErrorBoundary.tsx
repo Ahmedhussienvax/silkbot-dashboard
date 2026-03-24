@@ -33,7 +33,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-gray-600 dark:text-gray-400 mb-6">Don't worry, SilkBot is attempting to self-heal.</p>
           <button 
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-lg"
+            className="px-6 py-2 bg-red-600 text-foreground rounded-lg hover:bg-red-700 transition-colors shadow-lg"
           >
             Retry Connection
           </button>

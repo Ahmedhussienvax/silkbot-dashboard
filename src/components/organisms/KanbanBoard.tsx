@@ -60,7 +60,7 @@ const KanbanCard = ({ lead }: { lead: Lead }) => {
       style={style}
       {...attributes}
       {...listeners}
-      className={`relative group bg-[#0A0A0A]/80 border border-white/5 p-4 rounded-xl mb-3 cursor-grab active:cursor-grabbing backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(6,182,212,0.1)] ${
+      className={`relative group bg-[#0A0A0A]/80 border border-border p-4 rounded-xl mb-3 cursor-grab active:cursor-grabbing backdrop-blur-sm transition-all duration-300 hover:border-cyan-500/30 hover:shadow-[0_0_20px_rgba(6,182,212,0.1)] ${
         isDragging ? 'opacity-50 grayscale scale-95' : ''
       }`}
     >
@@ -69,21 +69,21 @@ const KanbanCard = ({ lead }: { lead: Lead }) => {
           <div className="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
             <User className="w-4 h-4 text-cyan-400" />
           </div>
-          <span className="text-sm font-medium text-white/90 truncate max-w-[120px]">
+          <span className="text-sm font-medium text-foreground truncate max-w-[120px]">
             {lead.name}
           </span>
         </div>
-        <button className="text-white/30 hover:text-white transition-colors">
+        <button className="text-muted-foreground hover:text-foreground transition-colors">
           <MoreHorizontal className="w-4 h-4" />
         </button>
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-[10px] text-white/40 uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider">
           <DollarSign className="w-3 h-3 text-emerald-400/60" />
           <span>${lead.value.toLocaleString()}</span>
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-white/40 uppercase tracking-wider">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider">
           <Clock className="w-3 h-3 text-amber-400/60" />
           <span>{lead.phone}</span>
         </div>
@@ -99,13 +99,13 @@ const KanbanColumn = ({ id, title, leads }: ColumnProps) => {
   const t = useTranslations('Pipelines');
   
   return (
-    <div className="flex flex-col h-full min-w-[300px] max-w-[350px] bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+    <div className="flex flex-col h-full min-w-[300px] max-w-[350px] bg-surface border border-border rounded-2xl p-4">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-          <h3 className="text-sm font-semibold text-white/80 uppercase tracking-widest">{title}</h3>
+          <h3 className="text-sm font-semibold text-foreground uppercase tracking-widest">{title}</h3>
         </div>
-        <span className="text-xs text-white/30 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
+        <span className="text-xs text-muted-foreground bg-surface px-2 py-0.5 rounded-full border border-border">
           {leads.length}
         </span>
       </div>
@@ -127,7 +127,7 @@ const KanbanColumn = ({ id, title, leads }: ColumnProps) => {
                   </motion.div>
                 ))
               ) : (
-                <div className="flex flex-col items-center justify-center h-32 border border-dashed border-white/5 rounded-xl text-white/20 text-xs italic">
+                <div className="flex flex-col items-center justify-center h-32 border border-dashed border-border rounded-xl text-foreground/20 text-xs italic">
                   {t('no_leads')}
                 </div>
               )}

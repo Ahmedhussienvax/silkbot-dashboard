@@ -38,7 +38,7 @@ export default function ModuleError({
           <h2 className="text-3xl font-black text-foreground tracking-tight italic">
             System Interrupt<span className="text-red-500">.</span>
           </h2>
-          <p className="text-text-muted text-sm font-medium leading-relaxed max-w-md mx-auto">
+          <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-md mx-auto">
             The <strong>{moduleName}</strong> module encountered an error and has been safely isolated.
             Your other dashboard modules remain fully operational.
           </p>
@@ -50,7 +50,7 @@ export default function ModuleError({
             <Bug className="w-3.5 h-3.5" />
             Error_Trace
           </summary>
-          <pre className="mt-4 text-[11px] text-text-dim font-mono whitespace-pre-wrap break-words leading-relaxed overflow-hidden max-h-32">
+          <pre className="mt-4 text-[11px] text-dim-foreground font-mono whitespace-pre-wrap break-words leading-relaxed overflow-hidden max-h-32">
             {error.message}
           </pre>
         </details>
@@ -59,21 +59,21 @@ export default function ModuleError({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={reset}
-            className="flex items-center gap-3 px-8 py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:bg-accent-primary hover:text-white transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl"
+            className="flex items-center gap-3 px-8 py-4 bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:bg-accent-primary hover:text-foreground transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl"
           >
             <RefreshCw className="w-4 h-4" />
             Retry Module
           </button>
           <a
             href="/dashboard"
-            className="flex items-center gap-3 px-8 py-4 bg-surface border border-glass-border font-black text-[10px] text-text-muted uppercase tracking-[0.3em] rounded-2xl hover:bg-surface-hover hover:text-foreground transition-all"
+            className="flex items-center gap-3 px-8 py-4 bg-surface border border-glass-border font-black text-[10px] text-muted-foreground uppercase tracking-[0.3em] rounded-2xl hover:bg-surface-hover hover:text-foreground transition-all"
           >
             <Home className="w-4 h-4" />
             Return Home
           </a>
         </div>
 
-        <p className="text-[9px] text-text-dim font-bold italic opacity-50">
+        <p className="text-[9px] text-dim-foreground font-bold italic opacity-50">
           SilkBot_Module_Isolation_Protocol // v5.7.1
         </p>
       </div>

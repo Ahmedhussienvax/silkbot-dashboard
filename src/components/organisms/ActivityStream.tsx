@@ -91,13 +91,13 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                         {t("real_time_events")}
                     </p>
                 </div>
-                <div className="flex -space-x-3 bg-zinc-100 dark:bg-white/5 p-1 rounded-full border border-zinc-200 dark:border-white/5">
+                <div className="flex -space-x-3 bg-surface dark:bg-surface p-1 rounded-full border border-zinc-200 dark:border-border">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="w-7 h-7 rounded-full border-2 border-background bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center text-[8px] font-black text-muted-foreground uppercase">
                             {String.fromCharCode(64 + i)}
                         </div>
                     ))}
-                    <div className="w-7 h-7 rounded-full border-2 border-background bg-accent-primary flex items-center justify-center text-[8px] font-black text-white">
+                    <div className="w-7 h-7 rounded-full border-2 border-background bg-accent-primary flex items-center justify-center text-[8px] font-black text-foreground">
                         +8
                     </div>
                 </div>
@@ -113,7 +113,7 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="group/item flex items-start gap-5 p-4 rounded-3xl hover:bg-zinc-100 dark:hover:bg-white/[0.03] border border-transparent hover:border-zinc-200 dark:hover:border-white/5 transition-all duration-300 relative"
+                                className="group/item flex items-start gap-5 p-4 rounded-3xl hover:bg-surface dark:hover:bg-white/[0.03] border border-transparent hover:border-zinc-200 dark:hover:border-border transition-all duration-300 relative"
                             >
                                 <div className={cn(
                                     "w-11 h-11 rounded-2xl flex items-center justify-center border shadow-xl shrink-0 transition-transform group-hover/item:-rotate-6",
@@ -137,24 +137,24 @@ export default function ActivityStream({ activities: initialActivities }: Activi
                                     
                                     {/* Action Tags */}
                                     <div className="flex gap-2 mt-3 opacity-0 group-hover/item:opacity-100 transition-opacity translate-y-2 group-hover/item:translate-y-0 duration-500">
-                                        <button className="px-3 py-1 bg-foreground/5 border border-glass-border hover:border-accent-primary/50 rounded-full text-[8px] font-black text-text-dim hover:text-accent-primary uppercase transition-all">{t("details")}</button>
-                                        <button className="px-3 py-1 bg-foreground/5 border border-glass-border hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-text-dim hover:text-accent-secondary uppercase transition-all">{t("log")}</button>
+                                        <button className="px-3 py-1 bg-surface border border-glass-border hover:border-accent-primary/50 rounded-full text-[8px] font-black text-dim-foreground hover:text-accent-primary uppercase transition-all">{t("details")}</button>
+                                        <button className="px-3 py-1 bg-surface border border-glass-border hover:border-accent-secondary/50 rounded-full text-[8px] font-black text-dim-foreground hover:text-accent-secondary uppercase transition-all">{t("log")}</button>
                                     </div>
                                 </div>
                             </motion.div>
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full py-20 opacity-40">
-                            <div className="w-20 h-20 rounded-full bg-foreground/5 border border-dashed border-glass-border flex items-center justify-center mb-6">
-                                <Activity className="w-8 h-8 text-text-muted" />
+                            <div className="w-20 h-20 rounded-full bg-surface border border-dashed border-glass-border flex items-center justify-center mb-6">
+                                <Activity className="w-8 h-8 text-muted-foreground" />
                             </div>
-                            <p className="text-xs font-black uppercase tracking-widest text-text-muted">{t("no_events_found")}</p>
+                            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t("no_events_found")}</p>
                         </div>
                     )}
                 </AnimatePresence>
             </div>
 
-            <button className="mt-8 w-full py-4 bg-foreground/5 border border-glass-border hover:border-accent-primary/20 rounded-2xl text-[10px] font-black text-text-muted hover:text-foreground uppercase tracking-[0.2em] transition-all group-hover/stream:shadow-inner shadow-xl">
+            <button className="mt-8 w-full py-4 bg-surface border border-glass-border hover:border-accent-primary/20 rounded-2xl text-[10px] font-black text-muted-foreground hover:text-foreground uppercase tracking-[0.2em] transition-all group-hover/stream:shadow-inner shadow-xl">
                 {t("view_full_history")}
             </button>
         </motion.div>

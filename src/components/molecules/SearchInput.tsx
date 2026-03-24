@@ -43,7 +43,7 @@ export default function SearchInput({ placeholder }: { placeholder: string }) {
                 {isPending ? (
                     <Loader2 className="w-4 h-4 text-accent-primary animate-spin" />
                 ) : (
-                    <Search className="w-4 h-4 text-slate-500 group-focus-within:text-accent-primary transition-colors" />
+                    <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-accent-primary transition-colors" />
                 )}
             </div>
             <input 
@@ -51,7 +51,7 @@ export default function SearchInput({ placeholder }: { placeholder: string }) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-zinc-100 dark:bg-white/[0.03] border border-zinc-200/50 dark:border-white/5 rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-zinc-900 dark:text-white placeholder:text-slate-500 focus:outline-none focus:border-accent-primary/30 transition-all shadow-sm focus:shadow-md"
+                className="w-full bg-surface dark:bg-white/[0.03] border border-border dark:border-border rounded-2xl py-3 pl-12 pr-4 text-sm font-bold text-foreground dark:text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent-primary/30 transition-all shadow-sm focus:shadow-md"
             />
         </div>
     );

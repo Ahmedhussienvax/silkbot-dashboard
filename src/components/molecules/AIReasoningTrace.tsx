@@ -128,7 +128,7 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
             case 'observation': return "text-indigo-400 bg-indigo-400/10 border-indigo-400/20";
             case 'generation': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/20";
             case 'error': return "text-red-400 bg-red-400/10 border-red-400/20";
-            default: return "text-slate-400 bg-slate-400/10 border-slate-400/20";
+            default: return "text-muted-foreground bg-slate-400/10 border-slate-400/20";
         }
     };
 
@@ -141,7 +141,7 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                     <motion.div 
                         variants={glowPulse}
                         animate={isThinking ? "animate" : "initial"}
-                        className="p-3 bg-white/5 rounded-2xl border border-white/10 shadow-inner relative"
+                        className="p-3 bg-surface rounded-2xl border border-border shadow-inner relative"
                     >
                         {isThinking ? (
                             <Loader2 className="w-5 h-5 text-accent-primary animate-spin" />
@@ -150,8 +150,8 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                         )}
                     </motion.div>
                     <div>
-                        <h3 className="text-xl font-black text-white tracking-tight italic">Neural Trace Console</h3>
-                        <p className="text-[11px] text-slate-500 font-black uppercase tracking-widest mt-0.5">Observability Layer v5.7.0</p>
+                        <h3 className="text-xl font-black text-foreground tracking-tight italic">AI Reasoning Trace</h3>
+                        <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">Business Intelligence v5.7.0</p>
                     </div>
                 </div>
             </div>
@@ -164,18 +164,18 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                         animate="animate"
                         className="py-12 text-center opacity-40"
                     >
-                        <p className="text-sm font-black text-slate-500 italic uppercase tracking-widest">Waiting for incoming thoughts...</p>
+                        <p className="text-sm font-black text-muted-foreground italic uppercase tracking-widest">Waiting for incoming thoughts...</p>
                     </motion.div>
                 ) : (
                     <div className="space-y-12">
                         {groups.map((group) => (
                             <div key={group.trace_id} className="space-y-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="h-px flex-1 bg-white/5" />
-                                    <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.4em] italic">
-                                        Thought_Chain: {group.trace_id.slice(0, 8)}
+                                    <div className="h-px flex-1 bg-surface" />
+                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.4em] italic">
+                                        Processing_Sequence: {group.trace_id.slice(0, 8)}
                                     </span>
-                                    <div className="h-px flex-1 bg-white/5" />
+                                    <div className="h-px flex-1 bg-surface" />
                                 </div>
 
                                 <motion.div 
@@ -202,9 +202,9 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                                                     <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md", getColor(step))}>
                                                         {step.type}
                                                     </span>
-                                                    <span className="text-[9px] text-slate-500 font-mono ml-auto">{step.timestamp}</span>
+                                                    <span className="text-[9px] text-muted-foreground font-mono ml-auto">{step.timestamp}</span>
                                                 </div>
-                                                <p className="text-sm text-slate-300 leading-relaxed font-medium bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                                                <p className="text-sm text-slate-300 leading-relaxed font-medium bg-surface p-4 rounded-2xl border border-border">
                                                     {step.content}
                                                 </p>
                                             </div>
