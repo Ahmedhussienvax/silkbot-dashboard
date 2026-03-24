@@ -8,13 +8,11 @@ import { Button } from "@/components/atoms/Button";
 import { 
     Globe, Shield, Clock, Building2, Brain, Zap, Lock, LogOut, 
     RefreshCcw, Fingerprint, Sparkles, ChevronRight, Activity, 
-    Smartphone, Sliders, Cpu, Terminal, Flame, ShieldCheck,
-    LayoutDashboard, Bot as BotIcon, MessageSquare, Loader2,
-    Columns, Plus, Trash2, Network, Key
+    Smartphone, ShieldCheck,
+    LayoutDashboard, MessageSquare, Loader2, Key
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import AIReasoningTrace from "@/components/molecules/AIReasoningTrace";
 
 interface Tenant {
     id: string;
@@ -26,47 +24,32 @@ interface Tenant {
     api_key?: string;
 }
 
-interface BotConfig {
-    id: string;
-    bot_name: string;
-    is_enabled: boolean;
-    ai_provider: string;
-    ai_model: string;
-    system_prompt: string;
-    fallback_message: string;
-    handoff_keywords: string[];
-    max_tokens: number;
-    temperature: number;
-}
+// BotConfig interface removed — AI config now managed in /dashboard/bot
 
 export default function SettingsPage() {
     const t = useTranslations("Settings");
     const bt = useTranslations("Bot");
     const wt = useTranslations("WhatsApp");
-    const kt = useTranslations("Kanban");
+    // Kanban translations removed — pipeline tab moved to dedicated page
     
     // Core State
-    const [activeTab, setActiveTab] = useState<"general" | "ai" | "whatsapp" | "pipeline" | "security">("general");
+    const [activeTab, setActiveTab] = useState<"general" | "whatsapp" | "billing" | "security">("general");
     const [tenant, setTenant] = useState<Tenant | null>(null);
-    const [botConfig, setBotConfig] = useState<BotConfig | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     
     // WhatsApp Specific State
     const [wsStatus, setWsStatus] = useState<string>("disconnected");
     const [qrCode, setQrCode] = useState<string | null>(null);
-    const [traceSteps, setTraceSteps] = useState<any[]>([]);
     
     const [errors, setErrors] = useState<Record<string, string>>({});
     
-    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL;
-    const MASTER_KEY = process.env.NEXT_PUBLIC_GATEWAY_API_KEY;
+    // [SEC-01] Removed direct Gateway URL/Key access. Using /api/gateway/ proxy routes.
 
-    // Validation Schema
+    // Validation Schema (bot_name removed — AI config now lives in /dashboard/bot)
     const settingsSchema = z.object({
         name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name too long").regex(/^[a-zA-Z0-9\s-]+$/, "Invalid characters in name"),
         industry: z.string().min(2, "Industry must be at least 2 characters").max(30, "Industry too long"),
-        bot_name: z.string().min(2, "Bot name must be at least 2 characters").max(30, "Bot name too long"),
     });
 
     // Data Fetching
@@ -77,30 +60,9 @@ export default function SettingsPage() {
             if (tenantData) {
                 setTenant(tenantData as any);
                 
-                // 2. Load Bot Config
-                const { data: botData } = await supabase.from("bot_configs").select("*").eq("tenant_id", tenantData.id).single();
-                if (botData) setBotConfig(botData as any);
-                
-                // 3. Check WhatsApp Status
+                // 2. Check WhatsApp Status
                 if (tenantData.wa_session) {
-                    checkWsStatus(tenantData.wa_session, tenantData.api_key || MASTER_KEY || "");
-                }
-
-                // 4. Load Initial AI Traces
-                const { data: traceData } = await supabase
-                    .from("ai_traces")
-                    .select("*")
-                    .eq("tenant_name", tenantData.name)
-                    .order("created_at", { ascending: false })
-                    .limit(5);
-                
-                if (traceData) {
-                    setTraceSteps(traceData.map((tr: any) => ({
-                        id: tr.id,
-                        type: tr.trace_type,
-                        content: tr.content,
-                        timestamp: new Date(tr.created_at).toLocaleTimeString()
-                    })).reverse());
+                    checkWsStatus(tenantData.wa_session);
                 }
             }
         } catch (err: any) {
@@ -109,17 +71,19 @@ export default function SettingsPage() {
         } finally {
             setLoading(false);
         }
-    }, [supabase, t, MASTER_KEY]);
+    }, [supabase, t]);
 
     useEffect(() => {
         loadSystemData();
     }, [loadSystemData]);
 
     // WhatsApp logic
-    const checkWsStatus = async (name: string, key: string) => {
+    const checkWsStatus = async (name: string) => {
         try {
-            const res = await fetch(`${GATEWAY_URL}/instance/status/${name}`, {
-                headers: { "apikey": key }
+            const res = await fetch(`/api/gateway/instance/status`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ instanceName: name })
             });
             const data = await res.json();
             setWsStatus(data.instance?.state === "open" ? "connected" : "disconnected");
@@ -134,25 +98,26 @@ export default function SettingsPage() {
             return;
         }
         setWsStatus("connecting");
-        const key = tenant.api_key || MASTER_KEY || "";
         try {
-            const res = await fetch(`${GATEWAY_URL}/instance/qr/${tenant.wa_session}`, {
-                headers: { "apikey": key }
+            const res = await fetch(`/api/gateway/instance/qr`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ instanceName: tenant.wa_session })
             });
             const data = await res.json();
-                if (data.code || data.base64) {
-                    setQrCode(data.base64 || data.code);
-                    setWsStatus("qr");
-                    toast.success(wt("qr_generated"));
-                } else {
-                    // If instance doesn't exist, create it
-                    await fetch(`${GATEWAY_URL}/instance/create`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "apikey": key },
-                        body: JSON.stringify({ instanceName: tenant.wa_session })
-                    });
-                    setTimeout(() => handleConnectWs(), 2000);
-                }
+            if (data.code || data.base64) {
+                setQrCode(data.base64 || data.code);
+                setWsStatus("qr");
+                toast.success(wt("qr_generated"));
+            } else {
+                // If instance doesn't exist, create it via proxy
+                await fetch(`/api/gateway/instance/create`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ instanceName: tenant.wa_session })
+                });
+                setTimeout(() => handleConnectWs(), 2000);
+            }
         } catch (err) {
             setWsStatus("disconnected");
             toast.error(wt("session_init_failed"));
@@ -162,11 +127,11 @@ export default function SettingsPage() {
     const handleLogoutWs = async () => {
         if (!tenant?.wa_session) return;
         if (!confirm(wt("confirm_disconnect"))) return;
-        const key = tenant.api_key || MASTER_KEY || "";
         try {
-            await fetch(`${GATEWAY_URL}/instance/logout/${tenant.wa_session}`, {
-                method: "DELETE",
-                headers: { "apikey": key }
+            await fetch(`/api/gateway/instance/logout`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ instanceName: tenant.wa_session })
             });
             setWsStatus("disconnected");
             setQrCode(null);
@@ -178,14 +143,13 @@ export default function SettingsPage() {
 
     // Save All Logic
     const handleGlobalSave = async () => {
-        if (!tenant || !botConfig) return;
+        if (!tenant) return;
         setErrors({});
         
         // Validate
         const validation = settingsSchema.safeParse({
             name: tenant.name,
             industry: tenant.industry,
-            bot_name: botConfig.bot_name
         });
 
         if (!validation.success) {
@@ -212,18 +176,6 @@ export default function SettingsPage() {
             
             if (tError) throw tError;
 
-            // Update Bot Config
-            const { error: bError } = await supabase.from("bot_configs").update({
-                bot_name: botConfig.bot_name,
-                is_enabled: botConfig.is_enabled,
-                ai_model: botConfig.ai_model,
-                temperature: botConfig.temperature,
-                max_tokens: botConfig.max_tokens,
-                system_prompt: botConfig.system_prompt
-            }).eq("id", botConfig.id);
-
-            if (bError) throw bError;
-
             toast.success(t("success"), { description: bt("success_description") });
         } catch (err: any) {
             toast.error(err.message || t("error_save"));
@@ -248,10 +200,9 @@ export default function SettingsPage() {
 
     const tabs = [
         { id: "general", label: t("title"), icon: LayoutDashboard, color: "text-accent-primary" },
-        { id: "ai", label: bt("title"), icon: BotIcon, color: "text-accent-secondary" },
         { id: "whatsapp", label: wt("title"), icon: MessageSquare, color: "text-accent-tertiary" },
-        { id: "pipeline", label: kt("title"), icon: Columns, color: "text-amber-500" },
-        { id: "security", label: t("account_management"), icon: Lock, color: "text-text-muted" },
+        { id: "billing", label: t("account_management"), icon: Lock, color: "text-amber-500" },
+        { id: "security", label: t("security_sector"), icon: Shield, color: "text-text-muted" },
     ];
 
     return (
@@ -412,153 +363,7 @@ export default function SettingsPage() {
                         </>
                     )}
 
-                    {activeTab === "ai" && (
-                        <>
-                            <div className="xl:col-span-8 space-y-12">
-                                <motion.section className="glass-card p-12 space-y-12 relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 p-12 opacity-5">
-                                        <Terminal className="w-48 h-48 text-accent-secondary -rotate-12" />
-                                    </div>
-                                    <div className="flex items-center justify-between relative z-10">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-16 h-16 bg-accent-secondary/10 rounded-[2.2rem] flex items-center justify-center border border-accent-secondary/20 shadow-inner">
-                                                <Brain className="w-8 h-8 text-accent-secondary" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{bt("title")}</h2>
-                                                <div className="text-[10px] font-black text-accent-secondary uppercase tracking-[0.4em] mt-2 flex items-center gap-2">
-                                                    <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                                                    {bt("status_optimal")}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-6 px-10 py-5 bg-foreground/[0.02] border border-glass-border rounded-[2rem]">
-                                            <span className={cn("text-[11px] font-black uppercase tracking-widest italic", botConfig?.is_enabled ? "text-accent-secondary" : "text-text-dim")}>
-                                                {botConfig?.is_enabled ? bt("operational") : bt("locked")}
-                                            </span>
-                                            <button 
-                                                onClick={() => setBotConfig(prev => prev ? { ...prev, is_enabled: !prev.is_enabled } : null)}
-                                                className={cn(
-                                                    "w-16 h-8 rounded-full border transition-all relative",
-                                                    botConfig?.is_enabled ? "bg-accent-secondary/20 border-accent-secondary/40" : "bg-foreground/[0.05] border-glass-border"
-                                                )}
-                                            >
-                                                <div className={cn(
-                                                    "absolute top-1 w-5 h-5 rounded-full transition-all shadow-lg",
-                                                    botConfig?.is_enabled ? "left-9 bg-accent-secondary shadow-accent-secondary/50" : "left-1 bg-text-dim"
-                                                )} />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-8 relative z-10">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                            <InputField 
-                                                label={bt("name")} 
-                                                value={botConfig?.bot_name || ""} 
-                                                error={errors.bot_name}
-                                                onChange={(val) => setBotConfig(prev => prev ? { ...prev, bot_name: val } : null)}
-                                            />
-                                            <div className="space-y-4">
-                                                <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2">{bt("model_select")}</label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={botConfig?.ai_model || "gpt-4o-mini"}
-                                                        onChange={(e) => setBotConfig(prev => prev ? { ...prev, ai_model: e.target.value } : null)}
-                                                        className="w-full bg-foreground/[0.03] border border-glass-border rounded-3xl px-8 py-5 text-[15px] font-black italic tracking-tight text-foreground appearance-none outline-none focus:ring-2 focus:ring-accent-secondary/30 transition-all cursor-pointer hover:bg-foreground/[0.05]"
-                                                    >
-                                                        <option value="gpt-4o-mini" className="bg-background text-foreground tracking-widest uppercase italic">Mini V1 (Fast)</option>
-                                                        <option value="gpt-4o" className="bg-background text-foreground tracking-widest uppercase italic">Neural Prime (Elite)</option>
-                                                        <option value="claude-3-5-sonnet" className="bg-background text-foreground tracking-widest uppercase italic">Logic Sonnet (Refined)</option>
-                                                    </select>
-                                                    <ChevronRight className="absolute right-8 top-1/2 -translate-y-1/2 w-5 h-5 text-accent-secondary rotate-90 pointer-events-none" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">{bt("prompt")}</label>
-                                            <textarea
-                                                rows={8}
-                                                value={botConfig?.system_prompt || ""}
-                                                onChange={(e) => setBotConfig(prev => prev ? { ...prev, system_prompt: e.target.value } : null)}
-                                                className="w-full bg-foreground/[0.02] border border-glass-border rounded-[2.5rem] px-10 py-10 text-[16px] text-foreground focus:ring-2 focus:ring-accent-secondary/30 outline-none transition-all resize-none font-mono leading-relaxed shadow-inner"
-                                                placeholder={bt("prompt_placeholder")}
-                                            />
-                                            <div className="flex items-center gap-4 p-6 bg-accent-secondary/[0.02] border border-accent-secondary/10 rounded-3xl italic">
-                                                <Fingerprint className="w-6 h-6 text-accent-secondary shrink-0 opacity-60" />
-                                                <span className="text-[11px] font-bold text-text-muted uppercase tracking-widest leading-loose drop-shadow-sm">
-                                                    {bt("weights_info")}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.section>
-
-                                <AIReasoningTrace steps={traceSteps} />
-                            </div>
-
-                            <div className="xl:col-span-4 space-y-12">
-                                <motion.section className="glass-card p-12 space-y-12 bg-gradient-to-b from-background to-accent-secondary/[0.03]">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-16 h-16 bg-accent-secondary/10 rounded-[2rem] flex items-center justify-center border border-accent-secondary/20">
-                                            <Sliders className="w-8 h-8 text-accent-secondary" />
-                                        </div>
-                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{bt("fine_tuning")}</h3>
-                                    </div>
-
-                                    <div className="space-y-12">
-                                        <div className="space-y-6">
-                                            <div className="flex justify-between items-center">
-                                                <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] flex items-center gap-3">
-                                                    <Flame className="w-4 h-4 text-amber-500" />
-                                                    {bt("creativity")}
-                                                </label>
-                                                <span className="text-xs font-black text-white bg-amber-500 px-4 py-1.5 rounded-full shadow-lg shadow-amber-500/20">{botConfig?.temperature}</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="0" max="1" step="0.1" 
-                                                value={botConfig?.temperature || 0.7} 
-                                                onChange={(e) => setBotConfig(prev => prev ? { ...prev, temperature: parseFloat(e.target.value) } : null)} 
-                                                className="w-full h-1.5 bg-foreground/[0.05] rounded-full appearance-none cursor-pointer accent-amber-500" 
-                                            />
-                                            <div className="flex justify-between text-[8px] font-black text-text-dim uppercase tracking-widest">
-                                                <span>{bt("creativity_low")}</span>
-                                                <span>{bt("creativity_high")}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-6 pt-4">
-                                            <div className="flex justify-between items-center">
-                                                <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] flex items-center gap-3">
-                                                    <Zap className="w-4 h-4 text-accent-tertiary" />
-                                                    {bt("length")}
-                                                </label>
-                                                <span className="text-xs font-black text-white bg-accent-tertiary px-4 py-1.5 rounded-full shadow-lg shadow-accent-tertiary/20">{botConfig?.max_tokens}</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="50" max="2000" step="50" 
-                                                value={botConfig?.max_tokens || 500} 
-                                                onChange={(e) => setBotConfig(prev => prev ? { ...prev, max_tokens: parseInt(e.target.value) } : null)} 
-                                                className="w-full h-1.5 bg-foreground/[0.05] rounded-full appearance-none cursor-pointer accent-accent-tertiary" 
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-10 border-t border-glass-border space-y-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-accent-primary/5 rounded-2xl flex items-center justify-center border border-accent-primary/10">
-                                                <ShieldCheck className="w-5 h-5 text-accent-primary opacity-60" />
-                                            </div>
-                                            <div className="text-[10px] font-bold text-text-dim uppercase tracking-widest italic">
-                                                {bt("immutable_core")}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </motion.section>
-                            </div>
-                        </>
-                    )}
+                    {/* AI Tab removed — AI config now lives in /dashboard/bot (AI Hub) */}
 
                     {activeTab === "whatsapp" && (
                         <>
@@ -596,7 +401,7 @@ export default function SettingsPage() {
                                             )}
                                             <div className="flex flex-col gap-4">
                                                 <div className="px-8 py-5 bg-foreground/[0.03] border border-glass-border rounded-[1.8rem] text-text-dim text-[11px] font-black tracking-widest uppercase italic flex items-center gap-4">
-                                                    <Cpu className="w-5 h-5 text-accent-tertiary opacity-50" />
+                                                    <Activity className="w-5 h-5 text-accent-tertiary opacity-50" />
                                                     {wt("tunnel_id")}: <span className={cn("font-mono", (!tenant?.wa_session || tenant.wa_session === "null") && "text-red-500 animate-pulse bg-red-500/10 px-2 rounded")}>
                                                         {(!tenant?.wa_session || tenant.wa_session === "null") ? wt("missing_id") : tenant.wa_session}
                                                     </span>
@@ -667,64 +472,27 @@ export default function SettingsPage() {
                         </>
                     )}
 
-                    {activeTab === "pipeline" && (
+                    {activeTab === "billing" && (
                         <>
-                            <div className="xl:col-span-8 space-y-12">
-                                <motion.section className="glass-card p-12 space-y-12 relative overflow-hidden group">
+                            <div className="xl:col-span-12">
+                                <motion.section className="glass-card p-12 space-y-12 relative overflow-hidden bg-gradient-to-br from-background to-amber-500/[0.03]">
                                     <div className="absolute top-0 right-0 p-12 opacity-5">
-                                        <Columns className="w-48 h-48 text-amber-500 rotate-12" />
+                                        <Zap className="w-48 h-48 text-amber-500 rotate-12" />
                                     </div>
                                     <div className="flex items-center gap-6 relative z-10">
                                         <div className="w-16 h-16 bg-amber-500/10 rounded-[2rem] flex items-center justify-center border border-amber-500/20 shadow-inner">
-                                            <Columns className="w-8 h-8 text-amber-500" />
+                                            <Zap className="w-8 h-8 text-amber-500" />
                                         </div>
                                         <div className="flex flex-col">
-                                            <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{kt("title")} {t("pipeline_states")}</h2>
-                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] mt-2">{t("neural_flow")}</p>
+                                            <h2 className="text-3xl font-black text-foreground uppercase italic tracking-tighter">{t("account_management")}</h2>
+                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] mt-2">Quota Management & Subscription</p>
                                         </div>
                                     </div>
                                     
-                                    <div className="space-y-6 relative z-10">
-                                        {[
-                                            { id: 'new', color: 'bg-blue-500' },
-                                            { id: 'warm', color: 'bg-orange-500' },
-                                            { id: 'hot', color: 'bg-red-500' },
-                                            { id: 'closed', color: 'bg-emerald-500' }
-                                        ].map((stage) => (
-                                            <div key={stage.id} className="group/stage flex items-center gap-6 p-6 bg-foreground/[0.02] border border-glass-border rounded-3xl hover:border-amber-500/30 transition-all shadow-lg">
-                                                <div className={cn("w-4 h-4 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)]", stage.color)} />
-                                                <div className="flex-1 flex items-center justify-between">
-                                                    <div className="space-y-1">
-                                                        <span className="text-[14px] font-black text-foreground uppercase italic tracking-tighter">{kt(stage.id)}</span>
-                                                        <p className="text-[9px] text-text-dim uppercase tracking-widest font-black">{kt("stage_id")}: {stage.id.toUpperCase()}</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 opacity-0 group-hover/stage:opacity-100 transition-opacity">
-                                                        <button className="p-2 text-text-dim hover:text-amber-500 transition-colors"><ChevronRight className="w-5 h-5" /></button>
-                                                        <button className="p-2 text-text-dim hover:text-red-500 transition-colors"><Trash2 className="w-5 h-5" /></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        <button className="w-full py-6 border-2 border-dashed border-glass-border rounded-3xl text-[11px] font-black text-text-dim uppercase tracking-[0.3em] hover:bg-amber-500/5 hover:border-amber-500/30 hover:text-amber-500 transition-all flex items-center justify-center gap-3 group">
-                                            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                                            {kt("inject_stage")}
-                                        </button>
-                                    </div>
-                                </motion.section>
-                            </div>
-
-                            <div className="xl:col-span-4 space-y-12">
-                                <motion.section className="glass-card p-12 space-y-12 bg-gradient-to-b from-background to-amber-500/[0.03]">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-16 h-16 bg-amber-500/10 rounded-[2rem] flex items-center justify-center border border-amber-500/20">
-                                            <Network className="w-8 h-8 text-amber-500" />
-                                        </div>
-                                        <h3 className="text-2xl font-black text-foreground uppercase italic tracking-tighter">{t("integrations")}</h3>
-                                    </div>
-
-                                    <div className="space-y-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+                                        {/* Webhook Config */}
                                         <div className="space-y-5">
-                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">{t("webhook_node")}</label>
+                                            <label className="text-[11px] font-black text-text-dim uppercase tracking-[0.3em] ml-2 italic">Webhook Endpoint</label>
                                             <div className="relative group">
                                                 <input 
                                                     type="text" 
@@ -737,9 +505,42 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
 
+                                        {/* Quick Links */}
+                                        <div className="flex flex-col gap-4">
+                                            <a href="/dashboard/bot" className="p-6 bg-foreground/[0.02] border border-glass-border rounded-3xl hover:border-accent-secondary/30 transition-all flex items-center gap-4 group">
+                                                <div className="w-12 h-12 bg-accent-secondary/10 rounded-2xl flex items-center justify-center border border-accent-secondary/20">
+                                                    <Brain className="w-6 h-6 text-accent-secondary" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className="text-[12px] font-black text-foreground uppercase tracking-tight">{bt("title")}</span>
+                                                    <p className="text-[9px] text-text-dim uppercase tracking-widest font-bold">Configure AI models & prompts</p>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-text-dim group-hover:text-accent-secondary group-hover:translate-x-1 transition-all" />
+                                            </a>
+                                            <a href="/dashboard/knowledge" className="p-6 bg-foreground/[0.02] border border-glass-border rounded-3xl hover:border-accent-primary/30 transition-all flex items-center gap-4 group">
+                                                <div className="w-12 h-12 bg-accent-primary/10 rounded-2xl flex items-center justify-center border border-accent-primary/20">
+                                                    <Sparkles className="w-6 h-6 text-accent-primary" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <span className="text-[12px] font-black text-foreground uppercase tracking-tight">Knowledge Base</span>
+                                                    <p className="text-[9px] text-text-dim uppercase tracking-widest font-bold">Upload docs & manage RAG</p>
+                                                </div>
+                                                <ChevronRight className="w-5 h-5 text-text-dim group-hover:text-accent-primary group-hover:translate-x-1 transition-all" />
+                                            </a>
+                                        </div>
+
+                                        {/* Info Card */}
                                         <div className="p-8 rounded-[2.5rem] bg-foreground/[0.02] border border-glass-border space-y-4">
+                                            <div className="flex items-center gap-3">
+                                                <ShieldCheck className="w-5 h-5 text-accent-primary opacity-60" />
+                                                <span className="text-[11px] font-black text-foreground uppercase tracking-tight">Subscription Status</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full w-fit">
+                                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                                <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Active Plan</span>
+                                            </div>
                                             <p className="text-[10px] font-black text-text-muted uppercase tracking-widest italic leading-relaxed">
-                                                {t("sync_info")}
+                                                Your subscription is active. Quota usage is tracked on the dashboard overview.
                                             </p>
                                         </div>
                                     </div>

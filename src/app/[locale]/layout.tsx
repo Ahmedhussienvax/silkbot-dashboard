@@ -5,7 +5,6 @@ import { Outfit, Cairo } from "next/font/google";
 import { Toaster } from 'sonner';
 import Providers from "@/components/organisms/Providers";
 import { ErrorBoundary } from '@/components/molecules/ErrorBoundary';
-import NeuralCursor from '@/components/atoms/NeuralCursor';
 import "../globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -33,7 +32,6 @@ export default async function LocaleLayout({
                 <NextIntlClientProvider messages={messages} locale={locale}>
                     <ErrorBoundary>
                         <Providers>
-                            <NeuralCursor />
                             {children}
                         </Providers>
                     </ErrorBoundary>

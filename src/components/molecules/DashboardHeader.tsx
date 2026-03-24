@@ -48,7 +48,7 @@ export default function DashboardHeader({ searchPlaceholder }: { searchPlacehold
                     className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all group shadow-sm"
                 >
                     <LogOut className="w-4 h-4 text-red-500 group-hover:text-white transition-colors" />
-                    <span className="text-[10px] font-black text-red-500 group-hover:text-white uppercase tracking-widest transition-colors">{t("logout") || "Logout"}</span>
+                    <span className="text-[10px] font-black text-red-500 group-hover:text-white uppercase tracking-widest transition-colors">{t("logout")}</span>
                 </button>
             </div>
         </header>

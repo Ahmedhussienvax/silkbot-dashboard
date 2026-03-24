@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
     LayoutDashboard, MessageSquare, Send, Settings,
     ChevronRight, LogOut, Sun, Moon, Zap, Users,
-    Columns
+    Columns, Brain, BookOpen, Activity, CreditCard
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -26,10 +26,14 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
     const navItems = [
         { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
-        { id: "kanban", icon: Columns, label: t("kanban"), href: "/dashboard/kanban" },
+        { id: "bot", icon: Brain, label: t("ai_hub"), href: "/dashboard/bot" },
+        { id: "knowledge", icon: BookOpen, label: t("knowledge"), href: "/dashboard/knowledge" },
         { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
         { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
+        { id: "kanban", icon: Columns, label: t("kanban"), href: "/dashboard/kanban" },
         { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
+        { id: "health", icon: Activity, label: t("health"), href: "/dashboard/health" },
+        { id: "billing", icon: CreditCard, label: t("billing"), href: "/dashboard/billing" },
         { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
     ];
 
@@ -149,7 +153,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                         <LogOut className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground group-hover/logout:text-red-500 transition-colors">
-                        {t("logout") || "Logout"}
+                        {t("logout")}
                     </span>
                 </button>
             </div>

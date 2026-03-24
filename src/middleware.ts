@@ -28,7 +28,7 @@ export default async function middleware(request: NextRequest) {
 
   // Apply Rate Limiting to API routes (only if initialized correctly)
   if (pathname.startsWith('/api') && ratelimit) {
-    const ip = request.headers.get("x-forwarded-for") ?? request.ip ?? "127.0.0.1";
+    const ip = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "127.0.0.1";
     const { success, limit, reset, remaining } = await ratelimit.limit(ip);
 
     if (!success) {

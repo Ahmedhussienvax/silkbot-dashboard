@@ -58,7 +58,6 @@ export default function AuditPage() {
     useEffect(() => {
         const fetchLogs = async () => {
             const { data, error } = await supabase
-                .schema("silkbot")
                 .from("silkbot_audit_logs")
                 .select("*")
                 .order("created_at", { ascending: false })

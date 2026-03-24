@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase-browser";
+import { useTenantConfig } from "@/hooks/useTenantConfig";
 import { 
     Zap, 
     Smartphone, 
@@ -18,57 +18,40 @@ import { toast } from "sonner";
 
 export default function WhatsAppPage() {
     const t = useTranslations("WhatsApp");
-    const [status, setStatus] = useState<string>("loading"); // loading, connected, disconnected, qr
+    const { tenant, loading: tenantLoading } = useTenantConfig();
+    const [status, setStatus] = useState<string>("loading");
     const [qrCode, setQrCode] = useState<string | null>(null);
-    const [instanceName, setInstanceName] = useState<string | null>(null);
-    const [apiKey, setApiKey] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const supabase = createClient();
 
-    const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL;
-    const MASTER_KEY = process.env.NEXT_PUBLIC_GATEWAY_API_KEY;
+    const instanceName = tenant?.wa_session || null;
 
     useEffect(() => {
-        const loadTenant = async () => {
-            try {
-                const { data, error } = await supabase.from("tenants").select("*").single();
-                if (data) {
-                    setInstanceName(data.wa_session);
-                    setApiKey(data.api_key || MASTER_KEY);
-                    checkStatus(data.wa_session, data.api_key || MASTER_KEY);
-                }
-            } catch (err) {
-                console.error("Error loading tenant:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadTenant();
-    }, []);
+        if (tenantLoading) return;
+        if (instanceName) {
+            checkStatus(instanceName);
+        } else {
+            setStatus("disconnected");
+        }
+    }, [tenantLoading, instanceName]);
 
-    const checkStatus = async (name: string, key: string) => {
+    const checkStatus = async (name: string) => {
         try {
-            const res = await fetch(`${GATEWAY_URL}/instance/status/${name}`, {
-                headers: { "apikey": key }
-            });
+            const res = await fetch(`/api/gateway/instance/status/${name}`);
             const data = await res.json();
             if (data.instance?.state === "open") {
                 setStatus("connected");
             } else {
                 setStatus("disconnected");
             }
-        } catch (err) {
+        } catch {
             setStatus("disconnected");
         }
     };
 
     const handleConnect = async () => {
-        if (!instanceName || !apiKey) return;
+        if (!instanceName) return;
         setStatus("connecting");
         try {
-            const res = await fetch(`${GATEWAY_URL}/instance/qr/${instanceName}`, {
-                headers: { "apikey": apiKey }
-            });
+            const res = await fetch(`/api/gateway/instance/qr/${instanceName}`);
             const data = await res.json();
             
             if (data.code || data.base64) {
@@ -76,38 +59,35 @@ export default function WhatsAppPage() {
                 setStatus("qr");
                 toast.success(t("qr_generated"));
             } else {
-                await fetch(`${GATEWAY_URL}/instance/create`, {
+                await fetch(`/api/gateway/instance/create`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", "apikey": apiKey },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ instanceName })
                 });
                 setTimeout(handleConnect, 2000);
             }
-        } catch (err) {
-            console.error("Connect error:", err);
+        } catch {
             setStatus("disconnected");
             toast.error(t("session_init_failed"));
         }
     };
 
     const handleLogout = async () => {
-        if (!instanceName || !apiKey) return;
+        if (!instanceName) return;
         if (!confirm(t("confirm_disconnect"))) return;
         try {
-            await fetch(`${GATEWAY_URL}/instance/logout/${instanceName}`, {
-                method: "DELETE",
-                headers: { "apikey": apiKey }
+            await fetch(`/api/gateway/instance/logout/${instanceName}`, {
+                method: "DELETE"
             });
             setStatus("disconnected");
             setQrCode(null);
             toast.info(t("instance_disconnected"));
-        } catch (err) {
-            console.error("Logout error:", err);
+        } catch {
             toast.error(t("logout_failed"));
         }
     };
 
-    if (loading) return (
+    if (tenantLoading) return (
         <div className="flex items-center justify-center min-h-[60vh]">
             <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
         </div>
@@ -198,7 +178,7 @@ export default function WhatsAppPage() {
                                 </button>
                             )}
                             <button 
-                                onClick={() => checkStatus(instanceName!, apiKey!)}
+                                onClick={() => instanceName && checkStatus(instanceName)}
                                 className="p-4 bg-white/5 text-slate-400 rounded-2xl hover:bg-white/10 hover:text-white transition-all border border-white/10 active:rotate-180 duration-500"
                                 title={t("btn_refresh")}
                             >
@@ -214,7 +194,7 @@ export default function WhatsAppPage() {
                     
                     {status === "qr" && qrCode ? (
                         <>
-                            <div className="relative p-2 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform group-hover:scale-[1.02] duration-500 cursor-pointer" onClick={() => checkStatus(instanceName!, apiKey!)}>
+                            <div className="relative p-2 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] transform transition-transform group-hover:scale-[1.02] duration-500 cursor-pointer" onClick={() => instanceName && checkStatus(instanceName)}>
                                 <img src={qrCode} alt="QR Code" className="w-full h-auto rounded-[1.5rem]" />
                                 <div className="absolute -inset-4 border-2 border-dashed border-purple-500/20 rounded-[2.5rem] -z-10 animate-[spin_20s_linear_infinite]" />
                             </div>

@@ -118,7 +118,7 @@ export default function CampaignsPage() {
                 
             if (data) {
                 const stats = { sent: 0, delivered: 0, read: 0, failed: 0 };
-                data.forEach(msg => {
+                data.forEach((msg: any) => {
                     const status = msg.delivery_status?.toUpperCase() || "SENT";
                     if (status.includes("READ")) stats.read++;
                     else if (status.includes("DELIVERED") || status.includes("RECEIVED")) stats.delivered++;
@@ -166,7 +166,7 @@ export default function CampaignsPage() {
 
     const handleSendBroadcast = async () => {
         if (!selectedInstance || !message.trim() || estimatedAudience === 0) {
-            toast.error(t("validation_error") || "Validation failed: Check instance, message, and audience.");
+            toast.error(t("validation_error"));
             return;
         }
 
@@ -176,7 +176,7 @@ export default function CampaignsPage() {
             let query = supabase.from("silkbot_contacts").select("contact_jid").eq("instance_name", selectedInstance);
             if (selectedTags.length > 0) query = query.contains("tags", selectedTags);
             const { data: targetContacts } = await query;
-            const jidList = targetContacts?.map(c => c.contact_jid) || [];
+            const jidList = targetContacts?.map((c: any) => c.contact_jid) || [];
 
             const res = await fetch(`/api/gateway/broadcast`, {
                 method: "POST",
@@ -352,7 +352,7 @@ export default function CampaignsPage() {
                             <div className="relative">
                                 <textarea 
                                     className="w-full bg-foreground/[0.03] border border-glass-border rounded-3xl p-8 min-h-[300px] outline-none focus:border-accent-primary/30 text-foreground transition-all font-medium text-lg leading-relaxed shadow-inner"
-                                    placeholder={t("message_placeholder") || "Construct your campaign transmission..."}
+                                    placeholder={t("message_placeholder")}
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                 />

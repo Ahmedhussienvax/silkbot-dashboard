@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase-browser";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -15,7 +15,10 @@ import {
     AlertCircle,
     CheckCircle2,
     BookOpen,
-    Zap
+    Zap,
+    Sparkles,
+    Loader2,
+    Send
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/atoms/Button";
@@ -35,6 +38,10 @@ export default function KnowledgePage() {
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [ragQuery, setRagQuery] = useState("");
+    const [ragResults, setRagResults] = useState<Array<{ id: string; filename: string; content: string; similarity: number }>>([]);
+    const [ragLoading, setRagLoading] = useState(false);
+    const [ragError, setRagError] = useState<string | null>(null);
     const supabase = createClient();
 
     const loadDocs = async () => {
@@ -47,7 +54,7 @@ export default function KnowledgePage() {
 
             if (error) throw error;
 
-            const uniqueDocs = (data || []).reduce((acc: KnowledgeDoc[], curr) => {
+            const uniqueDocs = (data || []).reduce((acc: KnowledgeDoc[], curr: KnowledgeDoc) => {
                 const exists = acc.find(d => d.filename === curr.filename);
                 if (!exists) acc.push(curr as KnowledgeDoc);
                 return acc;
@@ -305,6 +312,134 @@ export default function KnowledgePage() {
                     </div>
                 </div>
             </div>
+
+            {/* RAG Test Interface */}
+            <section className="mt-8 bg-slate-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-purple-500/3 blur-[150px] -z-10 pointer-events-none" />
+                
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="p-3 bg-gradient-to-br from-purple-500/20 to-cyan-500/20 rounded-2xl border border-purple-500/20">
+                        <Sparkles className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-black text-white tracking-tight">RAG Test Interface</h3>
+                        <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Semantic_Retrieval_Tester</p>
+                    </div>
+                </div>
+
+                {/* Query Input */}
+                <form
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (!ragQuery.trim()) return;
+                        setRagLoading(true);
+                        setRagError(null);
+                        setRagResults([]);
+                        try {
+                            const { data, error } = await supabase.rpc("match_knowledge", {
+                                query_text: ragQuery.trim(),
+                                match_count: 5,
+                            });
+                            if (error) throw error;
+                            setRagResults(data || []);
+                        } catch (err: any) {
+                            setRagError(err.message || "Failed to execute semantic search");
+                        } finally {
+                            setRagLoading(false);
+                        }
+                    }}
+                    className="flex gap-4 mb-8"
+                >
+                    <div className="relative flex-1">
+                        <Sparkles className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                        <input
+                            type="text"
+                            value={ragQuery}
+                            onChange={(e) => setRagQuery(e.target.value)}
+                            placeholder="Ask a question to test knowledge retrieval..."
+                            className="w-full bg-black/40 border border-white/5 rounded-2xl pl-12 pr-6 py-4 text-sm text-white focus:ring-2 focus:ring-purple-500/20 outline-none transition-all shadow-xl placeholder:text-slate-600"
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        disabled={ragLoading || !ragQuery.trim()}
+                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-cyan-600 text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl hover:brightness-110 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-3 shadow-xl"
+                    >
+                        {ragLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                        Query
+                    </button>
+                </form>
+
+                {/* Error State */}
+                {ragError && (
+                    <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl mb-6">
+                        <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                        <p className="text-red-400 text-xs font-bold">{ragError}</p>
+                    </div>
+                )}
+
+                {/* Results */}
+                {ragResults.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                                {ragResults.length} chunks matched
+                            </span>
+                            <div className="h-px flex-1 bg-white/5" />
+                        </div>
+                        {ragResults.map((result, idx) => (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                key={result.id || idx}
+                                className="bg-black/40 border border-white/5 rounded-[1.5rem] p-6 hover:border-purple-500/20 transition-all group"
+                            >
+                                <div className="flex items-start justify-between gap-4 mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <FileText className="w-4 h-4 text-purple-400" />
+                                        <span className="text-sm font-black text-white truncate max-w-xs">{result.filename}</span>
+                                    </div>
+                                    <div className={cn(
+                                        "px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest",
+                                        result.similarity >= 0.8
+                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                            : result.similarity >= 0.5
+                                                ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+                                                : "bg-slate-500/10 border-slate-500/20 text-slate-400"
+                                    )}>
+                                        {(result.similarity * 100).toFixed(1)}% match
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-400 leading-relaxed font-mono break-words line-clamp-4">
+                                    {result.content}
+                                </p>
+                                {/* Similarity bar */}
+                                <div className="mt-4 h-1 bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${result.similarity * 100}%` }}
+                                        transition={{ duration: 0.8 }}
+                                        className={cn(
+                                            "h-full rounded-full",
+                                            result.similarity >= 0.8 ? "bg-emerald-500" : result.similarity >= 0.5 ? "bg-amber-500" : "bg-slate-500"
+                                        )}
+                                    />
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Empty state (after a query) */}
+                {ragResults.length === 0 && !ragLoading && !ragError && ragQuery && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center opacity-40">
+                        <Database className="w-12 h-12 text-slate-600 mb-4" />
+                        <p className="text-slate-500 text-sm font-bold">No matching chunks found</p>
+                        <p className="text-slate-600 text-xs mt-1">Try a different query or upload more documents</p>
+                    </div>
+                )}
+            </section>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }

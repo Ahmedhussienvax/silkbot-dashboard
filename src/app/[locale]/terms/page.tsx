@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { ChevronLeft, Scale, Shield, FileText, Lock } from "lucide-react";
 import Footer from "@/components/organisms/Footer";
 
-export default function LegalPage({ params }: { params: { slug: string } }) {
+export default function LegalPage({ params }: { params: Promise<{ locale: string }> }) {
     const t = useTranslations("Common");
     const l = useTranslations("Footer");
 

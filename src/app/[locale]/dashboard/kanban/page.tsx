@@ -26,7 +26,6 @@ export default function PipelinesPage() {
     const fetchLeads = async () => {
       try {
         const { data, error } = await supabase
-          .schema('silkbot')
           .from('contacts')
           .select('*')
           .limit(100);

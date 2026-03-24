@@ -164,11 +164,10 @@ export default function KanbanBoard({ initialData }: { initialData: Lead[] }) {
 
   const saveLeadStatus = async (lead: Lead, newStatus: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/api/gateway/crm/update-lead`, {
+      const res = await fetch(`/api/gateway/crm/update-lead`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': process.env.NEXT_PUBLIC_GATEWAY_API_KEY || '',
         },
         body: JSON.stringify({
           remoteJid: lead.id,

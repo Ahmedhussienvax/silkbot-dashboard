@@ -25,7 +25,7 @@ export default async function DashboardPage(props: {
     const supabase = await createClient();
 
     // Data Fetching on Server (RSC First!)
-    const { data: statsData } = await supabase.schema("silkbot").from("tenant_stats").select("*").single();
+    const { data: statsData } = await supabase.from("tenant_stats").select("*").single();
     const stats = {
         conversations: statsData?.total_conversations || 0,
         messages: statsData?.total_messages || 0,

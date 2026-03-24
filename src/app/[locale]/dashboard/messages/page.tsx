@@ -70,7 +70,6 @@ export default function InboxPage() {
         queryKey: ["conversations"],
         queryFn: async () => {
             const { data, error } = await supabase
-                .schema("silkbot")
                 .from("conversations")
                 .select(`
                     composite_chat_id: id,
@@ -95,7 +94,6 @@ export default function InboxPage() {
         queryFn: async () => {
             if (!activeConv) return [];
             const { data, error } = await supabase
-                .schema("silkbot")
                 .from("inbox")
                 .select("*")
                 .eq("contact_jid", activeConvData?.contact_jid || "")
@@ -121,14 +119,14 @@ export default function InboxPage() {
 
     const activeConvData = conversations.find(c => c.composite_chat_id === activeConv);
 
-    // Real-time listener for new messages (v5.7.1 Schema)
+    // Real-time listener for new messages
     useEffect(() => {
         const channel = supabase
             .channel("realtime-inbox")
             .on(
                 "postgres_changes",
-                { event: "INSERT", schema: "silkbot", table: "inbox" },
-                (payload) => {
+                { event: "INSERT", schema: "public", table: "silkbot_messages" },
+                (payload: any) => {
                     const newMessage = payload.new as any;
                     // We invalidate queries here because we need consistent data from the synchronized view
                     queryClient.invalidateQueries({ queryKey: ["messages", activeConv] });
@@ -174,7 +172,7 @@ export default function InboxPage() {
                     table: "ai_traces",
                     filter: `conversation_id=eq.${activeConvData.contact_jid}`
                 },
-                (payload) => {
+                (payload: any) => {
                     const newTrace = payload.new as any;
                     setLiveTraces(prev => {
                         // Deduplicate
@@ -251,12 +249,9 @@ export default function InboxPage() {
 
     const statusMutation = useMutation({
         mutationFn: async ({ conv, status }: { conv: Conversation, status: string }) => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/api/gateway/crm/update-ticket`, {
+            const res = await fetch(`/api/gateway/crm/update-ticket`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-api-key": process.env.NEXT_PUBLIC_GATEWAY_API_KEY || ""
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     remoteJid: conv.contact_jid,
                     instanceId: conv.instance_name,
@@ -282,12 +277,9 @@ export default function InboxPage() {
 
     const botToggleMutation = useMutation({
         mutationFn: async ({ conv, newStatus }: { conv: Conversation, newStatus: boolean }) => {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_GATEWAY_URL}/api/gateway/crm/update-lead`, {
+            const res = await fetch(`/api/gateway/crm/update-lead`, {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "x-api-key": process.env.NEXT_PUBLIC_GATEWAY_API_KEY || ""
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
                     remoteJid: conv.contact_jid,
                     instanceId: conv.instance_name,
@@ -403,7 +395,7 @@ export default function InboxPage() {
                                     <div className="relative">
                                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/5 flex items-center justify-center text-white font-black text-xl overflow-hidden shadow-inner">
                                             {conv.contact_avatar ? (
-                                                <img src={conv.contact_avatar} alt="" className="w-full h-full object-cover opacity-80" />
+                                                <img src={conv.contact_avatar} alt={`${conv.contact_push_name || "Contact"}'s avatar`} className="w-full h-full object-cover opacity-80" />
                                             ) : (
                                                 (conv.contact_push_name || "?").charAt(0).toUpperCase()
                                             )}

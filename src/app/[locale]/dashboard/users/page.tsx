@@ -56,7 +56,6 @@ export default function ContactsPage() {
             setLoading(true);
             // Attempt 1: Schema-based secure view (Enterprise Specification)
             let result = await supabase
-                .schema("silkbot")
                 .from("contacts")
                 .select("*");
 
@@ -109,7 +108,7 @@ export default function ContactsPage() {
         const newTags = (contact.tags || []).filter(t => t !== tagToRemove);
         setContacts(prev => prev.map(c => c.jid === jid && c.instance_name === instance_name ? { ...c, tags: newTags } : c));
         
-        await supabase.schema("silkbot").from("contacts").update({ tags: newTags }).eq("id", contact.id);
+        await supabase.from("contacts").update({ tags: newTags }).eq("id", contact.id);
         toast.info("Segment Purged", { description: `Tag ${tagToRemove} removed from node identifiers.` });
     };
 
@@ -118,7 +117,7 @@ export default function ContactsPage() {
         if (!contact) return;
 
         setContacts(prev => prev.map(c => c.jid === jid && c.instance_name === instance_name ? { ...c, notes: notesBuffer } : c));
-        await supabase.schema("silkbot").from("contacts").update({ notes: notesBuffer }).eq("id", contact.id);
+        await supabase.from("contacts").update({ notes: notesBuffer }).eq("id", contact.id);
         toast.success("Intelligence Updated", { description: "Internal notes synchronized with the core registry." });
     };
 

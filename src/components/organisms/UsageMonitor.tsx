@@ -1,50 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase-browser";
+import React from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { Zap, AlertCircle, BarChart3, ShieldCheck } from "lucide-react";
-
-interface Quota {
-    total_tokens_used: number;
-    token_limit: number;
-    is_active: boolean;
-}
+import { Zap, AlertCircle, BarChart3, ShieldCheck, Clock } from "lucide-react";
+import { useQuota } from "@/hooks/useQuota";
 
 export default function UsageMonitor() {
     const t = useTranslations("Dashboard");
-    const [quota, setQuota] = useState<Quota | null>(null);
-    const [loading, setLoading] = useState(true);
-    const supabase = createClient();
-
-    useEffect(() => {
-        const fetchQuota = async () => {
-            try {
-                const { data, error } = await supabase
-                    .schema("silkbot")
-                    .from("tenant_quotas")
-                    .select("*")
-                    .limit(1)
-                    .single();
-                
-                if (data) setQuota(data);
-            } catch (err) {
-                console.error("Quota Fetch Failure:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchQuota();
-    }, [supabase]);
+    const { quota, loading, usagePercent, isWarning, isCritical, daysUntilReset } = useQuota();
 
     if (loading) return (
         <div className="h-32 bg-white/[0.02] border border-white/5 rounded-3xl animate-pulse" />
     );
 
     if (!quota) return null;
-
-    const percentage = Math.min((quota.total_tokens_used / quota.token_limit) * 100, 100);
-    const isWarning = percentage > 85;
 
     return (
         <div className="glass-card p-8 border-white/5 bg-white/[0.02] relative overflow-hidden group">
@@ -83,23 +52,37 @@ export default function UsageMonitor() {
                             / {quota.token_limit.toLocaleString()} Tokens
                         </span>
                     </div>
-                    <div className={`text-[11px] font-black italic transition-colors ${isWarning ? 'text-red-500' : 'text-accent-primary'}`}>
-                        {percentage.toFixed(1)}%
+                    <div className={`text-[11px] font-black italic transition-colors ${isCritical ? 'text-red-500 animate-pulse' : isWarning ? 'text-amber-500' : 'text-accent-primary'}`}>
+                        {usagePercent.toFixed(1)}%
                     </div>
                 </div>
 
                 <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                     <motion.div 
                         initial={{ width: 0 }}
-                        animate={{ width: `${percentage}%` }}
+                        animate={{ width: `${usagePercent}%` }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className={`h-full rounded-full ${isWarning ? 'bg-gradient-to-r from-red-500 to-orange-500' : 'bg-gradient-to-r from-accent-primary to-accent-tertiary shadow-[0_0_20px_rgba(168,85,247,0.4)]'}`}
+                        className={`h-full rounded-full ${
+                            isCritical 
+                                ? 'bg-gradient-to-r from-red-500 to-red-600 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
+                                : isWarning 
+                                    ? 'bg-gradient-to-r from-red-500 to-orange-500' 
+                                    : 'bg-gradient-to-r from-accent-primary to-accent-tertiary shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                        }`}
                     />
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
-                    <BarChart3 className="w-3.5 h-3.5" />
-                    Next Reset in 12 Neural Cycles
+                <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center gap-2 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                        <Clock className="w-3.5 h-3.5" />
+                        Next Reset in {daysUntilReset} day{daysUntilReset !== 1 ? 's' : ''}
+                    </div>
+                    {isCritical && (
+                        <div className="flex items-center gap-1 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-md">
+                            <AlertCircle className="w-2.5 h-2.5 text-red-500" />
+                            <span className="text-[8px] font-black text-red-400 uppercase tracking-wider">Quota Critical</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
