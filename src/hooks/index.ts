@@ -16,3 +16,6 @@ export type { HealthData, DLQData, ServiceStatus } from "./useGatewayHealth";
 
 export { useRealtimeTraces } from "./useRealtimeTraces";
 export type { AITrace, SeverityFilter } from "./useRealtimeTraces";
+
+export { useRoles } from "./useRoles";
+

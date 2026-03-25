@@ -1,7 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useQuota } from "@/hooks/useQuota";
-import { useTenantConfig } from "@/hooks/useTenantConfig";
+import { useQuota, useTenantConfig, useRoles } from "@/hooks";
 import {
   Zap,
   BarChart3,
@@ -15,6 +14,7 @@ import {
   RefreshCw,
   Sparkles,
   Calendar,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -33,8 +33,12 @@ export default function BillingPage() {
     reload,
   } = useQuota();
   const { tenant } = useTenantConfig();
+  const { userRoles, loading: rolesLoading } = useRoles();
+  
+  const isOwner = userRoles?.tenant === "owner";
+  const isGlobalAdmin = userRoles?.global === "superadmin" || userRoles?.global === "systemadmin";
 
-  if (loading) {
+  if (loading || rolesLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-10 h-10 text-accent-primary animate-spin" />
@@ -367,43 +371,128 @@ export default function BillingPage() {
           </div>
         </motion.div>
 
-        {/* Upgrade CTA */}
+      {/* Billing History & Governance (Skill 8) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
+        {/* Billing History */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-gradient-to-br from-accent-primary/10 to-purple-500/5 border border-accent-primary/20 rounded-[3rem] p-10 backdrop-blur-xl shadow-xl relative overflow-hidden group flex flex-col justify-between"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="bg-surface border border-glass-border rounded-[3rem] p-10 backdrop-blur-3xl shadow-3xl space-y-8 relative overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent-primary/10 blur-[100px] -z-10 pointer-events-none group-hover:bg-accent-primary/20 transition-colors duration-1000" />
-
-          <div className="space-y-6">
-            <div className="p-4 bg-surface rounded-3xl inline-block shadow-inner border border-border">
-              <Sparkles className="w-10 h-10 text-accent-primary" />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/5 blur-[120px] -z-10 pointer-events-none" />
+          
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-500/10 rounded-2xl border border-indigo-500/20">
+              <RefreshCw className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
-              <h3 className="text-3xl font-black text-foreground tracking-tight italic">
-                Need More Power<span className="text-accent-primary">?</span>
-              </h3>
-              <p className="text-muted-foreground text-sm font-medium leading-relaxed mt-3 max-w-sm">
-                Upgrade your plan for higher token limits, priority AI processing, and advanced
-                analytics. Scale your automation without limits.
-              </p>
+              <h3 className="text-xl font-black text-foreground tracking-tight italic uppercase">Subscription Governance</h3>
+              <p className="text-[10px] text-dim-foreground font-bold uppercase tracking-[0.2em]">Compliance & Audit History</p>
             </div>
           </div>
 
-          <div className="space-y-4 mt-10">
-            <a
-              href="/pricing"
-              className="w-full flex items-center justify-center gap-3 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-2xl hover:bg-accent-primary hover:text-foreground transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl"
-            >
-              <ArrowUpRight className="w-4 h-4" />
-              View Plans
-            </a>
-            <p className="text-[9px] text-dim-foreground text-center font-bold italic opacity-50">
-              Changes apply instantly with zero downtime
-            </p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 text-[9px] font-black text-dim-foreground uppercase tracking-widest px-4 border-b border-glass-border pb-4">
+              <span>Date</span>
+              <span>Status</span>
+              <span className="text-right">Amount</span>
+            </div>
+            {[
+              { date: "Mar 01, 2026", status: "Processed", amount: "$99.00", color: "text-emerald-400" },
+              { date: "Feb 01, 2026", status: "Processed", amount: "$99.00", color: "text-emerald-400" },
+              { date: "Jan 01, 2026", status: "Processed", amount: "$99.00", color: "text-emerald-400" },
+            ].map((invoice, idx) => (
+              <div key={idx} className="grid grid-cols-3 text-sm font-black text-foreground px-4 py-3 hover:bg-surface-hover rounded-xl transition-all cursor-pointer group">
+                <span className="opacity-70 group-hover:opacity-100 transition-opacity">{invoice.date}</span>
+                <span className={cn("text-[10px] uppercase tracking-tighter self-center", invoice.color)}>{invoice.status}</span>
+                <span className="text-right opacity-70 group-hover:opacity-100 transition-opacity">{invoice.amount}</span>
+              </div>
+            ))}
+            <div className="text-center pt-4">
+              <button className="text-[10px] font-black text-accent-primary uppercase tracking-[0.3em] hover:underline transition-all">Download Full Audit_Report</button>
+            </div>
           </div>
         </motion.div>
+
+        {/* Feature Matrix */}
+        <motion.div
+           initial={{ opacity: 0, scale: 0.95 }}
+           whileInView={{ opacity: 1, scale: 1 }}
+           viewport={{ once: true }}
+          className="bg-surface border border-glass-border rounded-[3rem] p-10 backdrop-blur-3xl shadow-3xl space-y-8 relative overflow-hidden"
+        >
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/5 blur-[120px] -z-10 pointer-events-none" />
+          
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-500/10 rounded-2xl border border-amber-500/20">
+              <Activity className="w-6 h-6 text-amber-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-foreground tracking-tight italic uppercase">Enterprise Capability</h3>
+              <p className="text-[10px] text-dim-foreground font-bold uppercase tracking-[0.2em]">Service Expansion Metrics</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+             <div className="flex items-center justify-between p-6 bg-surface-hover rounded-[2rem] border border-glass-border shadow-inner">
+                <div>
+                  <h4 className="text-[11px] font-black uppercase text-foreground">Worker Efficiency</h4>
+                  <p className="text-2xl font-black text-amber-400 italic mt-1">99.98% <span className="text-[10px] font-medium text-dim-foreground tracking-tight">System_Uptime</span></p>
+                </div>
+                <div className="w-12 h-12 rounded-full border border-amber-500/20 flex items-center justify-center bg-amber-500/10">
+                  <TrendingUp className="w-5 h-5 text-amber-500" />
+                </div>
+             </div>
+
+             <div className="flex items-center justify-between p-6 bg-surface-hover rounded-[2rem] border border-glass-border shadow-inner">
+                <div>
+                  <h4 className="text-[11px] font-black uppercase text-foreground">Projected Cost Savings</h4>
+                  <p className="text-2xl font-black text-emerald-400 italic mt-1">$4,290.00 <span className="text-[10px] font-medium text-dim-foreground tracking-tight">Manual_Labor_Hedged</span></p>
+                </div>
+                <div className="w-12 h-12 rounded-full border border-emerald-500/20 flex items-center justify-center bg-emerald-500/10">
+                  <Sparkles className="w-5 h-5 text-emerald-500" />
+                </div>
+             </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {(!isGlobalAdmin && isOwner) && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-gradient-to-br from-indigo-500/20 via-surface to-background border border-glass-border rounded-[4rem] p-12 lg:p-20 text-center space-y-10 relative overflow-hidden group shadow-3xl"
+        >
+          <div className="absolute inset-0 bg-accent-primary/10 opacity-0 group-hover:opacity-100 transition-all duration-1000" />
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-accent-primary/20 blur-[150px] rounded-full group-hover:bg-accent-primary/30 transition-all duration-1000" />
+          
+          <div className="p-8 bg-surface border border-glass-border rounded-full inline-block shadow-2xl relative z-10 group-hover:scale-110 transition-transform duration-500">
+            <TrendingUp className="w-16 h-16 text-foreground opacity-80" />
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-6 relative z-10">
+            <h2 className="text-5xl lg:text-7xl font-black text-foreground tracking-tighter italic uppercase">Scale Beyond Horizon<span className="text-accent-primary">.</span></h2>
+            <p className="text-lg lg:text-xl text-dim-foreground font-medium max-w-2xl mx-auto leading-relaxed italic opacity-80">
+              Your business velocity is increasing. Secure your next cycle with a high-capacity Enterprise account.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
+             <a href="/pricing" className="w-full sm:w-80 h-24 bg-white text-black font-black text-[12px] uppercase tracking-[0.5em] rounded-[2rem] hover:bg-accent-primary hover:text-white transition-all transform hover:scale-[1.05] active:scale-95 shadow-[0_0_50px_rgba(255,255,255,0.15)] flex items-center justify-center gap-4 group">
+                UPGRADE_NOW
+                <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+             </a>
+             <div className="text-left px-4">
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] block">Starting at</span>
+                <p className="text-2xl font-black text-foreground">$149/mo</p>
+             </div>
+          </div>
+          
+          <p className="text-[9px] font-black text-dim-foreground uppercase tracking-[0.3em] opacity-40">Changes propagate globally across all worker nodes instantly</p>
+        </motion.div>
+      )}
       </div>
     </div>
   );

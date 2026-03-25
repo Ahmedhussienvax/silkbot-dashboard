@@ -22,6 +22,7 @@ export interface BotConfig {
   handoff_keywords: string[];
   max_tokens: number;
   temperature: number;
+  use_knowledge_base?: boolean;
 }
 
 /**
@@ -90,10 +91,10 @@ export function useBotConfig(): UseBotConfigReturn {
       if (fetchError) throw fetchError;
       if (data) {
         setConfig(data as unknown as BotConfig);
-        setTenantName((data as any).tenants?.name || null);
+        setTenantName((data as { tenants?: { name: string } }).tenants?.name || null);
       }
-    } catch (err: any) {
-      const msg = err?.message || "Failed to load bot configuration";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load bot configuration";
       setError(msg);
       console.error("[useBotConfig] Load error:", msg);
     } finally {
@@ -125,6 +126,7 @@ export function useBotConfig(): UseBotConfigReturn {
           handoff_keywords: config.handoff_keywords,
           max_tokens: config.max_tokens,
           temperature: config.temperature,
+          use_knowledge_base: config.use_knowledge_base,
         })
         .eq("id", config.id);
 
@@ -134,8 +136,8 @@ export function useBotConfig(): UseBotConfigReturn {
         description: "Worker caches bot configuration in Redis with a 5-minute TTL.",
       });
       return true;
-    } catch (err: any) {
-      const msg = err?.message || "Failed to save bot configuration";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save bot configuration";
       toast.error(msg);
       console.error("[useBotConfig] Save error:", msg);
       return false;

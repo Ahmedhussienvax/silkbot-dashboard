@@ -21,6 +21,7 @@ import TagInput from "@/components/atoms/TagInput";
 import { cn } from "@/lib/utils";
 import { useBotConfig, PROVIDER_MODELS, PROVIDER_OPTIONS } from "@/hooks/useBotConfig";
 import { useRealtimeTraces } from "@/hooks/useRealtimeTraces";
+import { RoleGuard } from "@/components/atoms/RoleGuard";
 
 export default function BotConfigPage() {
     const t = useTranslations("Bot");
@@ -58,24 +59,40 @@ export default function BotConfigPage() {
 
     /** When provider changes, reset model to the first available model for that provider */
     const handleProviderChange = (provider: string) => {
-        const models = PROVIDER_MODELS[provider];
-        const firstModel = models?.[0]?.value || "";
-        setConfig(prev => prev ? { ...prev, ai_provider: provider, ai_model: firstModel } : null);
+        setConfig(prev => prev ? { ...prev, ai_provider: provider, ai_model: PROVIDER_MODELS[provider as keyof typeof PROVIDER_MODELS][0].value } : null);
     };
 
-    const availableModels = config?.ai_provider
-        ? PROVIDER_MODELS[config.ai_provider] || []
-        : [];
+    const availableModels = config?.ai_provider && config.ai_provider in PROVIDER_MODELS 
+        ? PROVIDER_MODELS[config.ai_provider as keyof typeof PROVIDER_MODELS] 
+        : PROVIDER_MODELS["openai"];
 
-    if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-            <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Syncing_AI_Config</span>
-        </div>
-    );
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+                <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Initializing_Core...</span>
+            </div>
+        );
+    }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-500 font-arabic">
+        <RoleGuard 
+            allowedTenantRoles={["owner", "manager"]} 
+            fallback={
+                <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center">
+                    <div className="w-24 h-24 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center">
+                        <ShieldCheck className="w-10 h-10 text-red-500" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-foreground uppercase tracking-tight italic">Access_Denied</h2>
+                        <p className="text-muted-foreground font-medium mt-2 max-w-sm mx-auto">
+                            Only workspace owners and managers possess the clearance to modify the AI core logic.
+                        </p>
+                    </div>
+                </div>
+            }
+        >
+            <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-10 animate-in fade-in duration-500 font-arabic">
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-10">
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
@@ -211,6 +228,48 @@ export default function BotConfigPage() {
                         />
                     </section>
 
+                    {/* Knowledge Integration Section */}
+                    <section className="bg-gradient-to-br from-slate-900/60 to-black/60 backdrop-blur-2xl border border-border rounded-[3rem] p-10 shadow-3xl relative group overflow-hidden">
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/5 blur-[120px] rounded-full -mr-64 -mt-64 pointer-events-none group-hover:bg-emerald-600/10 transition-colors duration-1000" />
+                        
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400 border border-emerald-500/20 transform group-hover:-rotate-12 transition-transform duration-500">
+                                    <Layers className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-foreground tracking-tight italic uppercase">Context Layer (RAG)</h2>
+                                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">Augment response logic with private library data</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 bg-surface border border-border px-4 py-2 rounded-2xl">
+                                <span className={cn("text-[9px] font-black uppercase tracking-widest", config?.use_knowledge_base ? "text-emerald-400" : "text-muted-foreground")}>
+                                    {config?.use_knowledge_base ? "Enabled" : "Disabled"}
+                                </span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={!!config?.use_knowledge_base}
+                                    onChange={(e) => setConfig(prev => prev ? { ...prev, use_knowledge_base: e.target.checked } : null)}
+                                    className="accent-emerald-500 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-6 bg-surface border border-border rounded-2xl opacity-50 cursor-not-allowed">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Connected Libraries</h4>
+                                <div className="text-xs font-mono text-slate-500 italic">None selected. Connect in Knowledge tab.</div>
+                            </div>
+                            <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1">Retrieval Strategy</h4>
+                                    <p className="text-[11px] font-medium text-slate-400">Hybrid Semantic + Keyword</p>
+                                </div>
+                                <Activity className="w-5 h-5 text-indigo-500/30" />
+                            </div>
+                        </div>
+                    </section>
+                    
                     <AIReasoningTrace steps={traceSteps} />
                 </div>
 
@@ -346,5 +405,6 @@ export default function BotConfigPage() {
                 </div>
             </form>
         </div>
+        </RoleGuard>
     );
 }

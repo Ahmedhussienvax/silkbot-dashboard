@@ -42,25 +42,29 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
     }, []);
 
     const navItems = [
-        { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" },
-        { id: "bot", icon: Brain, label: t("ai_hub"), href: "/dashboard/bot" },
-        { id: "knowledge", icon: BookOpen, label: t("knowledge"), href: "/dashboard/knowledge" },
-        { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" },
-        { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" },
-        { id: "kanban", icon: Columns, label: t("kanban"), href: "/dashboard/kanban" },
-        { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" },
-        { id: "health", icon: Activity, label: t("health"), href: "/dashboard/health" },
-        { id: "billing", icon: CreditCard, label: t("billing"), href: "/dashboard/billing" },
-        { id: "team", icon: Shield, label: "Team Matrix", href: "/dashboard/team" },
-        { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
+        { id: "dashboard", icon: LayoutDashboard, label: t("dashboard"), href: "/dashboard" as const },
+        { id: "bot", icon: Brain, label: t("ai_hub"), href: "/dashboard/bot" as const },
+        { id: "knowledge", icon: BookOpen, label: t("knowledge"), href: "/dashboard/knowledge" as const },
+        { id: "messages", icon: MessageSquare, label: t("inbox"), href: "/dashboard/messages" as const },
+        { id: "broadcast", icon: Send, label: t("campaigns"), href: "/dashboard/broadcast" as const },
+        { id: "kanban", icon: Columns, label: t("kanban"), href: "/dashboard/kanban" as const },
+        { id: "users", icon: Users, label: t("contacts"), href: "/dashboard/users" as const },
+        { id: "health", icon: Activity, label: t("health"), href: "/dashboard/health" as const },
+        { id: "billing", icon: CreditCard, label: t("billing"), href: "/dashboard/billing" as const },
+        { id: "team", icon: Shield, label: "Team Matrix", href: "/dashboard/team" as const },
+        { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" as const },
     ];
 
-    const isGlobalAdmin = userRoles.global === 'superadmin' || userRoles.global === 'systemadmin';
+    const isGlobalAdmin = userRoles?.global === 'superadmin' || userRoles?.global === 'systemadmin';
+    const isTenantAuthorized = userRoles?.tenant === 'owner' || userRoles?.tenant === 'manager';
 
     // Filter items based on RBAC (Skill 17)
     const filteredNavItems = navItems.filter(item => {
-        if (item.id === 'team' || item.id === 'billing') {
-            return isGlobalAdmin || userRoles.tenant === 'owner' || userRoles.tenant === 'manager';
+        if (item.id === 'team' || item.id === 'billing' || item.id === 'bot') {
+            return isGlobalAdmin || isTenantAuthorized;
+        }
+        if (item.id === 'health') {
+            return isGlobalAdmin;
         }
         return true;
     });
@@ -93,7 +97,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                         return (
                             <Link 
                                 key={item.id}
-                                href={item.href as any}
+                                href={item.href}
                                 className={cn(
                                     "w-full group/nav flex items-center justify-between p-4 rounded-2xl transition-all duration-500 relative",
                                     isActive 

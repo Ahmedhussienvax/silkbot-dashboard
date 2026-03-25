@@ -49,8 +49,8 @@ export function useTenantConfig(): UseTenantConfigReturn {
 
       if (fetchError) throw fetchError;
       if (data) setTenant(data as Tenant);
-    } catch (err: any) {
-      const msg = err?.message || "Failed to load tenant configuration";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load tenant configuration";
       setError(msg);
       console.error("[useTenantConfig] Load error:", msg);
     } finally {
@@ -83,8 +83,8 @@ export function useTenantConfig(): UseTenantConfigReturn {
 
       if (updateError) throw updateError;
       return true;
-    } catch (err: any) {
-      const msg = err?.message || "Failed to save tenant configuration";
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to save tenant configuration";
       toast.error(msg);
       console.error("[useTenantConfig] Save error:", msg);
       return false;
