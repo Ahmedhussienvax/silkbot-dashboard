@@ -55,10 +55,12 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
         { id: "settings", icon: Settings, label: t("settings"), href: "/dashboard/settings" },
     ];
 
+    const isGlobalAdmin = userRoles.global === 'superadmin' || userRoles.global === 'systemadmin';
+
     // Filter items based on RBAC (Skill 17)
     const filteredNavItems = navItems.filter(item => {
         if (item.id === 'team' || item.id === 'billing') {
-            return userRoles.tenant === 'owner' || userRoles.tenant === 'manager';
+            return isGlobalAdmin || userRoles.tenant === 'owner' || userRoles.tenant === 'manager';
         }
         return true;
     });
@@ -156,17 +158,19 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     </div>
                 </div>
 
-                <div className="p-6 rounded-3xl bg-surface border border-foreground/10 relative overflow-hidden group/upgrade">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-accent-secondary/10 blur-2xl rounded-full" />
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 italic">Pro Version</p>
-                    <p className="text-foreground font-black text-sm mb-4 leading-snug">Sync your business data across devices</p>
-                    <Link 
-                        href="/pricing"
-                        className="block w-full text-center py-3 bg-foreground text-background font-bold text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-transform active:scale-95 shadow-xl"
-                    >
-                        Upgrade
-                    </Link>
-                </div>
+                {(!isGlobalAdmin && userRoles.tenant === 'owner') && (
+                    <div className="p-6 rounded-3xl bg-surface border border-foreground/10 relative overflow-hidden group/upgrade">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-accent-secondary/10 blur-2xl rounded-full" />
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-2 italic">Pro Version</p>
+                        <p className="text-foreground font-black text-sm mb-4 leading-snug">Sync your business data across devices</p>
+                        <Link 
+                            href="/pricing"
+                            className="block w-full text-center py-3 bg-foreground text-background font-bold text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-transform active:scale-95 shadow-xl"
+                        >
+                            Upgrade
+                        </Link>
+                    </div>
+                )}
 
                 <button 
                     onClick={() => {

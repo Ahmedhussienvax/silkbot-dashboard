@@ -42,18 +42,20 @@ export const RoleGuard = ({
     const globalRole = user.app_metadata?.global_role || 'user';
     const tenantRole = user.app_metadata?.tenant_role || 'agent';
 
+    const isGlobalAdmin = globalRole === 'superadmin' || globalRole === 'systemadmin';
+
     // 1. Check SuperAdmin Requirement
     if (requireSuperAdmin && globalRole !== 'superadmin') {
         return fallback as ReactNode;
     }
 
     // 2. Check Global Roles whitelist
-    if (allowedGlobalRoles && !allowedGlobalRoles.includes(globalRole)) {
+    if (allowedGlobalRoles && !allowedGlobalRoles.includes(globalRole) && globalRole !== 'superadmin') {
         return fallback as ReactNode;
     }
 
-    // 3. Check Tenant Roles whitelist
-    if (allowedTenantRoles && !allowedTenantRoles.includes(tenantRole)) {
+    // 3. Check Tenant Roles whitelist (Bypass if Global Admin)
+    if (allowedTenantRoles && !allowedTenantRoles.includes(tenantRole) && !isGlobalAdmin) {
         return fallback as ReactNode;
     }
 

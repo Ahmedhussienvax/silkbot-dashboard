@@ -35,8 +35,8 @@ export default function TeamManagementPage() {
   const [isSending, setIsSending] = useState(false);
   
   // RBAC State (Skill 17)
-  const [currentUser, setCurrentUser] = useState<{ id: string; role: RoleType; tenantId: string | null }>({ 
-    id: '', role: 'agent', tenantId: null 
+  const [currentUser, setCurrentUser] = useState<{ id: string; role: RoleType; tenantId: string | null; globalRole: string }>({ 
+    id: '', role: 'agent', tenantId: null, globalRole: 'user' 
   });
 
   useEffect(() => {
@@ -46,16 +46,18 @@ export default function TeamManagementPage() {
         setCurrentUser({
           id: user.id,
           role: (user.app_metadata?.tenant_role as RoleType) || 'agent',
-          tenantId: user.app_metadata?.tenant_id || null
+          tenantId: user.app_metadata?.tenant_id || null,
+          globalRole: user.app_metadata?.global_role || 'user'
         });
       }
     };
     fetchSession();
   }, []);
 
-  const isOwner = currentUser.role === 'owner';
+  const isGlobalAdmin = currentUser.globalRole === 'superadmin' || currentUser.globalRole === 'systemadmin';
+  const isOwner = currentUser.role === 'owner' || isGlobalAdmin;
   const isManager = currentUser.role === 'manager';
-  const isAdmin = isOwner || isManager;
+  const isAdmin = isOwner || isManager || isGlobalAdmin;
 
   // Real-time Data Sync (TanStack Query)
   const { data: members = [], isLoading } = useQuery({
