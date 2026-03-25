@@ -5,16 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Users, Shield, UserCog, UserMinus, Plus, ShieldAlert,
   Search, CheckCircle2, ChevronDown, Mail, AlertTriangle,
-  Clock, X
+  Clock, X, Brain
 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // --- Types ---
-type RoleType = 'owner' | 'manager' | 'agent';
+type RoleType = 'owner' | 'manager' | 'analyst' | 'agent';
 
 interface Member {
   id: string;
   email: string;
+  display_name?: string;
   role: RoleType;
   status: 'active' | 'pending';
   joinedAt: string;
@@ -28,6 +30,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export default function TeamManagementPage() {
   const supabase = createClient();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [newInviteEmail, setNewInviteEmail] = useState("");
@@ -73,6 +76,7 @@ export default function TeamManagementPage() {
       return data.map((m: any): Member => ({
           id: m.membership_id, // Map database view primary key
           email: m.email || 'unknown@silkbot.app',
+          display_name: m.display_name || 'Incognito Agent',
           role: m.tenant_role as RoleType,
           status: 'active',
           joinedAt: new Date(m.created_at).toISOString().split('T')[0]
@@ -80,6 +84,17 @@ export default function TeamManagementPage() {
     },
     enabled: !!currentUser.tenantId
   });
+
+  // Access Guard (Skill 17)
+  useEffect(() => {
+    if (!isLoading && currentUser.id && !isAdmin && !isGlobalAdmin) {
+      toast.error("Access Denied", { description: "You do not have administrative clearance for this sector." });
+      router.push("/dashboard");
+    }
+  }, [isAdmin, isGlobalAdmin, isLoading, currentUser, router]);
+
+  if (isLoading) return <div className="h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin" /></div>;
+  if (!isAdmin && !isGlobalAdmin) return null;
 
   // --- Handlers ---
   const handleRemoveMember = async (id: string, email: string) => {
@@ -195,7 +210,7 @@ export default function TeamManagementPage() {
             <table className="w-full text-left border-collapse min-w-[800px]">
                 <thead>
                     <tr className="bg-foreground/[0.02] border-b border-glass-border">
-                        <th className="px-6 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Identifier (Email)</th>
+                        <th className="px-6 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Identity (Profile)</th>
                         <th className="px-6 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Privilege Level</th>
                         <th className="px-6 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Status Network</th>
                         <th className="px-6 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-dim-foreground">Ingress Date</th>
@@ -210,12 +225,22 @@ export default function TeamManagementPage() {
                         >
                             <td className="px-6 py-5">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-black/40 border border-glass-border flex items-center justify-center">
-                                        <Users className="w-4 h-4 text-muted-foreground" />
+                                    <div className="w-10 h-10 rounded-xl bg-black/40 border border-glass-border flex items-center justify-center shadow-inner overflow-hidden">
+                                        {member.display_name ? (
+                                            <span className="text-accent-primary font-black uppercase text-sm italic">
+                                                {member.display_name[0]}
+                                            </span>
+                                        ) : (
+                                            <Users className="w-4 h-4 text-muted-foreground" />
+                                        )}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-sm text-foreground">{member.email}</div>
-                                        <div className="text-[10px] font-mono text-muted-foreground mt-0.5">ID: {member.id.toUpperCase()}</div>
+                                        <div className="font-black text-sm text-foreground tracking-tight italic">
+                                            {member.display_name || "Incognito Agent"}
+                                        </div>
+                                        <div className="text-[10px] font-bold text-muted-foreground mt-0.5 opacity-60">
+                                            {member.email}
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -332,20 +357,29 @@ export default function TeamManagementPage() {
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ms-1">Initial Privilege Matrix</label>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => setNewInviteRole("manager")}
+                                        className={`p-4 rounded-xl border text-left transition-all ${newInviteRole === 'manager' ? 'bg-accent-primary/10 border-accent-primary/40 ring-1 ring-accent-primary/20' : 'bg-surface/40 hover:bg-surface/80 border-glass-border/60 hover:border-glass-border'}`}
+                                    >
+                                        <div className={`text-sm font-black mb-1 ${newInviteRole === 'manager' ? 'text-foreground' : 'text-muted-foreground'}`}>Manager</div>
+                                        <div className="text-[10px] font-medium text-muted-foreground leading-tight">Edit bots & monitor all.</div>
+                                    </button>
+                                    <button
+                                        onClick={() => setNewInviteRole("agent")}
+                                        className={`p-4 rounded-xl border text-left transition-all ${newInviteRole === 'agent' ? 'bg-accent-primary/10 border-accent-primary/40 ring-1 ring-accent-primary/20' : 'bg-surface/40 hover:bg-surface/80 border-glass-border/60 hover:border-glass-border'}`}
+                                    >
+                                        <div className={`text-sm font-black mb-1 ${newInviteRole === 'agent' ? 'text-foreground' : 'text-muted-foreground'}`}>Agent</div>
+                                        <div className="text-[10px] font-medium text-muted-foreground leading-tight">Chat & respond only.</div>
+                                    </button>
+                                </div>
                                 <button
-                                    onClick={() => setNewInviteRole("manager")}
-                                    className={`p-4 rounded-xl border text-left transition-all ${newInviteRole === 'manager' ? 'bg-accent-primary/10 border-accent-primary/40 ring-1 ring-accent-primary/20' : 'bg-surface/40 hover:bg-surface/80 border-glass-border/60 hover:border-glass-border'}`}
+                                    onClick={() => setNewInviteRole("analyst")}
+                                    className={`w-full p-4 rounded-xl border text-left transition-all ${newInviteRole === 'analyst' ? 'bg-accent-secondary/10 border-accent-secondary/40 ring-1 ring-accent-secondary/20' : 'bg-surface/40 hover:bg-surface/80 border-glass-border/60 hover:border-glass-border'}`}
                                 >
-                                    <div className={`text-sm font-black mb-1 ${newInviteRole === 'manager' ? 'text-foreground' : 'text-muted-foreground'}`}>Manager</div>
-                                    <div className="text-[10px] font-medium text-muted-foreground leading-tight">Can edit bots & monitor all chats.</div>
-                                </button>
-                                <button
-                                    onClick={() => setNewInviteRole("agent")}
-                                    className={`p-4 rounded-xl border text-left transition-all ${newInviteRole === 'agent' ? 'bg-accent-primary/10 border-accent-primary/40 ring-1 ring-accent-primary/20' : 'bg-surface/40 hover:bg-surface/80 border-glass-border/60 hover:border-glass-border'}`}
-                                >
-                                    <div className={`text-sm font-black mb-1 ${newInviteRole === 'agent' ? 'text-foreground' : 'text-muted-foreground'}`}>Agent</div>
-                                    <div className="text-[10px] font-medium text-muted-foreground leading-tight">Restricted to responding to assigned chats only.</div>
+                                    <div className={`text-sm font-black mb-1 ${newInviteRole === 'analyst' ? 'text-foreground' : 'text-muted-foreground'}`}>Analyst</div>
+                                    <div className="text-[10px] font-medium text-muted-foreground leading-tight">Read-only access to metrics, charts and reporting.</div>
                                 </button>
                             </div>
                         </div>

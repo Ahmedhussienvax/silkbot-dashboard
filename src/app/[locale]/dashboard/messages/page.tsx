@@ -20,11 +20,13 @@ import {
     MessageSquare,
     Zap,
     Brain,
-    Cpu
+    Cpu,
+    Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/atoms/Button";
+import { useRoles } from "@/hooks/useRoles";
 import AIReasoningTrace from "@/components/molecules/AIReasoningTrace";
 
 interface Conversation {
@@ -34,24 +36,33 @@ interface Conversation {
     contact_push_name: string | null;
     contact_avatar: string | null;
     last_message: Record<string, any> | null;
+    last_message_preview: string | null;
     last_message_at: number | null;
     bot_active?: boolean;
-    status?: 'new' | 'pending' | 'resolved';
+    status?: 'open' | 'pending' | 'resolved' | 'blocked';
+    assignee_id?: string | null;
+    assignee_name?: string | null;
+    assignee_avatar?: string | null;
 }
 
 interface Message {
     message_id: string;
     contact_jid: string;
     contact_push_name: string | null;
-    is_from_me: string;
+    is_from_me: boolean;
     content: Record<string, any>;
+    content_text: string | null;
     sent_at: number;
     delivery_status: string | null;
     instance_name: string;
     composite_chat_id: string;
     isOptimistic?: boolean;
     ai_trace?: any;
+    has_reasoning: boolean;
+    metadata?: Record<string, any>;
 }
+
+type MessageStatus = "open" | "pending" | "resolved" | "blocked";
 
 export default function InboxPage() {
     const t = useTranslations("Inbox");
@@ -59,11 +70,13 @@ export default function InboxPage() {
     const [activeConv, setActiveConv] = useState<string | null>(null);
     const [newMsg, setNewMsg] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-    const [filter, setFilter] = useState<"all" | "bot" | "human" | "open" | "pending" | "resolved">("all");
+    const [filter, setFilter] = useState<"all" | "bot" | "human" | "open" | "pending" | "resolved" | "blocked">("all");
     const [selectedTraceMsg, setSelectedTraceMsg] = useState<string | null>(null);
     const [liveTraces, setLiveTraces] = useState<any[]>([]);
     const msgEndRef = useRef<HTMLDivElement>(null);
     const supabase = createClient();
+    const { userRoles } = useRoles();
+    const currentUserId = userRoles?.id;
 
     // Fetch Conversations
     const { data: conversations = [], isLoading: loadingConvs } = useQuery({
@@ -78,9 +91,13 @@ export default function InboxPage() {
                     contact_push_name: contact_name,
                     contact_avatar,
                     last_message,
+                    last_message_preview,
                     last_message_at: updated_at,
                     bot_active,
-                    status: ticket_status
+                    status: ticket_status,
+                    assignee_id,
+                    assignee_name,
+                    assignee_avatar
                 `)
                 .order("last_message_at", { ascending: false });
             if (error) throw error;
@@ -93,22 +110,25 @@ export default function InboxPage() {
         queryKey: ["messages", activeConv],
         queryFn: async () => {
             if (!activeConv) return [];
+            
+            // v3.2: Using the optimized paged messages RPC
             const { data, error } = await supabase
-                .from("inbox")
-                .select("*")
-                .eq("contact_jid", activeConvData?.contact_jid || "")
-                .order("sent_at", { ascending: false })
-                .limit(50);
+                .rpc('get_paged_messages', {
+                    p_chat_id: activeConv,
+                    p_limit: 50,
+                    p_offset: 0
+                });
+
             if (error) throw error;
             
             const processMessages = ((data as unknown as any[]) || []).map(msg => {
                 const isBot = msg.is_from_me === "true" || msg.is_from_me === true;
-                const aiTrace = msg.metadata?.ai_trace || null;
-
                 return {
                     ...msg,
+                    is_from_me: isBot,
                     metadata: msg.metadata || {},
-                    ai_trace: aiTrace
+                    ai_trace: msg.metadata?.ai_trace || null,
+                    has_reasoning: !!msg.has_reasoning
                 } as Message;
             });
             
@@ -117,7 +137,7 @@ export default function InboxPage() {
         enabled: !!activeConv,
     });
 
-    const activeConvData = conversations.find(c => c.composite_chat_id === activeConv);
+    const activeConvData = (conversations as Conversation[]).find(c => c.composite_chat_id === activeConv);
 
     // Real-time listener for new messages
     useEffect(() => {
@@ -142,7 +162,7 @@ export default function InboxPage() {
     useEffect(() => {
         if (messages.length > 0) {
             const lastMsg = messages[messages.length - 1];
-            if (lastMsg.is_from_me === "true") {
+            if (lastMsg.is_from_me) {
                 setLiveTraces([]);
             }
         }
@@ -225,8 +245,10 @@ export default function InboxPage() {
                 message_id: `temp-${Date.now()}`,
                 contact_jid: conv.contact_jid,
                 contact_push_name: "Me",
-                is_from_me: "true",
+                is_from_me: true,
                 content: { conversation: text },
+                content_text: text,
+                has_reasoning: false,
                 sent_at: Math.floor(Date.now() / 1000),
                 delivery_status: "pending",
                 instance_name: conv.instance_name,
@@ -303,6 +325,37 @@ export default function InboxPage() {
         onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
     });
 
+    const assigneeMutation = useMutation({
+        mutationFn: async ({ conv, newAssigneeId }: { conv: Conversation, newAssigneeId: string | null }) => {
+            const targetId = newAssigneeId === "current_user" ? currentUserId : newAssigneeId;
+            const { error } = await supabase
+                .from("Chat")
+                .update({ 
+                    assignee_id: targetId,
+                    assigned_at: targetId ? new Date().toISOString() : null
+                })
+                .eq("id", conv.composite_chat_id);
+            if (error) throw error;
+            if (targetId) await botToggleMutation.mutateAsync({ conv, newStatus: false });
+        },
+        onMutate: async ({ conv, newAssigneeId }) => {
+            await queryClient.cancelQueries({ queryKey: ["conversations"] });
+            const previousConvs = queryClient.getQueryData<Conversation[]>(["conversations"]);
+            const targetId = newAssigneeId === "current_user" ? currentUserId : newAssigneeId;
+            queryClient.setQueryData(["conversations"], (old: Conversation[] = []) => 
+                old.map(c => c.composite_chat_id === conv.composite_chat_id ? { 
+                    ...c, assignee_id: targetId, bot_active: targetId ? false : c.bot_active 
+                } : c)
+            );
+            return { previousConvs };
+        },
+        onError: (err, variables, context) => {
+            queryClient.setQueryData(["conversations"], context?.previousConvs);
+            toast.error(t("assignment_failed") || "Failed to update assignment");
+        },
+        onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
+    });
+
     const handleSendMessage = (e: React.FormEvent) => {
         e.preventDefault();
         if (!newMsg.trim() || !activeConvData) return;
@@ -363,10 +416,49 @@ export default function InboxPage() {
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border mt-2">
-                        <button onClick={() => setFilter("open")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "open" ? "bg-blue-500 text-foreground" : "text-muted-foreground")}>{t("status_new")}</button>
-                        <button onClick={() => setFilter("pending")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "pending" ? "bg-amber-500 text-foreground" : "text-muted-foreground")}>{t("status_pending")}</button>
-                        <button onClick={() => setFilter("resolved")} className={cn("flex-1 text-[9px] font-black uppercase tracking-tighter py-2 rounded-lg transition-all", filter === "resolved" ? "bg-emerald-500 text-foreground" : "text-muted-foreground")}>{t("status_resolved")}</button>
+                    <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border mt-2 overflow-x-auto no-scrollbar">
+                        <button 
+                            onClick={() => setFilter("open")}
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
+                                filter === "open" 
+                                    ? "bg-accent-primary text-white shadow-[0_8px_20px_-6px_rgba(168,85,247,0.5)] scale-[1.02]" 
+                                    : "bg-surface/50 text-dim-foreground hover:bg-surface border border-transparent hover:border-glass-border"
+                            )}
+                        >
+                            <Sparkles className="w-3 h-3" />
+                            {t("status_new")}
+                        </button>
+                        <button 
+                            onClick={() => setFilter("pending")} 
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filter === "pending" ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20" : "bg-surface/50 text-muted-foreground hover:bg-surface border border-transparent"
+                            )}
+                        >
+                            <Clock className="w-3 h-3" />
+                            {t("status_pending")}
+                        </button>
+                        <button 
+                            onClick={() => setFilter("resolved")} 
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filter === "resolved" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-surface/50 text-muted-foreground hover:bg-surface border border-transparent"
+                            )}
+                        >
+                            <CheckCheck className="w-3 h-3" />
+                            {t("status_resolved")}
+                        </button>
+                        <button 
+                            onClick={() => setFilter("blocked")} 
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                filter === "blocked" ? "bg-red-500 text-white shadow-lg shadow-red-500/20" : "bg-surface/50 text-muted-foreground hover:bg-surface border border-transparent"
+                            )}
+                        >
+                            <Info className="w-3 h-3" />
+                            {t("status_blocked") || "Blocked"}
+                        </button>
                     </div>
                 </div>
 
@@ -422,30 +514,46 @@ export default function InboxPage() {
                                                     <User className="w-2 h-2" /> MNL
                                                 </span>
                                             )}
-                                            <span className="truncate">{extractText(conv.last_message)}</span>
+                                            <span className="truncate">{conv.last_message_preview || t("no_messages") || "Chat started"}</span>
                                         </p>
                                         <div className="flex items-center justify-between mt-2">
                                             {conv.status && (
                                                 <div className={cn(
                                                     "inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border",
-                                                    conv.status === 'new' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
+                                                    conv.status === 'open' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
                                                     conv.status === 'pending' ? "bg-amber-500/10 text-amber-400 border-amber-500/20" :
+                                                    conv.status === 'blocked' ? "bg-red-500/10 text-red-500 border-red-500/20" :
                                                     "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                                 )}>
                                                     {t(`status_${conv.status}`)}
                                                 </div>
                                             )}
                                             
-                                            <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    botToggleMutation.mutate({ conv, newStatus: conv.bot_active === false });
-                                                }}
-                                                className="opacity-0 group-hover:opacity-100 p-1.5 bg-surface hover:bg-foreground/10 rounded-lg border border-border transition-all"
-                                                title={conv.bot_active !== false ? "Switch to Manual" : "Switch to AI"}
-                                            >
-                                                {conv.bot_active !== false ? <User className="w-3 h-3 text-cyan-400" /> : <Bot className="w-3 h-3 text-purple-400" />}
-                                            </button>
+                                            {conv.assignee_id && (
+                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-foreground/5 rounded-md border border-border">
+                                                    <div className="w-3 h-3 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[6px] font-black uppercase text-white overflow-hidden">
+                                                        {conv.assignee_avatar ? (
+                                                            <img src={conv.assignee_avatar} alt="Agent" className="w-full h-full object-cover" />
+                                                        ) : (conv.assignee_name || "?").charAt(0)}
+                                                    </div>
+                                                    <span className="text-[8px] font-bold text-muted-foreground truncate max-w-[60px]">
+                                                        {conv.assignee_name || "Agent"}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        botToggleMutation.mutate({ conv, newStatus: conv.bot_active === false });
+                                                    }}
+                                                    className="p-1.5 bg-surface hover:bg-foreground/10 rounded-lg border border-border transition-all"
+                                                    title={conv.bot_active !== false ? "Switch to Manual" : "Switch to AI"}
+                                                >
+                                                    {conv.bot_active !== false ? <User className="w-3 h-3 text-cyan-400" /> : <Bot className="w-3 h-3 text-purple-400" />}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -484,14 +592,33 @@ export default function InboxPage() {
                                 
                                 <div className="flex items-center gap-2 mr-4 border-r border-border pr-6">
                                     <select 
-                                        value={activeConvData?.status || 'new'}
+                                        value={activeConvData?.status || 'open'}
                                         onChange={(e) => statusMutation.mutate({ conv: activeConvData!, status: e.target.value })}
                                         className="bg-surface border border-border rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-300 outline-none focus:ring-1 focus:ring-purple-500/50 transition-all cursor-pointer"
                                     >
-                                        <option value="new" className="bg-background">{t("status_new")}</option>
+                                        <option value="open" className="bg-background">{t("status_new")}</option>
                                         <option value="pending" className="bg-background">{t("status_pending")}</option>
                                         <option value="resolved" className="bg-background">{t("status_resolved")}</option>
+                                        <option value="blocked" className="bg-background">{t("status_blocked") || "Blocked"}</option>
                                     </select>
+                                </div>
+
+                                <div className="hidden lg:flex items-center gap-2 mr-4 border-r border-border pr-6">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-9 px-4 rounded-xl gap-2 font-black text-[9px] uppercase tracking-widest transition-all"
+                                        onClick={() => {
+                                            const isMe = activeConvData?.assignee_id === "me"; // Hook will use session identity
+                                            assigneeMutation.mutate({ 
+                                                conv: activeConvData!, 
+                                                newAssigneeId: activeConvData?.assignee_id ? null : "current_user" 
+                                            });
+                                        }}
+                                    >
+                                        {activeConvData?.assignee_id ? <User className="w-3 h-3 text-cyan-400" /> : <Brain className="w-3 h-3 text-purple-400" />}
+                                        {activeConvData?.assignee_id ? t("release_chat") || "Release Chat" : t("take_over") || "Take Over Chat"}
+                                    </Button>
                                 </div>
 
                                 <Button 
@@ -514,9 +641,9 @@ export default function InboxPage() {
                         <div className="flex-1 overflow-y-auto p-10 space-y-6 custom-scrollbar scroll-smooth">
                             <AnimatePresence initial={false}>
                                 {messages.map((msg, idx) => {
-                                    const fromMe = msg.is_from_me === "true";
+                                    const fromMe = msg.is_from_me;
                                     const isLast = idx === messages.length - 1;
-                                    const hasTrace = !!msg.ai_trace;
+                                    const hasTrace = msg.has_reasoning || !!msg.ai_trace || (msg.metadata && (msg.metadata as any).reasoning);
 
                                     return (
                                         <div key={msg.message_id} className="space-y-4">
@@ -549,7 +676,7 @@ export default function InboxPage() {
                                                                 <Brain className="w-3 h-3 text-purple-400" />
                                                             </button>
                                                         )}
-                                                        <p className="text-[15px] leading-relaxed font-medium whitespace-pre-wrap">{extractText(msg.content)}</p>
+                                                        <p className="text-[15px] leading-relaxed font-medium whitespace-pre-wrap">{msg.content_text || extractText(msg.content)}</p>
                                                         <div className={cn(
                                                             "mt-2 flex items-center gap-1.5 opacity-40",
                                                             fromMe ? "justify-end" : "justify-start"
@@ -566,15 +693,26 @@ export default function InboxPage() {
                                             </motion.div>
                                             
                                             <AnimatePresence>
-                                                {selectedTraceMsg === msg.message_id && msg.ai_trace && (
+                                                {selectedTraceMsg === msg.message_id && hasTrace && (
                                                     <motion.div
                                                         initial={{ opacity: 0, height: 0 }}
                                                         animate={{ opacity: 1, height: "auto" }}
                                                         exit={{ opacity: 0, height: 0 }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="max-w-[85%] mx-auto">
-                                                            <AIReasoningTrace steps={msg.ai_trace} />
+                                                        <div className="max-w-[85%] mx-auto py-4">
+                                                            <AIReasoningTrace steps={
+                                                                msg.ai_trace || (
+                                                                    Array.isArray((msg.metadata as any)?.reasoning) 
+                                                                        ? (msg.metadata as any).reasoning 
+                                                                        : [(msg.metadata as any)?.reasoning].filter(Boolean).map(r => ({
+                                                                            id: `r-${msg.message_id}`,
+                                                                            type: 'reasoning',
+                                                                            content: typeof r === 'string' ? r : JSON.stringify(r),
+                                                                            timestamp: new Date(msg.sent_at * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                                                                        }))
+                                                                )
+                                                            } />
                                                         </div>
                                                     </motion.div>
                                                 )}

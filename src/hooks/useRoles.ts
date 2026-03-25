@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase-browser";
 
 interface UserRoles {
+  id: string;
   global: string;
   tenant: string;
 }
@@ -17,6 +18,7 @@ export const useRoles = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUserRoles({
+            id: user.id,
             global: user.app_metadata?.global_role || "user",
             tenant: user.app_metadata?.tenant_role || "agent",
           });

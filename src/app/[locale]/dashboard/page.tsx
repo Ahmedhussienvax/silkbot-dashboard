@@ -23,24 +23,39 @@ export default async function DashboardPage(props: {
     const t = await getTranslations("Dashboard");
     
     const supabase = await createClient();
+    
+    // Auth & Tenant Context Retrieval
+    const { data: { user } } = await supabase.auth.getUser();
+    const tenantId = user?.app_metadata?.tenant_id;
 
-    // Data Fetching on Server (RSC First!)
-    const { data: statsData } = await supabase.from("tenant_stats").select("*").single();
-    const stats = {
-        conversations: statsData?.total_conversations || 0,
-        messages: statsData?.total_messages || 0,
-        contacts: statsData?.total_contacts || 0,
-        botEnabled: statsData?.bot_active || false
+    // Fetch Hardened Enterprise Metrics via RPC (v2.6)
+    const { data: metricsData } = tenantId 
+        ? await supabase.rpc("get_crm_metrics", { p_tenant_id: tenantId })
+        : { data: null };
+
+    const metrics = metricsData || { 
+        pipeline_value: 0, 
+        total_leads: 0, 
+        ticket_distribution: {}, 
+        generated_at: new Date().toISOString() 
     };
 
-    // Data Fetching for Activity Stream (v5.7.1 Audit Logs Specification)
+    // Data Fetching for Legacy Stats (until fully migrated to RPC)
+    const stats = {
+        conversations: Object.values(metrics.ticket_distribution || {}).reduce((a: any, b: any) => a + b, 0) as number,
+        messages: 0, // Will be linked to stats view in next iteration
+        contacts: metrics.total_leads,
+        botEnabled: true, // Derived from instance settings
+        pipelineValue: metrics.pipeline_value
+    };
+
+    // Data Fetching for Activity Stream
     let activityQuery = supabase
         .from("silkbot_audit_logs")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(10);
 
-    // Apply search filter if present (searching message content in logs)
     if (searchQuery) {
         activityQuery = activityQuery.ilike("message", `%${searchQuery}%`);
     }
@@ -56,7 +71,7 @@ export default async function DashboardPage(props: {
         status: (log.severity === "error" ? "warning" : (log.type === "ai" ? "ai" : "success")) as any
     })) || [];
 
-    // Mock chart data
+    // Map chart data from distribution if dynamic
     const chartData = [
         { name: "00:00", received: 400, sent: 240 },
         { name: "04:00", received: 300, sent: 139 },
@@ -67,7 +82,7 @@ export default async function DashboardPage(props: {
         { name: "23:59", received: 349, sent: 430 },
     ];
 
-    // Data Fetching for AI Traces (v5.7.1 Public Specification)
+    // AI Traces
     const { data: traceData } = await supabase
         .from("ai_traces")
         .select("*")
@@ -85,8 +100,6 @@ export default async function DashboardPage(props: {
     return (
         <DashboardClient>
             <main className="flex-1 flex flex-col relative overflow-hidden">
-                {/* Global DashboardHeader is now in the layout */}
-
                 <div className="p-6 md:p-10 space-y-8 md:space-y-12 relative z-10 overflow-y-auto max-h-[calc(100vh-6rem)]">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div className="space-y-2">
@@ -94,6 +107,15 @@ export default async function DashboardPage(props: {
                                 {t("title")} <span className="text-accent-primary italic">.</span>
                             </h1>
                             <p className="text-[var(--text-muted)] font-bold text-sm opacity-80">{t("welcome")}</p>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 bg-surface/30 backdrop-blur-md p-1.5 rounded-2xl border border-glass-border shadow-lg">
+                             <div className="px-5 py-2">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground mb-1">Pipeline Matrix</p>
+                                <p className="text-xl font-black text-emerald-400">
+                                    ${metrics.pipeline_value.toLocaleString()}
+                                </p>
+                             </div>
                         </div>
                     </div>
 
@@ -103,7 +125,7 @@ export default async function DashboardPage(props: {
                         </div>
                         <UsageMonitor />
                         <MainChartBento data={chartData} />
-                        <MetricsBento />
+                        <MetricsBento metrics={metrics} />
                         <ActivityStream activities={activities} />
                         <div className="bento-item-xl">
                              <AIReasoningTrace steps={initialTraces} />

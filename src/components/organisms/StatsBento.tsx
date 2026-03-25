@@ -14,6 +14,7 @@ interface Stats {
     messages: number;
     contacts: number;
     botEnabled: boolean;
+    pipelineValue?: number;
 }
 
 interface StatsBentoProps {
@@ -57,13 +58,13 @@ export default function StatsBento({ stats, onCardClick }: StatsBentoProps) {
             desc: t("conversations_desc")
         },
         {
-            id: "messages",
-            label: t("messages"),
-            value: stats.messages,
-            icon: <Send className="w-6 h-6" />,
-            color: "from-blue-600/80 to-indigo-500/80",
-            trend: "+8.2%",
-            desc: t("messages_desc")
+            id: "pipeline",
+            label: "Pipeline Matrix",
+            value: stats.pipelineValue ? `$${stats.pipelineValue.toLocaleString()}` : "$0",
+            icon: <TrendingUp className="w-6 h-6" />,
+            color: "from-emerald-600 to-teal-400",
+            trend: "+15.2%",
+            desc: "Estimated Total Lead Value"
         },
         {
             id: "contacts",

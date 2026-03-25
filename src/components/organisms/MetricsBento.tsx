@@ -7,15 +7,35 @@ import { Cpu, Zap, Activity } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { premiumEntrance, hoverLift, staggerContainer, staggerItem } from "@/lib/motion";
 
-interface MetricsBentoProps {}
+interface MetricsBentoProps {
+    metrics?: {
+        pipeline_value: number;
+        total_leads: number;
+        unassigned_chats: number;
+        ticket_distribution: Record<string, number>;
+        generated_at: string;
+    };
+}
 
-export default function MetricsBento({}: MetricsBentoProps) {
+export default function MetricsBento({ metrics }: MetricsBentoProps) {
     const t = useTranslations("Dashboard");
-    const data = [
-        { name: t("processing"), value: 65, color: "hsl(var(--accent-primary))" },
-        { name: t("idle"), value: 25, color: "hsla(var(--foreground-hsl), 0.05)" },
-        { name: t("queued"), value: 10, color: "hsla(var(--accent-secondary-hsl), 0.4)" },
-    ];
+    
+    // Fallback to static distribution if no data available
+    const distribution = metrics?.ticket_distribution || { open: 1, closed: 0 };
+    const unassignedCount = metrics?.unassigned_chats || 0;
+    
+    // Map distribution to Recharts format
+    const data = Object.entries(distribution).map(([name, value]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        value: value,
+        color: name === 'open' 
+            ? "hsl(var(--accent-primary))" 
+            : (name === 'closed' ? "hsla(var(--foreground-hsl), 0.4)" : "hsla(var(--accent-secondary-hsl), 0.6)")
+    }));
+
+    if (data.length === 0) {
+        data.push({ name: t("idle"), value: 1, color: "hsla(var(--foreground-hsl), 0.05)" });
+    }
 
     const containerVariants = {
         ...premiumEntrance,
@@ -32,13 +52,24 @@ export default function MetricsBento({}: MetricsBentoProps) {
             className="bento-item-l glass-card p-8 flex flex-col justify-between group/metrics overflow-hidden relative"
         >
             {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-secondary/5 blur-3xl rounded-full" />
+            <div className={`absolute top-0 right-0 w-32 h-32 ${unassignedCount > 0 ? 'bg-red-500/5' : 'bg-accent-secondary/5'} blur-3xl rounded-full`} />
             
             <div className="flex items-center justify-between mb-8 relative z-10">
                 <div>
-                    <h3 className="text-foreground font-black text-xl tracking-tight leading-none mb-2">
-                        {t("neural_load")}
-                    </h3>
+                    <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-foreground font-black text-xl tracking-tight leading-none">
+                            Ticket <span className="text-accent-primary uppercase italic">Matrix</span>
+                        </h3>
+                        {unassignedCount > 0 && (
+                            <motion.span 
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full italic animate-pulse"
+                            >
+                                {unassignedCount} Urgent
+                            </motion.span>
+                        )}
+                    </div>
                     <p className="text-dim-foreground text-[9px] font-black uppercase tracking-widest italic opacity-80">
                         {t("resource_utilization")}
                     </p>
@@ -48,7 +79,7 @@ export default function MetricsBento({}: MetricsBentoProps) {
                     whileHover={{ scale: 1.1, rotate: -8 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                    <Cpu className="w-5 h-5 text-accent-primary" />
+                    <Activity className="w-5 h-5 text-accent-primary" />
                 </motion.div>
             </div>
 
@@ -87,8 +118,10 @@ export default function MetricsBento({}: MetricsBentoProps) {
                 
                 {/* Center Text */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-black text-foreground leading-none tracking-tighter drop-shadow-sm">84%</span>
-                    <span className="text-[8px] text-dim-foreground font-black uppercase tracking-widest mt-1 italic">{t("efficiency")}</span>
+                    <span className="text-2xl font-black text-foreground leading-none tracking-tighter drop-shadow-sm">
+                        {Object.values(distribution).reduce((a, b) => a + b, 0)}
+                    </span>
+                    <span className="text-[8px] text-dim-foreground font-black uppercase tracking-widest mt-1 italic">Total</span>
                 </div>
             </div>
 
@@ -99,18 +132,18 @@ export default function MetricsBento({}: MetricsBentoProps) {
                 animate="animate"
             >
                 <motion.div className="space-y-1" variants={staggerItem}>
-                    <div className="flex items-center gap-2 text-accent-secondary">
-                        <Zap className="w-3 h-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest leading-none italic">{t("active_nodes")}</span>
+                    <div className="flex items-center gap-2 text-accent-primary">
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest leading-none italic">Open</span>
                     </div>
-                    <p className="text-lg font-black text-foreground tabular-nums tracking-tighter">12,482</p>
+                    <p className="text-lg font-black text-foreground tabular-nums tracking-tighter">{distribution.open || 0}</p>
                 </motion.div>
                 <motion.div className="space-y-1" variants={staggerItem}>
                     <div className="flex items-center gap-2 text-muted-foreground">
-                        <Activity className="w-3 h-3" />
-                        <span className="text-[10px] font-black uppercase tracking-widest leading-none italic">{t("latency")}</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
+                        <span className="text-[10px] font-black uppercase tracking-widest leading-none italic">Closed</span>
                     </div>
-                    <p className="text-lg font-black text-foreground tabular-nums tracking-tighter">18ms</p>
+                    <p className="text-lg font-black text-foreground tabular-nums tracking-tighter">{distribution.closed || 0}</p>
                 </motion.div>
             </motion.div>
 
@@ -118,14 +151,16 @@ export default function MetricsBento({}: MetricsBentoProps) {
             <div className="mt-8">
                 <div className="flex justify-between items-end mb-2">
                     <span className="text-[9px] font-black text-dim-foreground uppercase tracking-widest italic">{t("system_health")}</span>
-                    <span className="text-[10px] font-black text-accent-secondary uppercase italic">{t("premium")}</span>
+                    <span className="text-[10px] font-black text-accent-secondary uppercase italic">
+                        {unassignedCount > 0 ? "Debt Pending" : "Operational"}
+                    </span>
                 </div>
                 <div className="h-1.5 w-full bg-surface rounded-full overflow-hidden border border-glass-border">
                     <motion.div 
                         initial={{ width: 0 }}
-                        animate={{ width: "94%" }}
+                        animate={{ width: "100%" }}
                         transition={{ duration: 1.5, ease: "circOut" }}
-                        className="h-full bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary bg-[length:200%_auto] animate-shimmer rounded-full"
+                        className="h-full bg-gradient-to-r from-emerald-500 via-accent-primary to-emerald-500 bg-[length:200%_auto] animate-shimmer rounded-full"
                     />
                 </div>
             </div>

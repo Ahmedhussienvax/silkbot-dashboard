@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase-browser";
 import { useEffect, useState } from "react";
 
 interface NavigationSidebarProps {}
+type RoleType = 'owner' | 'manager' | 'analyst' | 'agent';
 
 export default function NavigationSidebar({}: NavigationSidebarProps) {
     const t = useTranslations("Sidebar");
@@ -26,7 +27,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
     const router = useRouter();
     const locale = useLocale();
     const supabase = createClient();
-    const [userRoles, setUserRoles] = useState<{ global: string; tenant: string }>({ global: 'user', tenant: 'agent' });
+    const [userRoles, setUserRoles] = useState<{ global: string; tenant: RoleType }>({ global: 'user', tenant: 'agent' });
 
     useEffect(() => {
         const getRoles = async () => {
@@ -57,6 +58,7 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
 
     const isGlobalAdmin = userRoles?.global === 'superadmin' || userRoles?.global === 'systemadmin';
     const isTenantAuthorized = userRoles?.tenant === 'owner' || userRoles?.tenant === 'manager';
+    const isAnalyst = userRoles?.tenant === 'analyst';
 
     // Filter items based on RBAC (Skill 17)
     const filteredNavItems = navItems.filter(item => {
@@ -65,6 +67,10 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
         }
         if (item.id === 'health') {
             return isGlobalAdmin;
+        }
+        // Analyst can see dashboard and potentially some read-only parts
+        if (item.id === 'dashboard') {
+            return true; // Everyone sees dashboard
         }
         return true;
     });

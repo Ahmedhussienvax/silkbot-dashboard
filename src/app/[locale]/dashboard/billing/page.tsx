@@ -211,7 +211,7 @@ export default function BillingPage() {
               </h2>
             </div>
             <p className="text-dim-foreground text-[11px] font-bold uppercase tracking-widest pl-11">
-              {tenant?.name || "Tenant"} // Billing Cycle
+              {tenant?.name || "Tenant"}
             </p>
           </div>
 
@@ -290,9 +290,8 @@ export default function BillingPage() {
           </motion.div>
         )}
       </motion.section>
-
-      {/* Bottom Grid: Billing Details + Upgrade CTA */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Bottom Grid: Billing Details + History + Capability */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
         {/* Billing Cycle Details */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -371,8 +370,6 @@ export default function BillingPage() {
           </div>
         </motion.div>
 
-      {/* Billing History & Governance (Skill 8) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
         {/* Billing History */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -415,12 +412,12 @@ export default function BillingPage() {
           </div>
         </motion.div>
 
-        {/* Feature Matrix */}
+        {/* Feature Matrix / Capability */}
         <motion.div
            initial={{ opacity: 0, scale: 0.95 }}
            whileInView={{ opacity: 1, scale: 1 }}
            viewport={{ once: true }}
-          className="bg-surface border border-glass-border rounded-[3rem] p-10 backdrop-blur-3xl shadow-3xl space-y-8 relative overflow-hidden"
+          className="bg-surface border border-glass-border rounded-[3rem] p-10 backdrop-blur-3xl shadow-3xl space-y-8 relative overflow-hidden lg:col-span-2"
         >
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500/5 blur-[120px] -z-10 pointer-events-none" />
           
@@ -434,7 +431,7 @@ export default function BillingPage() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
              <div className="flex items-center justify-between p-6 bg-surface-hover rounded-[2rem] border border-glass-border shadow-inner">
                 <div>
                   <h4 className="text-[11px] font-black uppercase text-foreground">Worker Efficiency</h4>
@@ -493,7 +490,6 @@ export default function BillingPage() {
           <p className="text-[9px] font-black text-dim-foreground uppercase tracking-[0.3em] opacity-40">Changes propagate globally across all worker nodes instantly</p>
         </motion.div>
       )}
-      </div>
     </div>
   );
 }
