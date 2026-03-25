@@ -12,6 +12,7 @@ import {
     LayoutDashboard, MessageSquare, Loader2, Key
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { RoleGuard } from "@/components/atoms/RoleGuard";
 import { cn } from "@/lib/utils";
 
 interface Tenant {
@@ -176,7 +177,7 @@ export default function SettingsPage() {
             
             if (tError) throw tError;
 
-            toast.success(t("success"), { description: bt("success_description") });
+            toast.success(t("success"), { description: t("success_description") });
         } catch (err: any) {
             toast.error(err.message || t("error_save"));
         } finally {
@@ -239,28 +240,30 @@ export default function SettingsPage() {
                         loading={saving}
                         className="h-16 px-16 rounded-3xl shadow-[0_25px_50px_rgba(var(--accent-primary-rgb),0.2)] font-black uppercase tracking-[0.4em] italic text-[13px] hover:scale-[1.03] transition-all active:scale-95 group relative overflow-hidden"
                     >
-                        <AnimatePresence>
-                            {saving ? (
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="flex items-center gap-3"
-                                >
-                                    <RefreshCcw className="w-5 h-5 animate-spin" />
-                                    {t("syncing_nexus")}
-                                </motion.div>
-                            ) : (
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="flex items-center gap-3"
-                                >
-                                    <Zap className="w-5 h-5 group-hover:animate-bounce" />
-                                    {t("commit_architecture")}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        <RoleGuard allowedTenantRoles={["owner", "manager"]} allowedGlobalRoles={["superadmin"]} fallback={<span className="opacity-50 line-through">LOCKED</span>}>
+                            <AnimatePresence>
+                                {saving ? (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <RefreshCcw className="w-5 h-5 animate-spin" />
+                                        {t("syncing_nexus")}
+                                    </motion.div>
+                                ) : (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <Zap className="w-5 h-5 group-hover:animate-bounce" />
+                                        {t("commit_architecture")}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </RoleGuard>
                     </Button>
                 </div>
             </header>
