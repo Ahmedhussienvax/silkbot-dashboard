@@ -13,14 +13,13 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Prioritized Discovery Logic (Internal Bridge -> Public FQDN)
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+// 1. URL Discovery: Use public URL as primary if internal networking is unstable in middleware context
+  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const internalUrl = process.env.SUPABASE_URL;
+  const supabaseUrl = internalUrl || publicUrl; 
   const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Fail-Fast: Ensure security context is valid before proceeding
   if (!supabaseUrl || !supabaseKey) {
-    console.error("❌ [Middleware Alert] Missing environment variables for session update.");
-    // We don't throw here to avoid crashing the edge, but return normal response
     return response;
   }
 
@@ -49,33 +48,44 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Performance Note: Using internal-bridge path reduces Latency < 10ms for getUser()
-  const { data: { user } } = await supabase.auth.getUser();
+  // Use a try-catch to prevent network transients from triggering hard logout loops
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user;
+  } catch (err) {
+    console.error("⚠️ [Middleware] Auth verification failing. Session might be stale or unreachable.");
+  }
 
-  // RBAC Routing Control (Skill 17: Enterprise Security)
   const pathname = request.nextUrl.pathname;
-  // Localized path cleaning for checks
   const cleanPath = pathname.replace(/^\/(en|ar)/, '');
   const locale = pathname.split('/')[1] === 'ar' ? 'ar' : 'en';
+
+  // 1. PUBLIC ROUTES ALLOWLIST (Prevents Issue 1: Intro Redirect)
+  const isPublicRoute = cleanPath === '' || cleanPath === '/' || cleanPath === '/login' || cleanPath === '/register';
 
   if (user) {
     const globalRole = user.app_metadata?.global_role;
     const tenantRole = user.app_metadata?.tenant_role;
 
-    // 1. DaaS Hardening: Only Superadmins can access audiences and super-broadcasts
+    // 1. RBAC Modules: Audiences/Super-broadcasts restricted to Superadmins
     const isGlobalModule = cleanPath.startsWith('/dashboard/audiences') || cleanPath.startsWith('/dashboard/super-broadcasts');
     if (isGlobalModule && globalRole !== 'superadmin') {
       return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
     }
 
-    // 2. Billing & Team Protection: Agents are locked out of sensitive operations
+    // 2. Tenancy Guard: Agents locked out of Billing/Team
     const isSensitiveModule = cleanPath.startsWith('/dashboard/billing') || cleanPath.startsWith('/dashboard/team');
     if (isSensitiveModule && tenantRole === 'agent') {
         return NextResponse.redirect(new URL(`/${locale}/dashboard/messages`, request.url));
     }
-  } else if (cleanPath.startsWith('/dashboard')) {
-      // Unauthenticated user trying to access dashboard -> redirect to login
-      // Force absolute path to prevent '/login/dashboard' hybrid concatenation (SDPN-Protocol)
+
+    // 3. Prevent logged-in users from hitting login page (optional but good for loops)
+    if (cleanPath === '/login' || cleanPath === '/register') {
+      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+    }
+  } else if (cleanPath.startsWith('/dashboard') && !isPublicRoute) {
+      // 2. Auth Guard: Strictly for dashboard protected routes
       return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
   }
 
