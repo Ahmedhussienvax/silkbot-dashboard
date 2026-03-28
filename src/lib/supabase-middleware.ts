@@ -2,9 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 /**
- * 🛰️ SilkBot Middleware Engine (M-01)
- * This middleware manages session refreshes and RBAC-based redirects.
- * It is optimized for high-performance internal network discovery.
+ * 🛰️ SilkBot Middleware Engine (M-05 Resilience Version)
+ * Optimized for high-performance internal network discovery & RBAC guarding.
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
@@ -13,9 +12,9 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // 1. URL Discovery: Use public URL as primary in middleware context for cookie domain consistency
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL; 
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+  // 1. Dual-Network Resilience: Prioritize internal networking for Docker speed
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL; 
+  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return response;
@@ -43,23 +42,37 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+      auth: {
+        persistSession: false,
+        detectSessionInUrl: false,
+      }
     }
   );
 
-  // Use a try-catch to prevent network transients from triggering hard logout loops
+  // 2. Diagnostics: Handling the "fetch failed" loop gracefully
   let user = null;
+  let hasNetworkIssue = false;
+
   try {
-    const { data } = await supabase.auth.getUser();
-    user = data?.user;
-  } catch (err) {
-    console.error("⚠️ [Middleware] Auth verification failing. Proceeding as guest.");
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+       if (error.message.toLowerCase().includes('fetch')) {
+          console.error(`🚨 [Middleware Networking] Fetch failed to reach Supabase at: ${supabaseUrl}`);
+          hasNetworkIssue = true;
+       }
+    } else {
+       user = data?.user;
+    }
+  } catch (err: any) {
+    console.error(`💥 [Critical Connectivity Failure] Middleware unable to authenticate: ${err.message}`);
+    hasNetworkIssue = true;
   }
 
   const pathname = request.nextUrl.pathname;
   const locale = pathname.split('/')[1] === 'ar' ? 'ar' : 'en';
   const cleanPath = pathname.replace(/^\/(en|ar)/, '') || '/';
 
-  // Helper to create redirects that PRESERVE cookies (Fix for S-03 Loop)
+  // Helper to create redirects that PRESERVE refreshed cookies accurately
   const createRedirect = (url: string) => {
     const redirectResponse = NextResponse.redirect(new URL(url, request.url));
     response.cookies.getAll().forEach((cookie) => {
@@ -68,7 +81,13 @@ export async function updateSession(request: NextRequest) {
     return redirectResponse;
   };
 
-  // 1. PUBLIC ROUTES ALLOWLIST (Skill 14 Resilience)
+  // 3. Loop Breaker (S-03 & M-05): If networking fails, allow access to prevent redirect logs
+  if (hasNetworkIssue) {
+    console.warn("⚠️ [Auth Guard] Proceeding as guest due to server-side connectivity issues.");
+    return response;
+  }
+
+  // 4. Public Routes Allowlist
   const isPublicRoute = cleanPath === '/' || cleanPath === '/login' || cleanPath === '/register' || cleanPath === '/dashboard/intro';
 
   if (user) {
