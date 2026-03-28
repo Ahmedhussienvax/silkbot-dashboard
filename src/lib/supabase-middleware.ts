@@ -15,6 +15,7 @@ export async function updateSession(request: NextRequest) {
   // 1. Dual-Network Resilience: Prioritize internal networking for Docker speed
   const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL; 
   const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const publicFQDN = "supabase.150.136.71.17.sslip.io"; // المنتظر من الـ Gateway
 
   if (!supabaseUrl || !supabaseKey) {
     return response;
@@ -24,6 +25,11 @@ export async function updateSession(request: NextRequest) {
     supabaseUrl,
     supabaseKey,
     {
+      global: {
+        headers: {
+          'Host': publicFQDN, // أهم سطر لإصلاح مشكلة الـ Gateway
+        },
+      },
       cookies: {
         getAll() {
           return request.cookies.getAll();
