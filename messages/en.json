@@ -9,7 +9,7 @@
   },
   "Landing": {
     "title": "SilkBot",
-    "subtitle": "The next-generation {span_start}WhatsApp AI{span_end} platform.",
+    "subtitle": "The next-generation <primary>WhatsApp AI</primary> platform.",
     "desc": "Built for speed, automation, and premium customer experiences.",
     "btn_dashboard": "Access Dashboard",
     "btn_demo": "View Demo 🎥",

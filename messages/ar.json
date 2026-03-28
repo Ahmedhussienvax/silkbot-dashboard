@@ -9,7 +9,7 @@
   },
   "Landing": {
     "title": "SilkBot",
-    "subtitle": "الجيل القادم من منصات {span_start}ذكاء الواتساب{span_end}",
+    "subtitle": "الجيل القادم من منصات <primary>ذكاء الواتساب</primary>",
     "desc": "صُمم للسرعة، الأتمتة، وتجربة عملاء فاخرة.",
     "btn_dashboard": "دخول لوحة التحكم",
     "btn_demo": "مشاهدة العرض 🎥",
