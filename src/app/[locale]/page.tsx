@@ -81,9 +81,7 @@ export default function Home() {
                     transition={{ delay: 0.2 }}
                 >
                     <p className="text-xl md:text-3xl text-foreground mb-12 max-w-3xl mx-auto leading-tight font-black uppercase tracking-tighter italic">
-                        {t.rich("subtitle", {
-                            primary: (chunks) => <span className="text-accent-primary">{chunks}</span>
-                        })}
+                        {t("subtitle")}
                     </p>
                     <p className="text-muted-foreground text-lg mb-12 max-w-2xl mx-auto font-medium tracking-wide">
                         {t("desc")}
