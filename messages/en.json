@@ -9,7 +9,7 @@
   },
   "Landing": {
     "title": "SilkBot",
-    "subtitle": "The next-generation <primary>WhatsApp AI</primary> platform.",
+    "subtitle": "The next-generation WhatsApp AI platform.",
     "desc": "Built for speed, automation, and premium customer experiences.",
     "btn_dashboard": "Access Dashboard",
     "btn_demo": "View Demo 🎥",
@@ -269,7 +269,7 @@
     "network_error_send": "Network Error: Could not send message.",
     "media_received": "📷 Media Received",
     "neural_active": "AI Assistant Active",
-    "quantum_link": "Secure Connection Active • Zero Latency Messaging",
+    "quantum_link": "Secure Connection Active \n Zero Latency Messaging",
     "input_placeholder": "Type your message...",
     "btn_docs": "Explore Documentation",
     "mode_ai": "AI Mode",
