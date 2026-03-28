@@ -13,11 +13,9 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-// 1. URL Discovery: Use public URL as primary if internal networking is unstable in middleware context
-  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const internalUrl = process.env.SUPABASE_URL;
-  const supabaseUrl = internalUrl || publicUrl; 
-  const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // 1. URL Discovery: Use public URL as primary in middleware context for cookie domain consistency
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL; 
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return response;
@@ -54,39 +52,48 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getUser();
     user = data?.user;
   } catch (err) {
-    console.error("⚠️ [Middleware] Auth verification failing. Session might be stale or unreachable.");
+    console.error("⚠️ [Middleware] Auth verification failing. Proceeding as guest.");
   }
 
   const pathname = request.nextUrl.pathname;
-  const cleanPath = pathname.replace(/^\/(en|ar)/, '');
   const locale = pathname.split('/')[1] === 'ar' ? 'ar' : 'en';
+  const cleanPath = pathname.replace(/^\/(en|ar)/, '') || '/';
 
-  // 1. PUBLIC ROUTES ALLOWLIST (Prevents Issue 1: Intro Redirect)
-  const isPublicRoute = cleanPath === '' || cleanPath === '/' || cleanPath === '/login' || cleanPath === '/register';
+  // Helper to create redirects that PRESERVE cookies (Fix for S-03 Loop)
+  const createRedirect = (url: string) => {
+    const redirectResponse = NextResponse.redirect(new URL(url, request.url));
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  };
+
+  // 1. PUBLIC ROUTES ALLOWLIST (Skill 14 Resilience)
+  const isPublicRoute = cleanPath === '/' || cleanPath === '/login' || cleanPath === '/register' || cleanPath === '/dashboard/intro';
 
   if (user) {
     const globalRole = user.app_metadata?.global_role;
     const tenantRole = user.app_metadata?.tenant_role;
 
-    // 1. RBAC Modules: Audiences/Super-broadcasts restricted to Superadmins
+    // RBAC: Restricted modules for Superadmins only
     const isGlobalModule = cleanPath.startsWith('/dashboard/audiences') || cleanPath.startsWith('/dashboard/super-broadcasts');
     if (isGlobalModule && globalRole !== 'superadmin') {
-      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+      return createRedirect(`/${locale}/dashboard`);
     }
 
-    // 2. Tenancy Guard: Agents locked out of Billing/Team
+    // RBAC: Agents restricted from billing/team
     const isSensitiveModule = cleanPath.startsWith('/dashboard/billing') || cleanPath.startsWith('/dashboard/team');
     if (isSensitiveModule && tenantRole === 'agent') {
-        return NextResponse.redirect(new URL(`/${locale}/dashboard/messages`, request.url));
+        return createRedirect(`/${locale}/dashboard/messages`);
     }
 
-    // 3. Prevent logged-in users from hitting login page (optional but good for loops)
+    // Safety: Prevent logged-in users from hitting login page
     if (cleanPath === '/login' || cleanPath === '/register') {
-      return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+      return createRedirect(`/${locale}/dashboard`);
     }
   } else if (cleanPath.startsWith('/dashboard') && !isPublicRoute) {
-      // 2. Auth Guard: Strictly for dashboard protected routes
-      return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
+      // Auth Guard: Force login for protected routes
+      return createRedirect(`/${locale}/login`);
   }
 
   return response;
