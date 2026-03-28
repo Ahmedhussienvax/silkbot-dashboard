@@ -65,7 +65,28 @@ export function useQuota(): UseQuotaReturn {
 
   useEffect(() => {
     loadQuota();
-  }, [loadQuota]);
+
+    // Realtime subscription for usage updates
+    const channel = supabase
+      .channel("public_tenant_quotas_monitor")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "tenant_quotas",
+        },
+        (payload: { new: any }) => {
+          console.log("[useQuota] Realtime Update:", payload.new);
+          setQuota(payload.new as Quota);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadQuota, supabase]);
 
   const usagePercent = useMemo(() => {
     if (!quota || !quota.token_limit) return 0;

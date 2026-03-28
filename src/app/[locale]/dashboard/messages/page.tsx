@@ -30,7 +30,7 @@ import { useRoles } from "@/hooks/useRoles";
 import AIReasoningTrace from "@/components/molecules/AIReasoningTrace";
 
 interface Conversation {
-    composite_chat_id: string;
+    id: string;
     instance_name: string;
     contact_jid: string;
     contact_push_name: string | null;
@@ -55,7 +55,7 @@ interface Message {
     sent_at: number;
     delivery_status: string | null;
     instance_name: string;
-    composite_chat_id: string;
+    id: string;
     isOptimistic?: boolean;
     ai_trace?: any;
     has_reasoning: boolean;
@@ -85,7 +85,7 @@ export default function InboxPage() {
             const { data, error } = await supabase
                 .from("conversations")
                 .select(`
-                    composite_chat_id: id,
+                    id,
                     instance_name,
                     contact_jid,
                     contact_push_name: contact_name,
@@ -99,7 +99,7 @@ export default function InboxPage() {
                     assignee_name,
                     assignee_avatar
                 `)
-                .order("last_message_at", { ascending: false });
+                .order("updated_at", { ascending: false });
             if (error) throw error;
             return (data as unknown as Conversation[]) || [];
         },
@@ -137,7 +137,7 @@ export default function InboxPage() {
         enabled: !!activeConv,
     });
 
-    const activeConvData = (conversations as Conversation[]).find(c => c.composite_chat_id === activeConv);
+    const activeConvData = (conversations as Conversation[]).find(c => c.id === activeConv);
 
     // Real-time listener for new messages
     useEffect(() => {
@@ -183,7 +183,7 @@ export default function InboxPage() {
         if (!activeConvData) return;
 
         const channel = supabase
-            .channel(`live-traces-${activeConvData.composite_chat_id}`)
+            .channel(`live-traces-${activeConvData.id}`)
             .on(
                 "postgres_changes",
                 { 
@@ -238,8 +238,8 @@ export default function InboxPage() {
             return res.json();
         },
         onMutate: async ({ conv, text }) => {
-            await queryClient.cancelQueries({ queryKey: ["messages", conv.composite_chat_id] });
-            const previousMessages = queryClient.getQueryData(["messages", conv.composite_chat_id]);
+            await queryClient.cancelQueries({ queryKey: ["messages", conv.id] });
+            const previousMessages = queryClient.getQueryData<Message[]>(["messages", conv.id]);
 
             const optimisticMsg: Message = {
                 message_id: `temp-${Date.now()}`,
@@ -250,22 +250,34 @@ export default function InboxPage() {
                 content_text: text,
                 has_reasoning: false,
                 sent_at: Math.floor(Date.now() / 1000),
-                delivery_status: "pending",
+                delivery_status: "sending", // Phase 13: Enhanced tracking
                 instance_name: conv.instance_name,
-                composite_chat_id: conv.composite_chat_id,
+                id: conv.id,
                 isOptimistic: true,
             };
 
-            queryClient.setQueryData(["messages", conv.composite_chat_id], (old: Message[] = []) => [...old, optimisticMsg]);
+            queryClient.setQueryData(["messages", conv.id], (old: Message[] = []) => [...(old || []), optimisticMsg]);
             setNewMsg("");
-            return { previousMessages };
+            return { previousMessages, tempId: optimisticMsg.message_id };
         },
         onError: (err: any, variables, context) => {
-            queryClient.setQueryData(["messages", variables.conv.composite_chat_id], context?.previousMessages);
+            // Update the optimistic message to reflect failure
+            queryClient.setQueryData(["messages", variables.conv.id], (old: Message[] = []) => 
+                old.map(m => m.message_id === context?.tempId ? { ...m, delivery_status: 'failed' } : m)
+            );
             toast.error(err.message || t("network_error_send"));
         },
+        onSuccess: (data, variables, context) => {
+            // Mark as sent
+            queryClient.setQueryData(["messages", variables.conv.id], (old: Message[] = []) => 
+                old.map(m => m.message_id === context?.tempId ? { ...m, delivery_status: 'sent', isOptimistic: false } : m)
+            );
+        },
         onSettled: (data, error, variables) => {
-            queryClient.invalidateQueries({ queryKey: ["messages", variables.conv.composite_chat_id] });
+            // Refresh to sync with DB
+            setTimeout(() => {
+                queryClient.invalidateQueries({ queryKey: ["messages", variables.conv.id] });
+            }, 1000);
         },
     });
 
@@ -286,7 +298,7 @@ export default function InboxPage() {
             await queryClient.cancelQueries({ queryKey: ["conversations"] });
             const previousConvs = queryClient.getQueryData<Conversation[]>(["conversations"]);
             queryClient.setQueryData(["conversations"], (old: Conversation[] = []) => 
-                old.map(c => c.composite_chat_id === conv.composite_chat_id ? { ...c, status: status as any } : c)
+                old.map(c => c.id === conv.id ? { ...c, status: status as any } : c)
             );
             return { previousConvs };
         },
@@ -314,7 +326,7 @@ export default function InboxPage() {
             await queryClient.cancelQueries({ queryKey: ["conversations"] });
             const previousConvs = queryClient.getQueryData<Conversation[]>(["conversations"]);
             queryClient.setQueryData(["conversations"], (old: Conversation[] = []) => 
-                old.map(c => c.composite_chat_id === conv.composite_chat_id ? { ...c, bot_active: newStatus } : c)
+                old.map(c => c.id === conv.id ? { ...c, bot_active: newStatus } : c)
             );
             return { previousConvs };
         },
@@ -328,32 +340,43 @@ export default function InboxPage() {
     const assigneeMutation = useMutation({
         mutationFn: async ({ conv, newAssigneeId }: { conv: Conversation, newAssigneeId: string | null }) => {
             const targetId = newAssigneeId === "current_user" ? currentUserId : newAssigneeId;
-            const { error } = await supabase
-                .from("Chat")
-                .update({ 
-                    assignee_id: targetId,
-                    assigned_at: targetId ? new Date().toISOString() : null
+            const res = await fetch(`/api/gateway/crm/assign-chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    chatId: conv.id,
+                    assigneeId: targetId,
+                    instanceId: conv.instance_name
                 })
-                .eq("id", conv.composite_chat_id);
-            if (error) throw error;
-            if (targetId) await botToggleMutation.mutateAsync({ conv, newStatus: false });
+            });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to update assignment via Gateway");
+            }
+            return res.json();
         },
         onMutate: async ({ conv, newAssigneeId }) => {
             await queryClient.cancelQueries({ queryKey: ["conversations"] });
             const previousConvs = queryClient.getQueryData<Conversation[]>(["conversations"]);
             const targetId = newAssigneeId === "current_user" ? currentUserId : newAssigneeId;
+            
+            // Optimistically update assignee and toggle bot if taking over
             queryClient.setQueryData(["conversations"], (old: Conversation[] = []) => 
-                old.map(c => c.composite_chat_id === conv.composite_chat_id ? { 
-                    ...c, assignee_id: targetId, bot_active: targetId ? false : c.bot_active 
+                old.map(c => c.id === conv.id ? { 
+                    ...c, 
+                    assignee_id: targetId, 
+                    bot_active: targetId ? false : c.bot_active 
                 } : c)
             );
             return { previousConvs };
         },
         onError: (err, variables, context) => {
             queryClient.setQueryData(["conversations"], context?.previousConvs);
-            toast.error(t("assignment_failed") || "Failed to update assignment");
+            toast.error(err.message || "Failed to update assignment");
         },
-        onSettled: () => { queryClient.invalidateQueries({ queryKey: ["conversations"] }); }
+        onSettled: () => { 
+            queryClient.invalidateQueries({ queryKey: ["conversations"] }); 
+        }
     });
 
     const handleSendMessage = (e: React.FormEvent) => {
@@ -474,11 +497,11 @@ export default function InboxPage() {
                                 layout
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                key={conv.composite_chat_id} 
-                                onClick={() => setActiveConv(conv.composite_chat_id)}
+                                key={conv.id} 
+                                onClick={() => setActiveConv(conv.id)}
                                 className={cn(
                                     "w-full text-left p-5 rounded-[1.75rem] mb-2 transition-all group relative border border-transparent",
-                                    activeConv === conv.composite_chat_id 
+                                    activeConv === conv.id 
                                         ? "bg-foreground/10 border-border shadow-xl scale-[1.02]" 
                                         : "hover:bg-surface"
                                 )}
@@ -685,7 +708,9 @@ export default function InboxPage() {
                                                                 {new Date(msg.sent_at * 1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                                                             </span>
                                                             {fromMe && (
-                                                                msg.isOptimistic ? <Clock className="w-3 h-3 animate-spin" /> : <CheckCheck className="w-3 h-3 text-emerald-400" />
+                                                                msg.delivery_status === "sending" ? <Clock className="w-3 h-3 animate-spin text-purple-400" /> : 
+                                                                msg.delivery_status === "failed" ? <Info className="w-3 h-3 text-red-500" /> :
+                                                                <CheckCheck className="w-3 h-3 text-emerald-400" />
                                                             )}
                                                         </div>
                                                     </div>

@@ -33,16 +33,19 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
     useEffect(() => {
         if (initialSteps.length > 0) {
             const grouped = initialSteps.reduce((acc, step) => {
-                const traceId = (step as any).trace_id || 'manual_sync';
+                const traceId = (step as any).trace_id || (step.metadata as any)?.trace_id || 'manual_sync';
                 const existing = acc.find(g => g.trace_id === traceId);
                 if (existing) {
-                    existing.steps.push(step);
+                    // Avoid duplicates
+                    if (!existing.steps.some(s => s.id === step.id)) {
+                        existing.steps.push(step);
+                    }
                 } else {
                     acc.push({ trace_id: traceId, steps: [step], last_updated: step.timestamp });
                 }
                 return acc;
             }, [] as TraceGroup[]);
-            setGroups(grouped.slice(0, 5));
+            setGroups(grouped.sort((a, b) => new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()).slice(0, 5));
         }
     }, [initialSteps]);
 
@@ -74,9 +77,12 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                         const existingIdx = prev.findIndex(g => g.trace_id === traceId);
                         if (existingIdx > -1) {
                             const updated = [...prev];
+                            // Avoid duplicates in realtime
+                            if (updated[existingIdx].steps.some(s => s.id === newStep.id)) return prev;
+                            
                             updated[existingIdx] = {
                                 ...updated[existingIdx],
-                                steps: [newStep, ...updated[existingIdx].steps].slice(0, 5),
+                                steps: [newStep, ...updated[existingIdx].steps].slice(0, 10),
                                 last_updated: newStep.timestamp
                             };
                             return updated;
@@ -95,6 +101,8 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
     }, []);
 
     const getIcon = (step: TraceStep) => {
+        if (step.severity === 'critical') return <ShieldCheck className="w-4 h-4 text-red-500 animate-bounce" />;
+        
         if (step.type === 'action' && step.metadata?.tool_name) {
             const tool = step.metadata.tool_name.toLowerCase();
             if (tool.includes('crm') || tool.includes('lead')) return <Target className="w-4 h-4 text-cyan-400" />;
@@ -104,7 +112,7 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
 
         switch (step.type) {
             case 'analysis': return <Target className="w-4 h-4" />;
-            case 'retrieval': return <Sparkles className="w-4 h-4" />;
+            case 'retrieval': return <History className="w-4 h-4" />;
             case 'reasoning': return <Brain className="w-4 h-4" />;
             case 'thought': return <Brain className="w-4 h-4" />;
             case 'action': return <Zap className="w-4 h-4 animate-pulse" />;
@@ -116,7 +124,8 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
     };
 
     const getColor = (step: TraceStep) => {
-        if (step.severity === 'error' || step.severity === 'critical') return "text-red-400 bg-red-400/10 border-red-400/20";
+        if (step.severity === 'critical') return "text-red-500 bg-red-500/20 border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.3)] ring-2 ring-red-500/20";
+        if (step.severity === 'error') return "text-red-400 bg-red-400/10 border-red-400/20";
         if (step.severity === 'warning') return "text-amber-400 bg-amber-400/10 border-amber-400/20";
         
         switch (step.type) {
@@ -133,7 +142,7 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
     };
 
     return (
-        <div className="glass-card p-8 overflow-hidden relative group">
+        <div className="glass-card p-6 md:p-8 overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary/5 blur-[100px] -z-10 group-hover:bg-accent-primary/10 transition-all duration-1000" />
             
             <div className="flex items-center justify-between mb-8">
@@ -150,61 +159,82 @@ export default function AIReasoningTrace({ steps: initialSteps = [] }: { steps?:
                         )}
                     </motion.div>
                     <div>
-                        <h3 className="text-xl font-black text-foreground tracking-tight italic">AI Reasoning Trace</h3>
-                        <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">Business Intelligence v5.7.0</p>
+                        <h3 className="text-xl font-black text-foreground tracking-tight italic">Neural Trace Console</h3>
+                        <p className="text-[11px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">Autonomous Core v5.7.0</p>
+                    </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                    <div className="px-3 py-1 bg-surface-dark border border-border rounded-lg text-[9px] font-mono text-muted-foreground">
+                        RT_SYNC: ACTIVE
                     </div>
                 </div>
             </div>
 
-            <div className="space-y-10 relative">
+            <div className="space-y-12 relative">
                 {groups.length === 0 ? (
                     <motion.div 
                         variants={premiumEntrance}
                         initial="initial"
                         animate="animate"
-                        className="py-12 text-center opacity-40"
+                        className="py-12 text-center opacity-40 border-2 border-dashed border-border rounded-[2rem]"
                     >
                         <p className="text-sm font-black text-muted-foreground italic uppercase tracking-widest">Waiting for incoming thoughts...</p>
                     </motion.div>
                 ) : (
-                    <div className="space-y-12">
+                    <div className="space-y-16">
                         {groups.map((group) => (
-                            <div key={group.trace_id} className="space-y-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-px flex-1 bg-surface" />
-                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.4em] italic">
-                                        Processing_Sequence: {group.trace_id.slice(0, 8)}
+                            <div key={group.trace_id} className="relative group/group">
+                                {/* Vertical Timeline Line */}
+                                <div className="absolute left-5 top-12 bottom-0 w-0.5 bg-gradient-to-b from-border via-border/50 to-transparent z-0 group-hover/group:from-accent-primary/30 transition-colors" />
+
+                                <div className="flex items-center gap-4 mb-8 bg-surface/50 p-2 rounded-xl border border-border w-fit">
+                                    <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
+                                    <span className="text-[10px] font-black text-foreground uppercase tracking-[0.3em] italic">
+                                        Sequence_{group.trace_id.slice(0, 8).toUpperCase()}
                                     </span>
-                                    <div className="h-px flex-1 bg-surface" />
+                                    <span className="text-[9px] text-muted-foreground font-mono px-2 py-0.5 bg-background rounded border border-border">
+                                        {group.last_updated}
+                                    </span>
                                 </div>
 
                                 <motion.div 
                                     variants={staggerContainer}
                                     initial="initial"
                                     animate="animate"
-                                    className="space-y-4"
+                                    className="space-y-6 pl-2"
                                 >
                                     {group.steps.map((step, idx) => (
                                         <motion.div 
                                             key={step.id} 
                                             variants={staggerItem}
-                                            className="relative flex gap-4"
+                                            className="relative flex gap-6 z-10"
                                         >
                                             <div className={cn(
-                                                "flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center shadow-lg transition-transform",
+                                                "flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center shadow-lg transition-all duration-500 scale-100 group-hover:scale-110",
                                                 getColor(step)
                                             )}>
                                                 {getIcon(step)}
                                             </div>
                                             
-                                            <div className="flex-1 pt-0.5">
-                                                <div className="flex items-center gap-2 mb-1.5">
-                                                    <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md", getColor(step))}>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <span className={cn(
+                                                        "text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border",
+                                                        getColor(step)
+                                                    )}>
                                                         {step.type}
                                                     </span>
-                                                    <span className="text-[9px] text-muted-foreground font-mono ml-auto">{step.timestamp}</span>
+                                                    {step.metadata?.tool_name && (
+                                                        <span className="text-[9px] font-black text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                            <Target className="w-3 h-3" /> {step.metadata.tool_name}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <p className="text-sm text-slate-300 leading-relaxed font-medium bg-surface p-4 rounded-2xl border border-border">
+                                                <p className={cn(
+                                                    "text-sm leading-relaxed font-medium p-5 rounded-[1.5rem] border transition-all duration-300",
+                                                    step.severity === 'critical' ? 'bg-red-500/5 border-red-500/20 text-red-200' : 'bg-surface/80 border-glass-border text-slate-300 hover:border-border hover:bg-surface'
+                                                )}>
                                                     {step.content}
                                                 </p>
                                             </div>

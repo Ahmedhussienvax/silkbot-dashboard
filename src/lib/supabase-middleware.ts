@@ -58,7 +58,12 @@ export async function updateSession(request: NextRequest) {
     }
   } else if (cleanPath.startsWith('/dashboard')) {
       // Unauthenticated user trying to access dashboard -> redirect to login
-      return NextResponse.redirect(new URL('/login', request.url));
+      // Force absolute path to prevent '/login/dashboard' hybrid concatenation
+      const locale = pathname.split('/')[1] || 'en';
+      const isCorrectLocale = ['en', 'ar'].includes(locale);
+      const targetLocale = isCorrectLocale ? locale : 'en';
+      
+      return NextResponse.redirect(new URL(`/${targetLocale}/login`, request.url));
   }
 
   return response;

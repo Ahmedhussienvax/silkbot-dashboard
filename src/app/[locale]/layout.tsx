@@ -27,7 +27,13 @@ export default async function LocaleLayout({
     const isRtl = locale === 'ar';
 
     return (
-        <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning>
+        <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning className="dark">
+            <head>
+                <style dangerouslySetInnerHTML={{ __html: `
+                    :root { color-scheme: dark; }
+                    body { background-color: hsl(230, 50%, 3%); }
+                `}} />
+            </head>
             <body className={`${isRtl ? cairo.className : outfit.className} antialiased`}>
                 <NextIntlClientProvider messages={messages} locale={locale}>
                     <ErrorBoundary>
