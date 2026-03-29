@@ -26,14 +26,25 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
+  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const internalProxy = 'http://supabase-kong:8000';
+
   const supabase = createServerClient(
-    supabaseUrl,
+    publicUrl, // Stable cookie naming using Public URL
     supabaseKey,
     {
       global: {
-        headers: {
-          'Host': publicHost, 
-          'x-application-name': 'silkbot-dashboard-internal'
+        fetch: (url, options) => {
+          // 🚀 INTERNAL ROUTING: Rewrite public requests to internal container
+          const targetUrl = url.toString().replace(publicUrl, internalProxy);
+          return fetch(targetUrl, {
+            ...options,
+            headers: {
+              ...options?.headers,
+              'Host': publicHost, // Critical for Kong routing
+              'x-application-name': 'silkbot-dashboard-internal'
+            },
+          });
         },
       },
       cookies: {
@@ -66,14 +77,18 @@ export async function updateSession(request: NextRequest) {
   let hasNetworkIssue = false;
 
   try {
-    const { data, error } = await supabase.auth.getUser();
-    if (error) {
-       if (error.message.toLowerCase().includes('fetch')) {
-          console.error(`🚨 [Middleware Networking] Fetch failed to reach Supabase at: ${supabaseUrl}`);
+    const { data: { user: foundUser }, error: authError } = await supabase.auth.getUser();
+    
+    // 🛰️ Real-time Probe
+    console.log(`[Middleware Check] Path: ${request.nextUrl.pathname} | User: ${foundUser ? 'FOUND' : 'NULL'} | Error: ${authError?.message || 'NONE'}`);
+    
+    if (authError) {
+       if (authError.message.toLowerCase().includes('fetch')) {
+          console.error(`🚨 [Middleware Networking] Fatal fetch failure to: ${supabaseUrl}`);
           hasNetworkIssue = true;
        }
     } else {
-       user = data?.user;
+       user = foundUser;
     }
   } catch (err: any) {
     console.error(`💥 [Critical Connectivity Failure] Middleware unable to authenticate: ${err.message}`);
