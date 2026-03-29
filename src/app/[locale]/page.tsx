@@ -45,15 +45,8 @@ export default function Home() {
 
     const embedUrl = getEmbedUrl(videoUrl);
 
-    useEffect(() => {
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                router.replace("/dashboard");
-            }
-        };
-        checkSession();
-    }, [router, supabase]);
+    // Redirection and Session protection are now optimized at the Server-side Middleware level.
+    // This removes hydration bottlenecks and fixes 'Black Screen' (FOUC) UI failures.
 
     return (
         <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center relative overflow-hidden selection:bg-accent-primary/30 transition-colors duration-700">
