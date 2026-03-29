@@ -12,10 +12,15 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // 1. Dual-Network Resilience: Prioritize internal networking for Docker speed
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL; 
+  // 1. Networking Strategy: Prioritize internal Docker DNS for server-side speed
+  // In Docker, 'supabase-kong' is the service name in the same network
+  const supabaseUrl = process.env.SUPABASE_INTERNAL_URL || "http://supabase-kong:8000";
   const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const publicFQDN = "supabase.150.136.71.17.sslip.io"; // المنتظر من الـ Gateway
+  
+  // The 'Host' header must match the public FQDN for Kong to route to the correct service
+  const publicHost = process.env.NEXT_PUBLIC_SUPABASE_URL 
+    ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host 
+    : "supabase.150.136.71.17.sslip.io";
 
   if (!supabaseUrl || !supabaseKey) {
     return response;
@@ -27,7 +32,8 @@ export async function updateSession(request: NextRequest) {
     {
       global: {
         headers: {
-          'Host': publicFQDN, // أهم سطر لإصلاح مشكلة الـ Gateway
+          'Host': publicHost, 
+          'x-application-name': 'silkbot-dashboard-internal'
         },
       },
       cookies: {

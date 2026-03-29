@@ -23,7 +23,7 @@ export default function Home() {
     const [showDemo, setShowDemo] = useState(false);
     const router = useRouter();
     const supabase = createClient();
-    
+
     const videoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL;
 
     // Clean YouTube Embed logic (No suggestions, no modest branding)
@@ -63,7 +63,7 @@ export default function Home() {
 
             <div className="relative z-10 text-center px-4 max-w-5xl">
                 {/* Unified Brand Identity (UI-06 Remediation) */}
-                <motion.div 
+                <motion.div
                     initial={{ y: -40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     className="inline-flex items-center gap-6 mb-12"
@@ -96,8 +96,8 @@ export default function Home() {
                     >
                         {t("btn_dashboard")}
                     </Link>
-                    
-                    <button 
+
+                    <button
                         onClick={() => setShowDemo(true)}
                         aria-label="Launch Video Demo"
                         className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-surface/40 border border-glass-border text-foreground font-black text-lg uppercase tracking-widest italic hover:bg-surface/60 transition-all backdrop-blur-xl flex items-center justify-center gap-3 group focus:outline-none focus:ring-4 focus:ring-accent-primary/20 shadow-xl"
@@ -114,7 +114,7 @@ export default function Home() {
                         { title: t("feature_sync"), desc: t("feature_sync_desc"), icon: Sparkles },
                         { title: t("feature_enterprise"), desc: t("feature_enterprise_desc"), icon: Shield }
                     ].map((feature, i) => (
-                        <motion.div 
+                        <motion.div
                             key={i}
                             initial={{ y: 20, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
@@ -137,33 +137,33 @@ export default function Home() {
             <AnimatePresence>
                 {showDemo && (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-10">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowDemo(false)}
                             className="absolute inset-0 bg-background/80 backdrop-blur-2xl"
                         />
-                        <motion.div 
+                        <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 40 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 40 }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
                             className="relative w-full max-w-6xl aspect-video bg-background rounded-[3rem] border border-glass-border shadow-[0_0_120px_rgba(var(--accent),0.1)] overflow-hidden"
                         >
-                            <button 
+                            <button
                                 onClick={() => setShowDemo(false)}
                                 className="absolute top-8 right-8 z-30 w-12 h-12 rounded-full bg-background/50 text-foreground flex items-center justify-center hover:bg-accent-primary hover:text-foreground transition-all backdrop-blur-md shadow-2xl"
                             >
                                 <X className="w-6 h-6" />
                             </button>
-                            
+
                             <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
-                            
+
                             <div className="absolute inset-0 bg-background flex items-center justify-center">
                                 {/* Professional Video Player or Placeholder */}
                                 {embedUrl ? (
-                                    <iframe 
+                                    <iframe
                                         src={embedUrl}
                                         className="w-full h-full border-0 absolute inset-0 z-0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -181,7 +181,7 @@ export default function Home() {
                                         </p>
                                     </div>
                                 )}
-                                
+
                                 {/* Overlay UI */}
                                 <div className="absolute bottom-12 left-12 z-20 space-y-4 max-w-xl">
                                     <div className="flex items-center gap-3">
