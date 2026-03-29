@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
     LayoutDashboard, MessageSquare, Send, Settings,
-    ChevronRight, LogOut, Sun, Moon, Zap, Users, Shield,
+    ChevronRight, Sun, Moon, Zap, Users, Shield,
     Columns, Brain, BookOpen, Activity, CreditCard
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -182,20 +182,6 @@ export default function NavigationSidebar({}: NavigationSidebarProps) {
                     </div>
                 )}
 
-                <button 
-                    onClick={() => {
-                        toast.info("Session Terminated", { description: "You have been safely logged out." });
-                        router.push("/login"); // Mock logout for UI demo
-                    }}
-                    className="w-full group/logout flex items-center gap-4 p-4 rounded-2xl border border-transparent hover:border-red-500/20 hover:bg-red-500/5 transition-all"
-                >
-                    <div className="w-10 h-10 rounded-xl bg-surface border border-foreground/10 flex items-center justify-center group-hover/logout:bg-red-500 text-muted-foreground group-hover/logout:text-foreground transition-all shadow-lg active:scale-95">
-                        <LogOut className="w-5 h-5" />
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-widest text-muted-foreground group-hover/logout:text-red-500 transition-colors">
-                        {t("logout")}
-                    </span>
-                </button>
             </div>
 
             {/* Ambient Background Lights */}
