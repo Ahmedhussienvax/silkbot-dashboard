@@ -29,16 +29,21 @@ export default async function LocaleLayout({
     return (
         <html lang={locale} dir={isRtl ? 'rtl' : 'ltr'} suppressHydrationWarning className="dark">
             <head>
+                {/* Critical CSS for zero-latency initial paint */}
                 <style dangerouslySetInnerHTML={{ __html: `
                     :root { color-scheme: dark; }
-                    body { background-color: hsl(230, 50%, 3%); }
+                    body { background-color: #030410; margin: 0; padding: 0; }
+                    /* Prevent flash of content during hydration */
+                    [data-js-focus-visible] :focus:not([data-focus-visible-added]) { outline: none; }
                 `}} />
             </head>
-            <body className={`${isRtl ? cairo.className : outfit.className} antialiased`}>
+            <body className={`${isRtl ? cairo.className : outfit.className} antialiased selection:bg-indigo-500/30`}>
                 <NextIntlClientProvider messages={messages} locale={locale}>
                     <ErrorBoundary>
                         <Providers>
-                            {children}
+                            <main className="min-h-screen bg-[#030410]">
+                                {children}
+                            </main>
                         </Providers>
                     </ErrorBoundary>
                     <Toaster richColors position="top-center" expand={false} visibleToasts={1} closeButton />

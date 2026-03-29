@@ -76,11 +76,19 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
   const locale = pathname.split('/')[1] === 'ar' ? 'ar' : 'en';
-  const cleanPath = pathname.replace(/^\/(en|ar)/, '') || '/';
+  
+  // Robust Path Cleaning: Ensure we don't end up with /login/dashboard
+  let cleanPath = pathname.replace(/^\/(en|ar)/, '');
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+  if (cleanPath === '') cleanPath = '/';
 
-  // Helper to create redirects that PRESERVE refreshed cookies accurately
-  const createRedirect = (url: string) => {
-    const redirectResponse = NextResponse.redirect(new URL(url, request.url));
+  // Absolute Redirect Helper to kill the hybrid /login/dashboard path
+  const createRedirect = (target: string) => {
+    // target is expected to be like '/en/dashboard' or '/en/login'
+    const url = new URL(target, request.url);
+    const redirectResponse = NextResponse.redirect(url);
+    
+    // Preserve cookies accurately across redirects
     response.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
     });
