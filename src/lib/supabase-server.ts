@@ -10,41 +10,44 @@ import { cookies } from "next/headers";
 export async function createClient() {
     const cookieStore = await cookies();
 
-    // Prioritized Discovery Logic: 
-    // 1. Internal Docker FQDN (Fastest, Secure)
-    // 2. Public SSL Endpoint (Fallback)
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // 🛰️ B-07 Internal Proxy Fix
+  const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const internalProxy = 'http://supabase-kong:8000';
+  const publicHost = new URL(publicUrl).host;
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-    // Fail-Fast: Prevent fragmented environment from causing silent failures or "Verify loops"
-    if (!supabaseUrl || !supabaseKey) {
-        throw new Error(
-            "❌ [Critical Failure] Supabase environment fragmented. " +
-            "Ensure SUPABASE_URL/SUPABASE_ANON_KEY are injected. " +
-            "Reference Directive: ENTERPRISE_AUTH_SERVICEDISCOVERY_V1"
-        );
-    }
-
-    return createServerClient(
-        supabaseUrl,
-        supabaseKey,
-        {
-            cookies: {
-                getAll() {
-                    return cookieStore.getAll();
-                },
-                setAll(cookiesToSet) {
-                    try {
-                        cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options)
-                        );
-                    } catch {
-                        // The `setAll` method was called from a Server Component.
-                        // This can be ignored if you have middleware refreshing
-                        // user sessions.
-                    }
-                },
+  return createServerClient(
+    publicUrl, // Stable naming: Public URL
+    anonKey,
+    {
+      global: {
+        fetch: (url, options) => {
+          // 🚀 Route through internal Docker kong
+          const targetUrl = url.toString().replace(publicUrl, internalProxy);
+          return fetch(targetUrl, {
+            ...options,
+            headers: {
+              ...options?.headers,
+              'Host': publicHost, // Kong ID routing
+              'x-application-name': 'silkbot-dashboard-internal-srv'
             },
-        }
-    );
+          });
+        },
+      },
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Safe to ignore in Server Components
+          }
+        },
+      },
+    }
+  );
 }
